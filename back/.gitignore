@@ -1,0 +1,10 @@
+
+.idea/
+.DS_Store
+.env
+.env.*
+!.env.example
+back/config/config.yaml
+back/config/config.*.yaml
+back/bin/
+back/server
