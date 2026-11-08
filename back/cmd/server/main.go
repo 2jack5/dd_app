@@ -11,6 +11,7 @@ import (
 	"dd_web/back/internal/api"
 	"dd_web/back/internal/config"
 	"dd_web/back/internal/infra"
+	"dd_web/back/internal/model"
 
 	"github.com/go-kratos/kratos/v3"
 	"gorm.io/gorm"
@@ -42,6 +43,9 @@ func run() error {
 		pg, err = infra.NewPG(context.Background(), &pgCfg)
 		if err != nil {
 			return fmt.Errorf("initialize postgres: %w", err)
+		}
+		if err := pg.AutoMigrate(model.AllModels()...); err != nil {
+			return fmt.Errorf("auto migrate postgres: %w", err)
 		}
 		// 路由创建失败、服务报错或正常停止，都会执行连接池关闭。
 		defer func() {
