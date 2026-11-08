@@ -1,7 +1,6 @@
 package model
 
-// AllModels 返回全新模型指针，用于模式检查。生产建表以 back/migrations 下的版本化迁移为准。
-// AutoMigrate 不会补齐本文显式 SQL 的所有外键、唯一、CHECK 与排斥约束。
+// AllModels 返回全新模型指针，供服务启动时执行 GORM AutoMigrate。
 func AllModels() []any {
 	return []any{
 		&User{},

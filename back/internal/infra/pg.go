@@ -22,7 +22,7 @@ func NewPG(ctx context.Context, cfg *config.PG) (*gorm.DB, error) {
 	}
 
 	db, err := gorm.Open(postgres.Open(cfg.DSN), &gorm.Config{
-		// 全局禁用外键迁移（表结构由 migrations 管理，GORM 只做读写）
+		// 关联字段暂未在模型中声明完整约束，避免 GORM 推断出错误外键。
 		DisableForeignKeyConstraintWhenMigrating: true,
 		DisableAutomaticPing:                     true,
 		TranslateError:                           true,
