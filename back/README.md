@@ -30,6 +30,7 @@ cmd/server/main.go
 |`internal/api/middleware.go`|请求号、恢复、身份/权限/幂等键入口检查|
 |`internal/api/response.go`|统一响应和错误返回|
 |`internal/api/router_test.go`|文档与路由一致、独立处理函数匹配、入口检查测试|
+|`test/`|集中式接口测试与单元测试；详见 `test/README.md`|
 |`internal/model/`|已有55表模型|
 |`migrations/`|已有分类SQL迁移，启动不自动执行|
 
@@ -77,6 +78,8 @@ go test ./...
 go vet ./...
 go build ./cmd/server
 ```
+
+项目启动后运行 `test/` 下按模块维护的本地接口测试：`go test -v ./test/...`。默认请求 `http://127.0.0.1:8000`，详细目录和单用例运行方式见 `test/README.md`。
 
 测试核对实际注册路径与OpenAPI、180条路由各自的处理函数、未实现接口不假成功、身份权限/幂等入口及分页边界。未连接真实PostgreSQL或支付渠道，尚未验证真实订单、退款、出款事务与并发。
 
