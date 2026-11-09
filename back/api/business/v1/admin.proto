@@ -1,0 +1,577 @@
+syntax = "proto3";
+
+package api.business.v1;
+
+option go_package = "dd_web/back/api/business/v1;businessv1";
+
+import "api/common/v1/common.proto";
+import "google/protobuf/struct.proto";
+import "third_party/google/api/annotations.proto";
+
+message AdminLoginRequest {
+  api.common.v1.AdminLogin body = 1;
+}
+
+message AdminRefreshTokenRequest {
+  api.common.v1.RefreshToken body = 1;
+}
+
+message AdminMeRequest {
+  google.protobuf.Struct empty = 1;
+}
+
+message AdminLogoutRequest {
+  google.protobuf.Struct empty = 1;
+}
+
+message AdminAccountsRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminCreateAccountRequest {
+  api.common.v1.AdminAccount body = 1;
+}
+
+message AdminUpdateAccountRequest {
+  string admin_id = 1;
+  api.common.v1.AdminAccountPatch body = 2;
+}
+
+message AdminRolesRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminCreateRoleRequest {
+  api.common.v1.AdminRole body = 1;
+}
+
+message AdminUpdateRoleRequest {
+  string role_id = 1;
+  api.common.v1.AdminRolePatch body = 2;
+}
+
+message AdminPermissionsRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminAuditLogsRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminApprovalsRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminRequestApprovalRequest {
+  api.common.v1.ApprovalRequest body = 1;
+}
+
+message AdminDecideApprovalRequest {
+  string approval_id = 1;
+  api.common.v1.ApprovalDecision body = 2;
+}
+
+message AdminUsersRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminUserDetailRequest {
+  string user_id = 1;
+}
+
+message AdminPenalizeUserRequest {
+  string user_id = 1;
+  api.common.v1.Penalty body = 2;
+}
+
+message AdminRevokePenaltyRequest {
+  string penalty_id = 1;
+  api.common.v1.PenaltyRevocation body = 2;
+}
+
+message AdminCoachesRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminCoachDetailRequest {
+  string coach_id = 1;
+}
+
+message AdminApplicationsRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminDecideApplicationRequest {
+  string application_id = 1;
+  api.common.v1.ApplicationDecision body = 2;
+}
+
+message AdminIdentityChecksRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminReviewIdentityRequest {
+  string check_id = 1;
+  api.common.v1.IdentityReview body = 2;
+}
+
+message AdminSkillsRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminDecideSkillRequest {
+  string skill_id = 1;
+  api.common.v1.SkillDecision body = 2;
+}
+
+message AdminGamesRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminCreateGameRequest {
+  api.common.v1.GameWrite body = 1;
+}
+
+message AdminUpdateGameRequest {
+  string game_id = 1;
+  api.common.v1.GamePatch body = 2;
+}
+
+message AdminRegionsRequest {
+  string game_id = 1;
+  int32 page_size = 2;
+  string cursor = 3;
+}
+
+message AdminCreateRegionRequest {
+  string game_id = 1;
+  api.common.v1.CatalogEntry body = 2;
+}
+
+message AdminUpdateRegionRequest {
+  string region_id = 1;
+  api.common.v1.CatalogEntryPatch body = 2;
+}
+
+message AdminRanksRequest {
+  string game_id = 1;
+  int32 page_size = 2;
+  string cursor = 3;
+}
+
+message AdminCreateRankRequest {
+  string game_id = 1;
+  api.common.v1.RankWrite body = 2;
+}
+
+message AdminUpdateRankRequest {
+  string rank_id = 1;
+  api.common.v1.RankPatch body = 2;
+}
+
+message AdminCategoriesRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminCreateCategoryRequest {
+  api.common.v1.CategoryWrite body = 1;
+}
+
+message AdminUpdateCategoryRequest {
+  string category_id = 1;
+  api.common.v1.CategoryPatch body = 2;
+}
+
+message AdminServicesRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminModerateServiceRequest {
+  string service_id = 1;
+  api.common.v1.ServiceModeration body = 2;
+}
+
+message AdminBannersRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminCreateBannerRequest {
+  api.common.v1.BannerWrite body = 1;
+}
+
+message AdminUpdateBannerRequest {
+  string banner_id = 1;
+  api.common.v1.BannerPatch body = 2;
+}
+
+message AdminActivitiesRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminCreateActivityRequest {
+  api.common.v1.ActivityWrite body = 1;
+}
+
+message AdminUpdateActivityRequest {
+  string activity_id = 1;
+  api.common.v1.ActivityPatch body = 2;
+}
+
+message AdminRecommendationsRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminCreateRecommendationRequest {
+  api.common.v1.Recommendation body = 1;
+}
+
+message AdminUpdateRecommendationRequest {
+  string recommendation_id = 1;
+  api.common.v1.RecommendationPatch body = 2;
+}
+
+message AdminContentAuditsRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminDecideContentRequest {
+  string audit_id = 1;
+  api.common.v1.ContentDecision body = 2;
+}
+
+message AdminPrepareUploadRequest {
+  api.common.v1.AdminPrepareUpload body = 1;
+}
+
+message AdminCompleteUploadRequest {
+  string asset_id = 1;
+}
+
+message AdminMediaAccessRequest {
+  string asset_id = 1;
+}
+
+service AdminService {
+  rpc AdminLogin (AdminLoginRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/auth/login"
+      body: "body"
+    };
+  }
+  rpc AdminRefreshToken (AdminRefreshTokenRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/auth/token/refresh"
+      body: "body"
+    };
+  }
+  rpc AdminMe (AdminMeRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/me"
+    };
+  }
+  rpc AdminLogout (AdminLogoutRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/auth/logout"
+    };
+  }
+  rpc AdminAccounts (AdminAccountsRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/accounts"
+    };
+  }
+  rpc AdminCreateAccount (AdminCreateAccountRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/accounts"
+      body: "body"
+    };
+  }
+  rpc AdminUpdateAccount (AdminUpdateAccountRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      patch: "/api/v1/admin/accounts/{admin_id}"
+      body: "body"
+    };
+  }
+  rpc AdminRoles (AdminRolesRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/roles"
+    };
+  }
+  rpc AdminCreateRole (AdminCreateRoleRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/roles"
+      body: "body"
+    };
+  }
+  rpc AdminUpdateRole (AdminUpdateRoleRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      patch: "/api/v1/admin/roles/{role_id}"
+      body: "body"
+    };
+  }
+  rpc AdminPermissions (AdminPermissionsRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/permissions"
+    };
+  }
+  rpc AdminAuditLogs (AdminAuditLogsRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/audit-logs"
+    };
+  }
+  rpc AdminApprovals (AdminApprovalsRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/approvals"
+    };
+  }
+  rpc AdminRequestApproval (AdminRequestApprovalRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/approvals"
+      body: "body"
+    };
+  }
+  rpc AdminDecideApproval (AdminDecideApprovalRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/approvals/{approval_id}/decision"
+      body: "body"
+    };
+  }
+  rpc AdminUsers (AdminUsersRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/users"
+    };
+  }
+  rpc AdminUserDetail (AdminUserDetailRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/users/{user_id}"
+    };
+  }
+  rpc AdminPenalizeUser (AdminPenalizeUserRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/users/{user_id}/penalties"
+      body: "body"
+    };
+  }
+  rpc AdminRevokePenalty (AdminRevokePenaltyRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/penalties/{penalty_id}/revoke"
+      body: "body"
+    };
+  }
+  rpc AdminCoaches (AdminCoachesRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/coaches"
+    };
+  }
+  rpc AdminCoachDetail (AdminCoachDetailRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/coaches/{coach_id}"
+    };
+  }
+  rpc AdminApplications (AdminApplicationsRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/coach-applications"
+    };
+  }
+  rpc AdminDecideApplication (AdminDecideApplicationRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/coach-applications/{application_id}/decision"
+      body: "body"
+    };
+  }
+  rpc AdminIdentityChecks (AdminIdentityChecksRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/identity-checks"
+    };
+  }
+  rpc AdminReviewIdentity (AdminReviewIdentityRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/identity-checks/{check_id}/review"
+      body: "body"
+    };
+  }
+  rpc AdminSkills (AdminSkillsRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/coach-skills"
+    };
+  }
+  rpc AdminDecideSkill (AdminDecideSkillRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/coach-skills/{skill_id}/decision"
+      body: "body"
+    };
+  }
+  rpc AdminGames (AdminGamesRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/games"
+    };
+  }
+  rpc AdminCreateGame (AdminCreateGameRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/games"
+      body: "body"
+    };
+  }
+  rpc AdminUpdateGame (AdminUpdateGameRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      patch: "/api/v1/admin/games/{game_id}"
+      body: "body"
+    };
+  }
+  rpc AdminRegions (AdminRegionsRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/games/{game_id}/regions"
+    };
+  }
+  rpc AdminCreateRegion (AdminCreateRegionRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/games/{game_id}/regions"
+      body: "body"
+    };
+  }
+  rpc AdminUpdateRegion (AdminUpdateRegionRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      patch: "/api/v1/admin/game-regions/{region_id}"
+      body: "body"
+    };
+  }
+  rpc AdminRanks (AdminRanksRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/games/{game_id}/ranks"
+    };
+  }
+  rpc AdminCreateRank (AdminCreateRankRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/games/{game_id}/ranks"
+      body: "body"
+    };
+  }
+  rpc AdminUpdateRank (AdminUpdateRankRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      patch: "/api/v1/admin/game-ranks/{rank_id}"
+      body: "body"
+    };
+  }
+  rpc AdminCategories (AdminCategoriesRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/service-categories"
+    };
+  }
+  rpc AdminCreateCategory (AdminCreateCategoryRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/service-categories"
+      body: "body"
+    };
+  }
+  rpc AdminUpdateCategory (AdminUpdateCategoryRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      patch: "/api/v1/admin/service-categories/{category_id}"
+      body: "body"
+    };
+  }
+  rpc AdminServices (AdminServicesRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/coach-services"
+    };
+  }
+  rpc AdminModerateService (AdminModerateServiceRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/coach-services/{service_id}/moderate"
+      body: "body"
+    };
+  }
+  rpc AdminBanners (AdminBannersRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/banners"
+    };
+  }
+  rpc AdminCreateBanner (AdminCreateBannerRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/banners"
+      body: "body"
+    };
+  }
+  rpc AdminUpdateBanner (AdminUpdateBannerRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      patch: "/api/v1/admin/banners/{banner_id}"
+      body: "body"
+    };
+  }
+  rpc AdminActivities (AdminActivitiesRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/activities"
+    };
+  }
+  rpc AdminCreateActivity (AdminCreateActivityRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/activities"
+      body: "body"
+    };
+  }
+  rpc AdminUpdateActivity (AdminUpdateActivityRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      patch: "/api/v1/admin/activities/{activity_id}"
+      body: "body"
+    };
+  }
+  rpc AdminRecommendations (AdminRecommendationsRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/coach-recommendations"
+    };
+  }
+  rpc AdminCreateRecommendation (AdminCreateRecommendationRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/coach-recommendations"
+      body: "body"
+    };
+  }
+  rpc AdminUpdateRecommendation (AdminUpdateRecommendationRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      patch: "/api/v1/admin/coach-recommendations/{recommendation_id}"
+      body: "body"
+    };
+  }
+  rpc AdminContentAudits (AdminContentAuditsRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/content-audits"
+    };
+  }
+  rpc AdminDecideContent (AdminDecideContentRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/content-audits/{audit_id}/decision"
+      body: "body"
+    };
+  }
+  rpc AdminPrepareUpload (AdminPrepareUploadRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/media/uploads"
+      body: "body"
+    };
+  }
+  rpc AdminCompleteUpload (AdminCompleteUploadRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/media/uploads/{asset_id}/complete"
+    };
+  }
+  rpc AdminMediaAccess (AdminMediaAccessRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/media/{asset_id}/access"
+    };
+  }
+}

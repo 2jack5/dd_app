@@ -2,12 +2,17 @@
   "openapi": "3.0.3",
   "info": {
     "title": "东东电竞APP后端接口规划及框架",
-    "version": "0.2.0",
-    "description": "按PRD与三端截图设计的180个接口。cmd/server/main.go启动internal/api/router.go；所有路由注册集中在router.go，五个板块文件只放处理函数、请求结构和相关辅助。6项基础处理有实现，其他独立处理函数为明确占位；请求类型已按V0.2定义，字段验证和业务事务尚未实现。"
+    "version": "0.3.0",
+    "description": "按PRD与三端截图设计的180个接口。API契约拆分于api/business/v1、api/order/v1和api/common/v1，由Kratos v3生成HTTP binding；业务服务与订单服务独立运行，并采用server、service、biz、data标准分层。6项基础处理已实现，其余服务方法明确返回501。"
   },
   "servers": [
     {
-      "url": "http://127.0.0.1:8000"
+      "url": "http://127.0.0.1:8000",
+      "description": "Business API"
+    },
+    {
+      "url": "http://127.0.0.1:8001",
+      "description": "Order API"
     }
   ],
   "paths": {
@@ -127,7 +132,18 @@
         },
         "security": [],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "defined"
+        "x-response-contract-status": "defined",
+        "x-service": "business,order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          },
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/readyz": {
@@ -246,7 +262,18 @@
         },
         "security": [],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "defined"
+        "x-response-contract-status": "defined",
+        "x-service": "business,order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          },
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/auth/wechat/login": {
@@ -365,7 +392,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/auth/token/refresh": {
@@ -484,7 +518,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/agreements/{code}/current": {
@@ -602,7 +643,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/home": {
@@ -709,7 +757,14 @@
         },
         "security": [],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/home/banners": {
@@ -836,7 +891,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/home/recommendations": {
@@ -963,7 +1025,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/activities": {
@@ -1090,7 +1159,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/activities/{activity_id}": {
@@ -1209,7 +1285,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/games": {
@@ -1348,7 +1431,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "defined"
+        "x-response-contract-status": "defined",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/games/{game_id}/regions": {
@@ -1497,7 +1587,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "defined"
+        "x-response-contract-status": "defined",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/games/{game_id}/ranks": {
@@ -1646,7 +1743,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "defined"
+        "x-response-contract-status": "defined",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/service-categories": {
@@ -1795,7 +1899,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "defined"
+        "x-response-contract-status": "defined",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/search/suggestions": {
@@ -1902,7 +2013,14 @@
         },
         "security": [],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/coaches": {
@@ -2155,7 +2273,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/coaches/{coach_id}": {
@@ -2274,7 +2399,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/coaches/{coach_id}/services": {
@@ -2411,7 +2543,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/coaches/{coach_id}/availability": {
@@ -2539,7 +2678,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/coaches/{coach_id}/reviews": {
@@ -2676,7 +2822,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/services/{service_id}": {
@@ -2795,7 +2948,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/support/config": {
@@ -2902,7 +3062,14 @@
         },
         "security": [],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/users/me": {
@@ -3013,7 +3180,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       },
       "patch": {
         "operationId": "user.updateProfile",
@@ -3146,7 +3320,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/auth/logout": {
@@ -3269,7 +3450,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/users/me/cancellation": {
@@ -3404,7 +3592,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/users/me/notifications": {
@@ -3535,7 +3730,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/users/me/notifications/{notification_id}/read": {
@@ -3668,7 +3870,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/agreements/acceptances": {
@@ -3803,7 +4012,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/media/uploads": {
@@ -3938,7 +4154,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/media/uploads/{asset_id}/complete": {
@@ -4071,7 +4294,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/media/{asset_id}/access": {
@@ -4194,7 +4424,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/activity-events": {
@@ -4329,7 +4566,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/orders/quotes": {
@@ -4476,7 +4720,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "defined",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/orders": {
@@ -4623,7 +4874,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "defined",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       },
       "get": {
         "operationId": "trade.orders",
@@ -4768,7 +5026,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/orders/{order_id}": {
@@ -4903,7 +5168,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "defined"
+        "x-response-contract-status": "defined",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/orders/{order_id}/events": {
@@ -5044,7 +5316,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/orders/{order_id}/cancel": {
@@ -5189,7 +5468,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/orders/{order_id}/confirm": {
@@ -5322,7 +5608,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/orders/{order_id}/payment": {
@@ -5479,7 +5772,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "defined",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       },
       "get": {
         "operationId": "payment.result",
@@ -5612,7 +5912,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "defined"
+        "x-response-contract-status": "defined",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/orders/{order_id}/refunds": {
@@ -5769,7 +6076,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "defined",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/refunds": {
@@ -5918,7 +6232,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/refunds/{refund_id}": {
@@ -6053,7 +6374,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "defined"
+        "x-response-contract-status": "defined",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/refunds/{refund_id}/cancel": {
@@ -6186,7 +6514,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/orders/{order_id}/reviews": {
@@ -6331,7 +6666,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/reviews/{review_id}/follow-ups": {
@@ -6476,7 +6818,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/users/me/reviews": {
@@ -6607,7 +6956,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/cases": {
@@ -6742,7 +7098,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       },
       "get": {
         "operationId": "case.list",
@@ -6898,7 +7261,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/cases/{case_id}": {
@@ -7021,7 +7391,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/cases/{case_id}/messages": {
@@ -7166,7 +7543,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/coach/applications/current": {
@@ -7277,7 +7661,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/coach/applications": {
@@ -7412,7 +7803,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/coach/applications/{application_id}/withdraw": {
@@ -7545,7 +7943,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/coach/identity-checks": {
@@ -7680,7 +8085,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/coach/identity-checks/current": {
@@ -7791,7 +8203,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/coach/skills": {
@@ -7926,7 +8345,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       },
       "get": {
         "operationId": "coach.skills",
@@ -8055,7 +8481,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/coach/skills/{skill_id}": {
@@ -8178,7 +8611,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/coach/me": {
@@ -8289,7 +8729,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       },
       "patch": {
         "operationId": "coach.updateProfile",
@@ -8422,7 +8869,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/coach/workbench": {
@@ -8533,7 +8987,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/coach/accepting-orders": {
@@ -8668,7 +9129,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/coach/heartbeat": {
@@ -8791,7 +9259,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/coach/services": {
@@ -8922,7 +9397,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       },
       "post": {
         "operationId": "coach.createService",
@@ -9055,7 +9537,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/coach/services/{service_id}": {
@@ -9200,7 +9689,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/coach/services/{service_id}/publish": {
@@ -9333,7 +9829,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/coach/services/{service_id}/unpublish": {
@@ -9466,7 +9969,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/coach/availability": {
@@ -9588,7 +10098,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       },
       "put": {
         "operationId": "coach.updateAvailability",
@@ -9721,7 +10238,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/coach/orders": {
@@ -9867,7 +10391,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/coach/orders/{order_id}": {
@@ -9990,7 +10521,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/coach/orders/{order_id}/events": {
@@ -10131,7 +10669,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/coach/orders/{order_id}/accept": {
@@ -10264,7 +10809,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/coach/orders/{order_id}/reject": {
@@ -10409,7 +10961,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/coach/orders/{order_id}/start": {
@@ -10542,7 +11101,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/coach/orders/{order_id}/complete": {
@@ -10687,7 +11253,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/coach/earnings/summary": {
@@ -10798,7 +11371,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/coach/earnings/items": {
@@ -10929,7 +11509,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/coach/settlements": {
@@ -11060,7 +11647,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/coach/settlements/{batch_id}": {
@@ -11183,7 +11777,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/coach/settlement-supplements": {
@@ -11314,7 +11915,14 @@
           }
         ],
         "x-delivery-priority": "P1",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/coach/settlement-account": {
@@ -11425,7 +12033,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/coach/settlement-account/onboarding": {
@@ -11560,7 +12175,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/auth/login": {
@@ -11679,7 +12301,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/auth/token/refresh": {
@@ -11798,7 +12427,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/me": {
@@ -11909,7 +12545,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/auth/logout": {
@@ -12032,7 +12675,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/accounts": {
@@ -12163,7 +12813,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       },
       "post": {
         "operationId": "admin.createAccount",
@@ -12296,7 +12953,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/accounts/{admin_id}": {
@@ -12441,7 +13105,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/roles": {
@@ -12572,7 +13243,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       },
       "post": {
         "operationId": "admin.createRole",
@@ -12705,7 +13383,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/roles/{role_id}": {
@@ -12850,7 +13535,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/permissions": {
@@ -12981,7 +13673,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/audit-logs": {
@@ -13112,7 +13811,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/approvals": {
@@ -13243,7 +13949,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       },
       "post": {
         "operationId": "admin.requestApproval",
@@ -13376,7 +14089,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/approvals/{approval_id}/decision": {
@@ -13521,7 +14241,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/users": {
@@ -13652,7 +14379,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/users/{user_id}": {
@@ -13775,7 +14509,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/users/{user_id}/penalties": {
@@ -13920,7 +14661,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/penalties/{penalty_id}/revoke": {
@@ -14065,7 +14813,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/coaches": {
@@ -14196,7 +14951,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/coaches/{coach_id}": {
@@ -14319,7 +15081,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/coach-applications": {
@@ -14450,7 +15219,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/coach-applications/{application_id}/decision": {
@@ -14595,7 +15371,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/identity-checks": {
@@ -14726,7 +15509,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/identity-checks/{check_id}/review": {
@@ -14871,7 +15661,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/coach-skills": {
@@ -15002,7 +15799,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/coach-skills/{skill_id}/decision": {
@@ -15147,7 +15951,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/games": {
@@ -15278,7 +16089,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       },
       "post": {
         "operationId": "admin.createGame",
@@ -15411,7 +16229,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/games/{game_id}": {
@@ -15556,7 +16381,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/games/{game_id}/regions": {
@@ -15697,7 +16529,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       },
       "post": {
         "operationId": "admin.createRegion",
@@ -15840,7 +16679,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/game-regions/{region_id}": {
@@ -15985,7 +16831,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/games/{game_id}/ranks": {
@@ -16126,7 +16979,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       },
       "post": {
         "operationId": "admin.createRank",
@@ -16269,7 +17129,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/game-ranks/{rank_id}": {
@@ -16414,7 +17281,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/service-categories": {
@@ -16545,7 +17419,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       },
       "post": {
         "operationId": "admin.createCategory",
@@ -16678,7 +17559,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/service-categories/{category_id}": {
@@ -16823,7 +17711,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/coach-services": {
@@ -16954,7 +17849,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/coach-services/{service_id}/moderate": {
@@ -17099,7 +18001,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/banners": {
@@ -17230,7 +18139,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       },
       "post": {
         "operationId": "admin.createBanner",
@@ -17363,7 +18279,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/banners/{banner_id}": {
@@ -17508,7 +18431,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/activities": {
@@ -17639,7 +18569,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       },
       "post": {
         "operationId": "admin.createActivity",
@@ -17772,7 +18709,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/activities/{activity_id}": {
@@ -17917,7 +18861,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/coach-recommendations": {
@@ -18048,7 +18999,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       },
       "post": {
         "operationId": "admin.createRecommendation",
@@ -18181,7 +19139,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/coach-recommendations/{recommendation_id}": {
@@ -18326,7 +19291,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/content-audits": {
@@ -18457,7 +19429,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/content-audits/{audit_id}/decision": {
@@ -18602,7 +19581,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/orders": {
@@ -18793,7 +19779,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/orders/{order_id}": {
@@ -18916,7 +19909,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/orders/{order_id}/events": {
@@ -19057,7 +20057,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/refunds": {
@@ -19188,7 +20195,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/refunds/{refund_id}": {
@@ -19311,7 +20325,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/refunds/{refund_id}/decision": {
@@ -19456,7 +20477,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/cases": {
@@ -19624,7 +20652,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/cases/{case_id}": {
@@ -19747,7 +20782,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/cases/{case_id}/assign": {
@@ -19892,7 +20934,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/cases/{case_id}/messages": {
@@ -20037,7 +21086,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/cases/{case_id}/resolve": {
@@ -20182,7 +21238,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/cases/{case_id}/reopen": {
@@ -20327,7 +21390,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/dashboard": {
@@ -20466,7 +21536,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/finance/payments": {
@@ -20597,7 +21674,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/finance/settlement-items": {
@@ -20728,7 +21812,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/finance/settlement-batches": {
@@ -20859,7 +21950,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       },
       "post": {
         "operationId": "admin.createBatch",
@@ -20992,7 +22090,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/finance/adjustments": {
@@ -21123,7 +22228,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       },
       "post": {
         "operationId": "admin.createAdjustment",
@@ -21256,7 +22368,14 @@
         "x-delivery-priority": "P1",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/finance/supplements": {
@@ -21387,7 +22506,14 @@
           }
         ],
         "x-delivery-priority": "P1",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       },
       "post": {
         "operationId": "admin.createSupplement",
@@ -21520,7 +22646,14 @@
         "x-delivery-priority": "P1",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/finance/supplements/{supplement_id}/retry": {
@@ -21665,7 +22798,14 @@
         "x-delivery-priority": "P1",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/finance/reconciliation-runs": {
@@ -21800,7 +22940,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       },
       "get": {
         "operationId": "admin.reconciliationRuns",
@@ -21929,7 +23076,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/finance/reconciliation-runs/{run_id}": {
@@ -22052,7 +23206,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/finance/reconciliation-diffs": {
@@ -22183,7 +23344,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/finance/reconciliation-diffs/{diff_id}/resolve": {
@@ -22328,7 +23496,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/commission-rules": {
@@ -22459,7 +23634,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       },
       "post": {
         "operationId": "admin.createCommission",
@@ -22592,7 +23774,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/commission-rules/{rule_id}/publish": {
@@ -22737,7 +23926,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/business-rules": {
@@ -22868,7 +24064,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       },
       "post": {
         "operationId": "admin.createBusinessRule",
@@ -23001,7 +24204,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/business-rules/{rule_id}/publish": {
@@ -23146,7 +24356,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/admin/media/uploads": {
@@ -23281,7 +24498,14 @@
         "x-delivery-priority": "P0",
         "x-response-contract-status": "draft",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented"
+        "x-request-validation": "not_implemented",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/media/uploads/{asset_id}/complete": {
@@ -23414,7 +24638,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/admin/media/{asset_id}/access": {
@@ -23537,7 +24768,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/callbacks/wechat/pay": {
@@ -23638,7 +24876,14 @@
         "security": [],
         "description": "保留原始字节、渠道签名/证书/时间戳，先验签解密并核对商户、金额及业务号，持久化幂等事件与事务结果后按该渠道ACK。当前仅为503占位；配置provider必须有白名单，不接受任意渠道名作为可信身份。",
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/callbacks/wechat/refund": {
@@ -23739,7 +24984,14 @@
         "security": [],
         "description": "保留原始字节、渠道签名/证书/时间戳，先验签解密并核对商户、金额及业务号，持久化幂等事件与事务结果后按该渠道ACK。当前仅为503占位；配置provider必须有白名单，不接受任意渠道名作为可信身份。",
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/callbacks/settlement/{provider}": {
@@ -23851,7 +25103,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "order",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8001",
+            "description": "Order API"
+          }
+        ]
       }
     },
     "/api/v1/callbacks/identity/{provider}": {
@@ -23963,7 +25222,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     },
     "/api/v1/callbacks/content-audit/{provider}": {
@@ -24075,7 +25341,14 @@
           }
         ],
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft"
+        "x-response-contract-status": "draft",
+        "x-service": "business",
+        "servers": [
+          {
+            "url": "http://127.0.0.1:8000",
+            "description": "Business API"
+          }
+        ]
       }
     }
   },

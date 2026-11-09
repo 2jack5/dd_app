@@ -1,22 +1,32 @@
 # 参数值留空，按实际环境自行填写。
-# 格式说明写在注释中；空数据库地址表示暂不连接数据库。
+# 格式说明写在注释中；PostgreSQL 连接参数缺失时项目拒绝启动。
 env: # dev / test / prod
 
 http:
-  port: # 端口号或 host:port；留空使用程序默认监听地址
+  port: 8000 # 业务服务端口号或 host:port
+  shutdown_timeout: # 优雅退出等待时长，填写带单位的时长
+
+order_http:
+  port: 8001 # 订单服务端口号或 host:port
   shutdown_timeout: # 优雅退出等待时长，填写带单位的时长
 
 log:
-  level: # debug / info / warn / error；留空默认 info
-  format: # json / console / text；留空默认 json
+  level: info # debug / info / warn / error；留空默认 info
+  format: json # json / console / text；留空默认 json
 
 pg:
-  dsn: # PostgreSQL连接串，自行填写地址、数据库名、账号、密码和TLS参数
-  max_open_conns: # 最大连接数，填写正整数；留空使用程序默认值
-  max_idle_conns: # 最大空闲连接数，填写非负整数
-  conn_max_lifetime: # 连接最大存活时长，填写带单位的时长
+  host: 127.0.0.1 # 必填；PostgreSQL主机名或IP
+  port: 15432 # 端口；留空默认5432
+  database: smartring # 必填；数据库名
+  user: smartring # 必填；数据库用户
+  password: smartring # 必填；数据库密码
+  ssl_mode: # TLS模式；留空默认disable，生产环境按实际要求填写require/verify-full等
+  time_zone: # 数据库会话时区；留空默认UTC
+  max_open_conns: 50 # 最大连接数，填写正整数；留空使用程序默认值
+  max_idle_conns: 20 # 最大空闲连接数，填写非负整数
+  conn_max_lifetime: 360s  # 连接最大存活时长，填写带单位的时长
 
 redis:
-  addr: # host:port；当前尚未接入Redis初始化
+  addr: 127.0.0.1  # host:port；当前尚未接入Redis初始化
   password: # 密码
-  db: # 数据库编号，填写非负整数
+  db:  0 # 数据库编号，填写非负整数

@@ -11,11 +11,12 @@ import (
 )
 
 type Config struct {
-	Env   string `mapstructure:"env"`
-	HTTP  HTTP   `mapstructure:"http"`
-	Log   Log    `mapstructure:"log"`
-	PG    PG     `mapstructure:"pg"`
-	Redis Redis  `mapstructure:"redis"`
+	Env       string `mapstructure:"env"`
+	HTTP      HTTP   `mapstructure:"http"`
+	OrderHTTP HTTP   `mapstructure:"order_http"`
+	Log       Log    `mapstructure:"log"`
+	PG        PG     `mapstructure:"pg"`
+	Redis     Redis  `mapstructure:"redis"`
 }
 
 type HTTP struct {
@@ -29,7 +30,13 @@ type Log struct {
 }
 
 type PG struct {
-	DSN             string        `mapstructure:"dsn"`
+	Host            string        `mapstructure:"host"`
+	Port            int           `mapstructure:"port"`
+	Database        string        `mapstructure:"database"`
+	User            string        `mapstructure:"user"`
+	Password        string        `mapstructure:"password"`
+	SSLMode         string        `mapstructure:"ssl_mode"`
+	TimeZone        string        `mapstructure:"time_zone"`
 	MaxOpenConns    int           `mapstructure:"max_open_conns"`
 	MaxIdleConns    int           `mapstructure:"max_idle_conns"`
 	ConnMaxLifetime time.Duration `mapstructure:"conn_max_lifetime"`

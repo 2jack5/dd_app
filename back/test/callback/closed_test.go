@@ -7,6 +7,6 @@ import (
 )
 
 func TestPaymentCallbackDoesNotReturnFakeSuccess(t *testing.T) {
-	response := testkit.RequestJSON(t, http.MethodPost, "/api/v1/callbacks/wechat/pay", map[string]string{"event": "test"})
+	response := testkit.RequestOrderJSON(t, http.MethodPost, "/api/v1/callbacks/wechat/pay", map[string]string{"event": "test"})
 	testkit.Require(t, response, http.StatusServiceUnavailable, "CHANNEL_NOT_CONFIGURED")
 }

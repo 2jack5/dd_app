@@ -4,6 +4,9 @@ import (
 	"context"
 	"dd_web/back/internal/config"
 	"fmt"
+	"net"
+	"net/url"
+	"strconv"
 	"time"
 
 	"gorm.io/driver/postgres"
@@ -17,11 +20,8 @@ func NewPG(ctx context.Context, cfg *config.PG) (*gorm.DB, error) {
 	if cfg == nil {
 		return nil, fmt.Errorf("pg config is nil")
 	}
-	if cfg.DSN == "" {
-		return nil, fmt.Errorf("pg dsn is empty")
-	}
 
-	db, err := gorm.Open(postgres.Open(cfg.DSN), &gorm.Config{
+	db, err := gorm.Open(postgres.Open(postgresDSN(cfg)), &gorm.Config{
 		// 关联字段暂未在模型中声明完整约束，避免 GORM 推断出错误外键。
 		DisableForeignKeyConstraintWhenMigrating: true,
 		DisableAutomaticPing:                     true,
@@ -58,6 +58,19 @@ func NewPG(ctx context.Context, cfg *config.PG) (*gorm.DB, error) {
 
 	L().Info("postgres connected", TraceID("infra"))
 	return db, nil
+}
+
+func postgresDSN(cfg *config.PG) string {
+	query := url.Values{}
+	query.Set("sslmode", cfg.SSLMode)
+	query.Set("TimeZone", cfg.TimeZone)
+	return (&url.URL{
+		Scheme:   "postgres",
+		User:     url.UserPassword(cfg.User, cfg.Password),
+		Host:     net.JoinHostPort(cfg.Host, strconv.Itoa(cfg.Port)),
+		Path:     "/" + cfg.Database,
+		RawQuery: query.Encode(),
+	}).String()
 }
 
 // gormWriter 使用统一slog实例；SQL参数已由ParameterizedQueries屏蔽。

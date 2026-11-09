@@ -12,7 +12,10 @@ import (
 	"time"
 )
 
-const DefaultBaseURL = "http://127.0.0.1:8000"
+const (
+	DefaultBusinessBaseURL = "http://127.0.0.1:8000"
+	DefaultOrderBaseURL    = "http://127.0.0.1:8001"
+)
 
 var httpClient = &http.Client{Timeout: 5 * time.Second}
 
@@ -31,10 +34,24 @@ type Response struct {
 }
 
 func BaseURL() string {
+	return BusinessBaseURL()
+}
+
+func BusinessBaseURL() string {
+	if value := strings.TrimSpace(os.Getenv("DD_TEST_BUSINESS_BASE_URL")); value != "" {
+		return strings.TrimRight(value, "/")
+	}
 	if value := strings.TrimSpace(os.Getenv("DD_TEST_BASE_URL")); value != "" {
 		return strings.TrimRight(value, "/")
 	}
-	return DefaultBaseURL
+	return DefaultBusinessBaseURL
+}
+
+func OrderBaseURL() string {
+	if value := strings.TrimSpace(os.Getenv("DD_TEST_ORDER_BASE_URL")); value != "" {
+		return strings.TrimRight(value, "/")
+	}
+	return DefaultOrderBaseURL
 }
 
 func Request(t *testing.T, method, path string, body io.Reader) Response {
@@ -44,8 +61,20 @@ func Request(t *testing.T, method, path string, body io.Reader) Response {
 // RequestWithHeaders 请求已经启动的真实服务。每次调用都完整校验统一响应格式，
 // 因此任意顶层 TestXxx 都可以从 IDE 的运行按钮单独执行。
 func RequestWithHeaders(t *testing.T, method, path string, body io.Reader, headers http.Header) Response {
+	return requestWithHeaders(t, BusinessBaseURL(), "business", method, path, body, headers)
+}
+
+func RequestOrder(t *testing.T, method, path string, body io.Reader) Response {
+	return requestWithHeaders(t, OrderBaseURL(), "order", method, path, body, nil)
+}
+
+func RequestOrderWithHeaders(t *testing.T, method, path string, body io.Reader, headers http.Header) Response {
+	return requestWithHeaders(t, OrderBaseURL(), "order", method, path, body, headers)
+}
+
+func requestWithHeaders(t *testing.T, baseURL, service, method, path string, body io.Reader, headers http.Header) Response {
 	t.Helper()
-	target := BaseURL() + "/" + strings.TrimLeft(path, "/")
+	target := baseURL + "/" + strings.TrimLeft(path, "/")
 	req, err := http.NewRequest(method, target, body)
 	if err != nil {
 		t.Fatalf("创建请求失败: %v", err)
@@ -60,7 +89,7 @@ func RequestWithHeaders(t *testing.T, method, path string, body io.Reader, heade
 	t.Logf("请求真实服务: %s %s", method, target)
 	resp, err := httpClient.Do(req)
 	if err != nil {
-		t.Fatalf("请求 %s 失败: %v；请先在 back 目录运行 go run ./cmd/server；如果服务不是默认地址，请设置 DD_TEST_BASE_URL", target, err)
+		t.Fatalf("请求 %s 失败: %v；请先启动 %s 服务；非默认地址请设置对应的 DD_TEST_*_BASE_URL", target, err, service)
 	}
 	defer resp.Body.Close()
 	raw, err := io.ReadAll(resp.Body)
@@ -84,6 +113,14 @@ func RequestWithHeaders(t *testing.T, method, path string, body io.Reader, heade
 
 // RequestJSON 编码 JSON 请求体并设置 Content-Type，供需要请求体的 case 直接使用。
 func RequestJSON(t *testing.T, method, path string, payload any) Response {
+	return requestJSON(t, false, method, path, payload)
+}
+
+func RequestOrderJSON(t *testing.T, method, path string, payload any) Response {
+	return requestJSON(t, true, method, path, payload)
+}
+
+func requestJSON(t *testing.T, order bool, method, path string, payload any) Response {
 	t.Helper()
 	body, err := json.Marshal(payload)
 	if err != nil {
@@ -91,6 +128,9 @@ func RequestJSON(t *testing.T, method, path string, payload any) Response {
 	}
 	header := make(http.Header)
 	header.Set("Content-Type", "application/json")
+	if order {
+		return RequestOrderWithHeaders(t, method, path, bytes.NewReader(body), header)
+	}
 	return RequestWithHeaders(t, method, path, bytes.NewReader(body), header)
 }
 
@@ -110,5 +150,5 @@ func DecodeData(t *testing.T, response Response, target any) {
 }
 
 func URL(path string) string {
-	return fmt.Sprintf("%s/%s", BaseURL(), strings.TrimLeft(path, "/"))
+	return fmt.Sprintf("%s/%s", BusinessBaseURL(), strings.TrimLeft(path, "/"))
 }

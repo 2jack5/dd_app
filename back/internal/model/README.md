@@ -29,7 +29,7 @@
 
 ## 使用边界
 
-- `model` 是持久化结构；当前按用户指定的简化结构，由internal/api对应板块实现请求处理并读写本包，响应使用独立DTO，不直接序列化数据库模型。
+- `model` 是持久化结构；仅由`internal/data`仓储读写，`internal/biz`使用领域结果，`internal/service`转换为API DTO，不直接序列化数据库模型。
 - 不直接把模型序列化为客户端响应，也不把模型直接绑定请求。敏感字段已尽量标 `json:"-"`，但这不替代权限和脱敏。
 - 主外键为有符号 `int64`，对外 ID 使用字符串；金额为 `int64` 分，费率为 `int32` 万分比，不使用浮点数。乘法/累计金额需防溢出。
 - 可空字段使用指针，`bytea` 用 `[]byte`（nil 为 NULL）。审计 IP 用 `sql.NullString` 对应 PostgreSQL `inet`。

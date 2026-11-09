@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package api.order.v1;
+
+option go_package = "dd_web/back/api/order/v1;orderv1";
+
+import "api/common/v1/common.proto";
+import "google/protobuf/struct.proto";
+import "third_party/google/api/annotations.proto";
+
+message CallbackPaymentRequest {
+  google.protobuf.Struct empty = 1;
+}
+
+message CallbackRefundRequest {
+  google.protobuf.Struct empty = 1;
+}
+
+message CallbackSettlementRequest {
+  string provider = 1;
+}
+
+service CallbackService {
+  rpc CallbackPayment (CallbackPaymentRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/callbacks/wechat/pay"
+    };
+  }
+  rpc CallbackRefund (CallbackRefundRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/callbacks/wechat/refund"
+    };
+  }
+  rpc CallbackSettlement (CallbackSettlementRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/callbacks/settlement/{provider}"
+    };
+  }
+}

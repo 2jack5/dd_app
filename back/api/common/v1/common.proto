@@ -1,0 +1,493 @@
+syntax = "proto3";
+
+package api.common.v1;
+
+option go_package = "dd_web/back/api/common/v1;commonv1";
+
+import "google/protobuf/struct.proto";
+
+message ApiResponse {
+  string code = 1;
+  string message = 2;
+  google.protobuf.Value data = 3;
+  string request_id = 4;
+}
+
+message WechatLogin {
+  string client_type = 1;
+  string code = 2;
+}
+
+message RefreshToken {
+  string refresh_token = 1;
+}
+
+message ProfileUpdate {
+  string nickname = 1;
+  string avatar_asset_id = 2;
+  int32 content_version = 3;
+}
+
+message Reason {
+  string reason_code = 1;
+  string reason_detail = 2;
+  int32 version = 3;
+}
+
+message AgreementAccept {
+  string agreement_code = 1;
+  string agreement_version = 2;
+  string content_hash = 3;
+  string order_id = 4;
+}
+
+message PrepareUpload {
+  string purpose = 1;
+  string mime_type = 2;
+  int32 size_bytes = 3;
+  string sha256 = 4;
+}
+
+message ActivityEvent {
+  string event_key = 1;
+  string event_type = 2;
+  string occurred_at = 3;
+  google.protobuf.Struct context = 4;
+}
+
+message OrderQuote {
+  string service_id = 1;
+  string region_id = 2;
+  int32 quantity = 3;
+  string appointment_start_at = 4;
+}
+
+message CreateOrder {
+  string quote_no = 1;
+  string game_player_id = 2;
+  string remark = 3;
+  string agreement_acceptance_id = 4;
+}
+
+message Prepay {
+  string client_type = 1;
+}
+
+message RefundApply {
+  int64 amount_cent = 1;
+  string reason_code = 2;
+  string reason_detail = 3;
+  repeated string evidence_asset_ids = 4;
+  string case_id = 5;
+}
+
+message CreateReview {
+  int32 rating = 1;
+  string content = 2;
+  repeated string image_asset_ids = 3;
+}
+
+message ReviewContent {
+  string content = 1;
+  repeated string image_asset_ids = 2;
+}
+
+message CreateCase {
+  string kind = 1;
+  string order_id = 2;
+  string target_user_id = 3;
+  string review_id = 4;
+  string category_code = 5;
+  string content = 6;
+  repeated string evidence_asset_ids = 7;
+}
+
+message CaseMessage {
+  string content = 1;
+  repeated string evidence_asset_ids = 2;
+}
+
+message CoachApplication {
+  string identity_check_id = 1;
+  string agreement_acceptance_id = 2;
+  string display_name = 3;
+  string bio = 4;
+  repeated string evidence_asset_ids = 5;
+}
+
+message IdentityCheck {
+  string provider = 1;
+  string consent_version = 2;
+}
+
+message CoachSkill {
+  string game_id = 1;
+  string rank_id = 2;
+  repeated string evidence_asset_ids = 3;
+}
+
+message CoachProfile {
+  string display_name = 1;
+  string bio = 2;
+  int32 content_version = 3;
+}
+
+message AcceptingOrders {
+  bool accepting_orders = 1;
+  int32 version = 2;
+}
+
+message CoachService {
+  string game_id = 1;
+  string category_id = 2;
+  string title = 3;
+  string description = 4;
+  int64 price_cent = 5;
+  int64 min_qty = 6;
+  int64 max_qty = 7;
+  int64 booking_minutes_per_unit = 8;
+  repeated string region_ids = 9;
+}
+
+message CoachServicePatch {
+  string title = 1;
+  string description = 2;
+  int64 price_cent = 3;
+  int64 min_qty = 4;
+  int64 max_qty = 5;
+  int64 booking_minutes_per_unit = 6;
+  repeated string region_ids = 7;
+  int32 version = 8;
+  int32 content_version = 9;
+}
+
+message Availability {
+  string date = 1;
+  repeated google.protobuf.Struct expected_slots = 2;
+  repeated google.protobuf.Struct slots = 3;
+}
+
+message Completion {
+  int32 schema_version = 1;
+  int64 completed_quantity = 2;
+  string actual_end_at = 3;
+  repeated string evidence_asset_ids = 4;
+  string completion_note = 5;
+  int32 version = 6;
+}
+
+message Onboarding {
+  string provider = 1;
+  string consent_version = 2;
+}
+
+message AdminLogin {
+  string account = 1;
+  string password = 2;
+  string mfa_code = 3;
+}
+
+message AdminAccount {
+  string account = 1;
+  string initial_password = 2;
+  string display_name = 3;
+  repeated string role_ids = 4;
+}
+
+message AdminAccountPatch {
+  string display_name = 1;
+  string status = 2;
+  repeated string role_ids = 3;
+}
+
+message AdminRole {
+  string code = 1;
+  string name = 2;
+  string data_scope = 3;
+  repeated string permission_ids = 4;
+  string status = 5;
+}
+
+message AdminRolePatch {
+  string name = 1;
+  string data_scope = 2;
+  repeated string permission_ids = 3;
+  string status = 4;
+}
+
+message ApprovalRequest {
+  string operation = 1;
+  string resource_type = 2;
+  string resource_id = 3;
+  int32 resource_version = 4;
+  google.protobuf.Struct parameters = 5;
+}
+
+message ApprovalDecision {
+  string decision = 1;
+  string expected_payload_hash = 2;
+  string reason = 3;
+}
+
+message Penalty {
+  string action = 1;
+  string coach_id = 2;
+  string service_id = 3;
+  string case_id = 4;
+  string reason = 5;
+  string starts_at = 6;
+  string ends_at = 7;
+}
+
+message PenaltyRevocation {
+  string reason_code = 1;
+  string reason_detail = 2;
+}
+
+message ApplicationDecision {
+  string decision = 1;
+  int32 expected_revision = 2;
+  string expected_status = 3;
+  string reason = 4;
+}
+
+message IdentityReview {
+  string decision = 1;
+  string expected_status = 2;
+  string review_note = 3;
+}
+
+message SkillDecision {
+  string decision = 1;
+  int32 expected_revision = 2;
+  string expected_status = 3;
+  string reason = 4;
+}
+
+message GameWrite {
+  string code = 1;
+  string name = 2;
+  string icon_asset_id = 3;
+  string keywords = 4;
+  int64 sort_order = 5;
+  string status = 6;
+}
+
+message GamePatch {
+  string name = 1;
+  string icon_asset_id = 2;
+  string keywords = 3;
+  int64 sort_order = 4;
+  string status = 5;
+}
+
+message CatalogEntry {
+  string code = 1;
+  string name = 2;
+  string status = 3;
+  int64 sort_order = 4;
+}
+
+message CatalogEntryPatch {
+  string name = 1;
+  string status = 2;
+  int64 sort_order = 3;
+}
+
+message RankWrite {
+  string code = 1;
+  string name = 2;
+  int64 rank_level = 3;
+  string status = 4;
+}
+
+message RankPatch {
+  string name = 1;
+  int64 rank_level = 2;
+  string status = 3;
+}
+
+message CategoryWrite {
+  string game_id = 1;
+  string code = 2;
+  string name = 3;
+  string unit_type = 4;
+  int64 billing_minutes = 5;
+  int64 min_price_cent = 6;
+  int64 max_price_cent = 7;
+  string status = 8;
+  int64 sort_order = 9;
+}
+
+message CategoryPatch {
+  string name = 1;
+  int64 min_price_cent = 2;
+  int64 max_price_cent = 3;
+  string status = 4;
+  int64 sort_order = 5;
+}
+
+message ServiceModeration {
+  string action = 1;
+  string reason = 2;
+  int32 version = 3;
+}
+
+message BannerWrite {
+  string placement = 1;
+  string title = 2;
+  string image_asset_id = 3;
+  string target_type = 4;
+  string target_id = 5;
+  string starts_at = 6;
+  string ends_at = 7;
+  string status = 8;
+  int64 sort_order = 9;
+}
+
+message BannerPatch {
+  string placement = 1;
+  string title = 2;
+  string image_asset_id = 3;
+  string target_type = 4;
+  string target_id = 5;
+  string starts_at = 6;
+  string ends_at = 7;
+  string status = 8;
+  int64 sort_order = 9;
+}
+
+message ActivityWrite {
+  string title = 1;
+  google.protobuf.Struct content = 2;
+  string cover_asset_id = 3;
+  string starts_at = 4;
+  string ends_at = 5;
+  string status = 6;
+}
+
+message ActivityPatch {
+  string title = 1;
+  google.protobuf.Struct content = 2;
+  string cover_asset_id = 3;
+  string starts_at = 4;
+  string ends_at = 5;
+  string status = 6;
+  int32 content_version = 7;
+  int32 version = 8;
+}
+
+message Recommendation {
+  string placement = 1;
+  string coach_id = 2;
+  string game_id = 3;
+  string starts_at = 4;
+  string ends_at = 5;
+  string status = 6;
+  int64 sort_order = 7;
+}
+
+message RecommendationPatch {
+  string placement = 1;
+  string coach_id = 2;
+  string game_id = 3;
+  string starts_at = 4;
+  string ends_at = 5;
+  string status = 6;
+  int64 sort_order = 7;
+}
+
+message ContentDecision {
+  string decision = 1;
+  int32 expected_revision = 2;
+  int32 source_version = 3;
+  string expected_status = 4;
+  string reason = 5;
+}
+
+message RefundDecision {
+  string decision = 1;
+  string approval_id = 2;
+  int32 resource_version = 3;
+  string reason = 4;
+}
+
+message AssignCase {
+  string assignee_id = 1;
+  int32 version = 2;
+}
+
+message AdminCaseMessage {
+  string content = 1;
+  repeated string evidence_asset_ids = 2;
+  string visibility = 3;
+}
+
+message ResolveCase {
+  string resolution_code = 1;
+  string resolution_note = 2;
+  int32 version = 3;
+}
+
+message CreateBatch {
+  repeated string settlement_item_ids = 1;
+  string approval_id = 2;
+}
+
+message Adjustment {
+  string settlement_item_id = 1;
+  string kind = 2;
+  int64 gross_delta_cent = 3;
+  int64 commission_delta_cent = 4;
+  int64 coach_delta_cent = 5;
+  int64 channel_fee_delta_cent = 6;
+  string reason = 7;
+  string approval_id = 8;
+}
+
+message CreateSupplement {
+  string adjustment_id = 1;
+  string account_id = 2;
+  string approval_id = 3;
+}
+
+message ApprovedAction {
+  string approval_id = 1;
+  int32 resource_version = 2;
+}
+
+message ReconciliationRun {
+  string provider = 1;
+  string merchant_id = 2;
+  string bill_type = 3;
+  string bill_date = 4;
+}
+
+message ResolveDiff {
+  string resolution = 1;
+  string result = 2;
+}
+
+message CommissionRule {
+  string scope_type = 1;
+  string coach_id = 2;
+  string game_id = 3;
+  string category_id = 4;
+  int32 bps = 5;
+  string effective_at = 6;
+  string expires_at = 7;
+}
+
+message BusinessRule {
+  string code = 1;
+  google.protobuf.Struct config = 2;
+  string effective_at = 3;
+  string expires_at = 4;
+}
+
+message AdminPrepareUpload {
+  string purpose = 1;
+  string mime_type = 2;
+  int32 size_bytes = 3;
+  string sha256 = 4;
+}

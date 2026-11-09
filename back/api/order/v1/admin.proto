@@ -1,0 +1,357 @@
+syntax = "proto3";
+
+package api.order.v1;
+
+option go_package = "dd_web/back/api/order/v1;orderv1";
+
+import "api/common/v1/common.proto";
+import "third_party/google/api/annotations.proto";
+
+message AdminOrdersRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+  string buyer_id = 3;
+  string coach_id = 4;
+  string order_no = 5;
+  string created_from = 6;
+  string created_to = 7;
+  string status = 8;
+}
+
+message AdminOrderDetailRequest {
+  string order_id = 1;
+}
+
+message AdminOrderEventsRequest {
+  string order_id = 1;
+  int32 page_size = 2;
+  string cursor = 3;
+}
+
+message AdminRefundsRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminRefundDetailRequest {
+  string refund_id = 1;
+}
+
+message AdminDecideRefundRequest {
+  string refund_id = 1;
+  api.common.v1.RefundDecision body = 2;
+}
+
+message AdminCasesRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+  string kind = 3;
+  string assignee_id = 4;
+  string status = 5;
+}
+
+message AdminCaseDetailRequest {
+  string case_id = 1;
+}
+
+message AdminAssignCaseRequest {
+  string case_id = 1;
+  api.common.v1.AssignCase body = 2;
+}
+
+message AdminCaseMessageRequest {
+  string case_id = 1;
+  api.common.v1.AdminCaseMessage body = 2;
+}
+
+message AdminResolveCaseRequest {
+  string case_id = 1;
+  api.common.v1.ResolveCase body = 2;
+}
+
+message AdminReopenCaseRequest {
+  string case_id = 1;
+  api.common.v1.Reason body = 2;
+}
+
+message AdminDashboardRequest {
+  string from_date = 1;
+  string to_date = 2;
+  string game_id = 3;
+}
+
+message AdminPaymentsRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminSettlementItemsRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminBatchesRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminCreateBatchRequest {
+  api.common.v1.CreateBatch body = 1;
+}
+
+message AdminAdjustmentsRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminCreateAdjustmentRequest {
+  api.common.v1.Adjustment body = 1;
+}
+
+message AdminSupplementsRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminCreateSupplementRequest {
+  api.common.v1.CreateSupplement body = 1;
+}
+
+message AdminRetrySupplementRequest {
+  string supplement_id = 1;
+  api.common.v1.ApprovedAction body = 2;
+}
+
+message AdminCreateReconciliationRequest {
+  api.common.v1.ReconciliationRun body = 1;
+}
+
+message AdminReconciliationRunsRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminReconciliationDetailRequest {
+  string run_id = 1;
+}
+
+message AdminReconciliationDiffsRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminResolveDiffRequest {
+  string diff_id = 1;
+  api.common.v1.ResolveDiff body = 2;
+}
+
+message AdminCommissionRulesRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminCreateCommissionRequest {
+  api.common.v1.CommissionRule body = 1;
+}
+
+message AdminPublishCommissionRequest {
+  string rule_id = 1;
+  api.common.v1.ApprovedAction body = 2;
+}
+
+message AdminBusinessRulesRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message AdminCreateBusinessRuleRequest {
+  api.common.v1.BusinessRule body = 1;
+}
+
+message AdminPublishBusinessRuleRequest {
+  string rule_id = 1;
+  api.common.v1.ApprovedAction body = 2;
+}
+
+service AdminOrderService {
+  rpc AdminOrders (AdminOrdersRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/orders"
+    };
+  }
+  rpc AdminOrderDetail (AdminOrderDetailRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/orders/{order_id}"
+    };
+  }
+  rpc AdminOrderEvents (AdminOrderEventsRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/orders/{order_id}/events"
+    };
+  }
+  rpc AdminRefunds (AdminRefundsRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/refunds"
+    };
+  }
+  rpc AdminRefundDetail (AdminRefundDetailRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/refunds/{refund_id}"
+    };
+  }
+  rpc AdminDecideRefund (AdminDecideRefundRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/refunds/{refund_id}/decision"
+      body: "body"
+    };
+  }
+  rpc AdminCases (AdminCasesRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/cases"
+    };
+  }
+  rpc AdminCaseDetail (AdminCaseDetailRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/cases/{case_id}"
+    };
+  }
+  rpc AdminAssignCase (AdminAssignCaseRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/cases/{case_id}/assign"
+      body: "body"
+    };
+  }
+  rpc AdminCaseMessage (AdminCaseMessageRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/cases/{case_id}/messages"
+      body: "body"
+    };
+  }
+  rpc AdminResolveCase (AdminResolveCaseRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/cases/{case_id}/resolve"
+      body: "body"
+    };
+  }
+  rpc AdminReopenCase (AdminReopenCaseRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/cases/{case_id}/reopen"
+      body: "body"
+    };
+  }
+  rpc AdminDashboard (AdminDashboardRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/dashboard"
+    };
+  }
+  rpc AdminPayments (AdminPaymentsRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/finance/payments"
+    };
+  }
+  rpc AdminSettlementItems (AdminSettlementItemsRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/finance/settlement-items"
+    };
+  }
+  rpc AdminBatches (AdminBatchesRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/finance/settlement-batches"
+    };
+  }
+  rpc AdminCreateBatch (AdminCreateBatchRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/finance/settlement-batches"
+      body: "body"
+    };
+  }
+  rpc AdminAdjustments (AdminAdjustmentsRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/finance/adjustments"
+    };
+  }
+  rpc AdminCreateAdjustment (AdminCreateAdjustmentRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/finance/adjustments"
+      body: "body"
+    };
+  }
+  rpc AdminSupplements (AdminSupplementsRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/finance/supplements"
+    };
+  }
+  rpc AdminCreateSupplement (AdminCreateSupplementRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/finance/supplements"
+      body: "body"
+    };
+  }
+  rpc AdminRetrySupplement (AdminRetrySupplementRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/finance/supplements/{supplement_id}/retry"
+      body: "body"
+    };
+  }
+  rpc AdminCreateReconciliation (AdminCreateReconciliationRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/finance/reconciliation-runs"
+      body: "body"
+    };
+  }
+  rpc AdminReconciliationRuns (AdminReconciliationRunsRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/finance/reconciliation-runs"
+    };
+  }
+  rpc AdminReconciliationDetail (AdminReconciliationDetailRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/finance/reconciliation-runs/{run_id}"
+    };
+  }
+  rpc AdminReconciliationDiffs (AdminReconciliationDiffsRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/finance/reconciliation-diffs"
+    };
+  }
+  rpc AdminResolveDiff (AdminResolveDiffRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/finance/reconciliation-diffs/{diff_id}/resolve"
+      body: "body"
+    };
+  }
+  rpc AdminCommissionRules (AdminCommissionRulesRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/commission-rules"
+    };
+  }
+  rpc AdminCreateCommission (AdminCreateCommissionRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/commission-rules"
+      body: "body"
+    };
+  }
+  rpc AdminPublishCommission (AdminPublishCommissionRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/commission-rules/{rule_id}/publish"
+      body: "body"
+    };
+  }
+  rpc AdminBusinessRules (AdminBusinessRulesRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/business-rules"
+    };
+  }
+  rpc AdminCreateBusinessRule (AdminCreateBusinessRuleRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/business-rules"
+      body: "body"
+    };
+  }
+  rpc AdminPublishBusinessRule (AdminPublishBusinessRuleRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/business-rules/{rule_id}/publish"
+      body: "body"
+    };
+  }
+}

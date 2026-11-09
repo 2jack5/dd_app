@@ -1,97 +1,87 @@
-# 东东电竞APP后端接口框架
+# 东东电竞 APP 后端
 
-使用Kratos v3 + GORM + PostgreSQL。按已修订的接口文档组织180个接口，保留55表模型及17组SQL迁移。
+使用 Kratos v3、GORM 和 PostgreSQL。HTTP 契约采用 Protobuf API-first 方式维护，当前 180 项契约已拆分为业务服务和订单服务两个可独立运行的进程。
 
-## 启动关系
+## 微服务划分
+
+| 服务 | 入口 | 默认地址 | 职责 |
+|---|---|---|---|
+| Business API | `cmd/business/main.go` | `127.0.0.1:8000` | 登录注册、用户、陪练、目录、内容和运营管理 |
+| Order API | `cmd/order/main.go` | `127.0.0.1:8001` | 下单、支付、履约、退款、售后、结算和资金管理 |
+
+两个进程都有独立的 Kratos HTTP Server、路由注册、访问策略、Service 实现和健康检查。当前迁移阶段仍读取同一份 PostgreSQL 配置和模型迁移；后续拆库时只需分别注入各自 Repository，不需要再调整 HTTP 边界。
 
 ```text
-cmd/server/main.go
-  └─ api.NewRouter(cfg, pg)                     internal/api/router.go
-       ├─ 仅注册HTTP接口，接收main初始化的数据库连接
-       ├─ 集中注册180个接口，按五个板块分组
-       └─ 指向各板块文件中的独立处理函数
-  └─ kratos.New(..., kratos.Server(httpServer)).Run()
+cmd/business ─ internal/app.RunBusiness ─ server.NewBusinessHTTPServer
+             └ api/business/v1 ─ service.BusinessService ─ biz ─ data
+
+cmd/order    ─ internal/app.RunOrder    ─ server.NewOrderHTTPServer
+             └ api/order/v1    ─ service.OrderService    ─ biz ─ data
 ```
 
-`main.go`启动Kratos服务；所有GET/POST/PATCH/PUT等接口注册语句都集中在`internal/api/router.go`。`public.go`、`user.go`、`coach.go`、`admin.go`、`callback.go`仅保留各板块的接口函数、请求结构和相关辅助函数，不包含路由注册。
+## API 文件划分
 
-## 文件划分
+- `api/common/v1/common.proto`：两个服务共享的消息类型。
+- `api/business/v1/public.proto`：健康检查与公共目录。
+- `api/business/v1/account.proto`：注册、登录和用户账号。
+- `api/business/v1/coach.proto`：陪练资料和非订单能力。
+- `api/business/v1/admin.proto`：业务后台接口。
+- `api/business/v1/callback.proto`：身份和内容回调。
+- `api/order/v1/user.proto`：用户订单、支付、退款和售后。
+- `api/order/v1/coach.proto`：陪练接单、履约和收入结算。
+- `api/order/v1/admin.proto`：订单、退款、支付、结算和对账后台。
+- `api/order/v1/callback.proto`：支付、退款和结算回调。
+- `api/order/v1/system.proto`：订单服务健康检查。
 
-|文件|内容|
-|---|---|
-|`cmd/server/main.go`|程序入口，调用api.NewRouter并启动Kratos|
-|`internal/api/router.go`|读取启动配置、创建HTTP服务、集中注册全部180项接口，按五个板块分组|
-|`internal/api/public.go`|公共基础、登录、首页、游戏目录、找陪练（22项）|
-|`internal/api/user.go`|用户账户、通知、上传、订单、支付退款、评价售后（31项）|
-|`internal/api/coach.go`|陪练入驻、认证、服务排期、履约、收益结算（34项）|
-|`internal/api/admin.go`|后台权限、审核、商品运营、交易售后、财务统计（88项）|
-|`internal/api/callback.go`|支付、退款、结算、实名、内容审核回调（5项）|
-|`internal/infra/pg.go`|PostgreSQL/GORM初始化、连接池、超时探活与关闭|
-|`internal/api/middleware.go`|请求号、恢复、身份/权限/幂等键入口检查|
-|`internal/api/response.go`|统一响应和错误返回|
-|`internal/api/router_test.go`|文档与路由一致、独立处理函数匹配、入口检查测试|
-|`test/`|集中式接口测试与单元测试；详见 `test/README.md`|
-|`internal/model/`|已有55表模型|
-|`migrations/`|已有分类SQL迁移，启动不自动执行|
-
-上一轮生成的internal/biz、data、service、server、auth、conf框架文件已移除，不再通过这些层转发接口。
+生成的 `*.pb.go` 和 `*_http.pb.go` 不手工修改。业务实现也按角色拆到 `internal/service/business_*.go` 和 `internal/service/order_*.go`，不再存在超大的 `platform.proto` 或 `platform.go`。
 
 ## 运行
 
-Go版本1.25或以上。在back目录执行：
+Go 1.25 或以上。在 `back` 目录分别启动：
 
 ```sh
-go run ./cmd/server
+go run ./cmd/business
+go run ./cmd/order
 ```
 
-默认地址`127.0.0.1:8000`。`config/.env.example`列出环境变量；程序读取系统环境，不自动加载.env文件。未配置`DD_DATABASE_URL`时允许启动路由框架，`/healthz`返回200，数据库就绪检查和数据查询返回503。
-
-连接自己的PostgreSQL时先完成migrations，再设置环境变量：
+可用环境变量覆盖地址：
 
 ```sh
-export DD_HTTP_ADDR='127.0.0.1:8000'
-export DD_DATABASE_URL='postgres://dd_api:replace-me@127.0.0.1:5432/dongdong?sslmode=disable&TimeZone=UTC'
-go run ./cmd/server
+export DD_BUSINESS_HTTP_ADDR='127.0.0.1:8000'
+export DD_ORDER_HTTP_ADDR='127.0.0.1:8001'
 ```
 
-示例为占位凭据；生产TLS按实际环境配置。指定数据库却连接失败会启动失败，不自动建库、不插入默认管理员、不执行AutoMigrate。
+PostgreSQL 的 `host`、`database`、`user`、`password` 为必填项。项目启动时校验配置、连接并探活数据库，再对 `model.AllModels()` 执行 GORM AutoMigrate；项目不会自动创建 PostgreSQL 数据库，也不会插入默认管理员。完整配置见 `config/config.yaml` 和 `config/.env.example`。
 
-## 接口实现范围
+## 实现范围
 
-当前完成启动、180项显式路由、各接口独立处理函数和文档中的请求结构。健康/数据库检查与游戏、区服、段位、分类共6项有基础实现；目录查询直接在public.go中调用GORM并转换为公开DTO。
+当前已完成两个进程的启动、180 项生成路由、认证入口、统一响应、数据库健康检查和目录查询。未完成的业务函数明确返回 501；渠道回调在验签、幂等和入账接入前固定返回 503，不返回假成功。
 
-其余业务函数明确返回501。请求结构注明必填/可选，但规划接口尚未执行JSON绑定、字段校验和业务事务，不能把请求结构存在当作业务完成。后续就在对应板块函数中逐项实现。
+## 生成与验证
 
-需要登录的接口无凭据返回401；尚未配置可信身份适配器时带凭据返回503。后台动作检查权限；资源归属、数据范围、账号/陪练状态由实际业务继续校验。禁止通过Header直接指定可信用户ID或权限。幂等Header检查不等于数据库事务幂等已经完成。
+修改 Proto 后执行：
 
-渠道回调在真实验签/幂等/入账接入前固定503，不返回假成功，不修改资金。
+```sh
+buf lint
+buf generate --path api/common/v1 --path api/business/v1 --path api/order/v1
+```
 
-## 文档与测试
-
-- `docs/接口设计.md`：V0.2按板块业务设计及当前启动结构。
-- `api/v1/openapi.json`：可导入Apifox的请求/响应契约，180项操作。
-- `api/v1/routes.json`：与文档同步的操作清单，请求schema名称已更新。
-- `docs/接口设计复查意见_V0.2.md`：历史复查问题；此前路由空文件问题已在此次重建解决。
+常用验证命令：
 
 ```sh
 go test ./...
 go vet ./...
-go build ./cmd/server
+go build ./cmd/business ./cmd/order
 ```
 
-项目启动后运行 `test/` 下按模块维护的本地接口测试：`go test -v ./test/...`。默认请求 `http://127.0.0.1:8000`，详细目录和单用例运行方式见 `test/README.md`。
+`api/v1/routes.json` 和 `api/v1/openapi.json` 仍是全部 180 项接口的汇总契约。项目启动后的真实 HTTP 用例见 `test/README.md`。
 
-测试核对实际注册路径与OpenAPI、180条路由各自的处理函数、未实现接口不假成功、身份权限/幂等入口及分页边界。未连接真实PostgreSQL或支付渠道，尚未验证真实订单、退款、出款事务与并发。
+## 分层约定
 
-数据库实现统一位于 `internal/infra/pg.go`；`main.go`的“2.基础设施”调用 `infra.NewPG`，同处注册defer调用 `infra.ClosePG`。路由只接收连接。`api/database.go` 已删除；API中只保留请求级连接获取和HTTP错误映射。
+- `server` 只组装 Kratos Server、中间件和生成路由。
+- `service` 实现生成的 Service 接口并编排用例。
+- `biz` 保存领域用例和 Repository 接口。
+- `data` 实现 GORM Repository。
+- `internal/app` 负责配置、日志、数据库和 Kratos 生命周期。
 
-
-## 统一日志与配置
-
-日志统一使用Go标准库slog，初始化函数仍在 `internal/infra/logger.go`。`cmd/server/main.go`先读取 `config/config.yaml`，再执行 `logger.Init(cfg.Log.Level, cfg.Log.Format)`，把 `logger.L()` 传给Kratos。HTTP请求日志、infra辅助日志及GORM日志使用同一个默认实例，不再使用Zap或Sugar接口。
-
-`config/config.yaml`的参数均留空，只保留字段与说明供自行填写。空日志配置默认info/json；空数据库地址只运行接口框架；HTTP留空使用默认本地地址。数值与时长请按注释类型填写。程序现优先查找config目录，兼容旧configs目录。
-
-main将加载的配置传给 `api.NewRouter(cfg, pg)`，HTTP端口来自这份配置；PostgreSQL参数由main.go使用并初始化连接；保留原DD环境变量覆盖以兼容既有运行方式。NX环境变量经配置加载器覆盖YAML。Redis仍未接入初始化，保留配置项供后续使用。
-
-数据库生命周期归main.go所有：初始化成功即defer关闭，路由构建失败或Kratos停止后都释放连接池；router.go不初始化、不关闭PostgreSQL。连接串留空时允许以无数据库模式运行接口框架。
+日志统一使用标准库 `slog`。数据库连接生命周期归 `internal/app` 所有；路由层不创建或关闭数据库连接。

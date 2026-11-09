@@ -1,0 +1,117 @@
+syntax = "proto3";
+
+package api.business.v1;
+
+option go_package = "dd_web/back/api/business/v1;businessv1";
+
+import "api/common/v1/common.proto";
+import "google/protobuf/struct.proto";
+import "third_party/google/api/annotations.proto";
+
+message UserProfileRequest {
+  google.protobuf.Struct empty = 1;
+}
+
+message UserUpdateProfileRequest {
+  api.common.v1.ProfileUpdate body = 1;
+}
+
+message AuthLogoutRequest {
+  google.protobuf.Struct empty = 1;
+}
+
+message UserCancelAccountRequest {
+  api.common.v1.Reason body = 1;
+}
+
+message NotificationListRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message NotificationReadRequest {
+  string notification_id = 1;
+}
+
+message AgreementAcceptRequest {
+  api.common.v1.AgreementAccept body = 1;
+}
+
+message MediaPrepareUploadRequest {
+  api.common.v1.PrepareUpload body = 1;
+}
+
+message MediaCompleteUploadRequest {
+  string asset_id = 1;
+}
+
+message MediaAccessRequest {
+  string asset_id = 1;
+}
+
+message AnalyticsActiveRequest {
+  api.common.v1.ActivityEvent body = 1;
+}
+
+service AccountService {
+  rpc UserProfile (UserProfileRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/users/me"
+    };
+  }
+  rpc UserUpdateProfile (UserUpdateProfileRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      patch: "/api/v1/users/me"
+      body: "body"
+    };
+  }
+  rpc AuthLogout (AuthLogoutRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/auth/logout"
+    };
+  }
+  rpc UserCancelAccount (UserCancelAccountRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/users/me/cancellation"
+      body: "body"
+    };
+  }
+  rpc NotificationList (NotificationListRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/users/me/notifications"
+    };
+  }
+  rpc NotificationRead (NotificationReadRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/users/me/notifications/{notification_id}/read"
+    };
+  }
+  rpc AgreementAccept (AgreementAcceptRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/agreements/acceptances"
+      body: "body"
+    };
+  }
+  rpc MediaPrepareUpload (MediaPrepareUploadRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/media/uploads"
+      body: "body"
+    };
+  }
+  rpc MediaCompleteUpload (MediaCompleteUploadRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/media/uploads/{asset_id}/complete"
+    };
+  }
+  rpc MediaAccess (MediaAccessRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/media/{asset_id}/access"
+    };
+  }
+  rpc AnalyticsActive (AnalyticsActiveRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/activity-events"
+      body: "body"
+    };
+  }
+}

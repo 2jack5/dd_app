@@ -1,0 +1,242 @@
+syntax = "proto3";
+
+package api.business.v1;
+
+option go_package = "dd_web/back/api/business/v1;businessv1";
+
+import "api/common/v1/common.proto";
+import "google/protobuf/struct.proto";
+import "third_party/google/api/annotations.proto";
+
+message SystemHealthRequest {
+  google.protobuf.Struct empty = 1;
+}
+
+message SystemReadyRequest {
+  google.protobuf.Struct empty = 1;
+}
+
+message AuthWechatLoginRequest {
+  api.common.v1.WechatLogin body = 1;
+}
+
+message AuthRefreshTokenRequest {
+  api.common.v1.RefreshToken body = 1;
+}
+
+message AgreementCurrentRequest {
+  string code = 1;
+}
+
+message HomeOverviewRequest {
+  google.protobuf.Struct empty = 1;
+}
+
+message HomeBannersRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message HomeRecommendationsRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message ActivityListRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message ActivityDetailRequest {
+  string activity_id = 1;
+}
+
+message CatalogGamesRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message CatalogRegionsRequest {
+  string game_id = 1;
+  int32 page_size = 2;
+  string cursor = 3;
+}
+
+message CatalogRanksRequest {
+  string game_id = 1;
+  int32 page_size = 2;
+  string cursor = 3;
+}
+
+message CatalogCategoriesRequest {
+  string game_id = 1;
+  int32 page_size = 2;
+  string cursor = 3;
+}
+
+message SearchSuggestionsRequest {
+  google.protobuf.Struct empty = 1;
+}
+
+message DiscoveryCoachesRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+  string game_id = 3;
+  string region_id = 4;
+  string rank_id = 5;
+  int64 min_price_cent = 6;
+  int64 max_price_cent = 7;
+  string unit_type = 8;
+  string start_at = 9;
+  string end_at = 10;
+  string keyword = 11;
+  double min_rating = 12;
+  bool online = 13;
+  bool accepting_orders = 14;
+  bool verified = 15;
+  string sort = 16;
+}
+
+message DiscoveryCoachDetailRequest {
+  string coach_id = 1;
+}
+
+message DiscoveryServicesRequest {
+  string coach_id = 1;
+  int32 page_size = 2;
+  string cursor = 3;
+}
+
+message DiscoveryAvailabilityRequest {
+  string coach_id = 1;
+  string date = 2;
+}
+
+message DiscoveryReviewsRequest {
+  string coach_id = 1;
+  int32 page_size = 2;
+  string cursor = 3;
+}
+
+message DiscoveryServiceDetailRequest {
+  string service_id = 1;
+}
+
+message SupportConfigRequest {
+  google.protobuf.Struct empty = 1;
+}
+
+service PublicService {
+  rpc SystemHealth (SystemHealthRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/healthz"
+    };
+  }
+  rpc SystemReady (SystemReadyRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/readyz"
+    };
+  }
+  rpc AuthWechatLogin (AuthWechatLoginRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/auth/wechat/login"
+      body: "body"
+    };
+  }
+  rpc AuthRefreshToken (AuthRefreshTokenRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/auth/token/refresh"
+      body: "body"
+    };
+  }
+  rpc AgreementCurrent (AgreementCurrentRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/agreements/{code}/current"
+    };
+  }
+  rpc HomeOverview (HomeOverviewRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/home"
+    };
+  }
+  rpc HomeBanners (HomeBannersRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/home/banners"
+    };
+  }
+  rpc HomeRecommendations (HomeRecommendationsRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/home/recommendations"
+    };
+  }
+  rpc ActivityList (ActivityListRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/activities"
+    };
+  }
+  rpc ActivityDetail (ActivityDetailRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/activities/{activity_id}"
+    };
+  }
+  rpc CatalogGames (CatalogGamesRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/games"
+    };
+  }
+  rpc CatalogRegions (CatalogRegionsRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/games/{game_id}/regions"
+    };
+  }
+  rpc CatalogRanks (CatalogRanksRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/games/{game_id}/ranks"
+    };
+  }
+  rpc CatalogCategories (CatalogCategoriesRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/service-categories"
+    };
+  }
+  rpc SearchSuggestions (SearchSuggestionsRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/search/suggestions"
+    };
+  }
+  rpc DiscoveryCoaches (DiscoveryCoachesRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/coaches"
+    };
+  }
+  rpc DiscoveryCoachDetail (DiscoveryCoachDetailRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/coaches/{coach_id}"
+    };
+  }
+  rpc DiscoveryServices (DiscoveryServicesRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/coaches/{coach_id}/services"
+    };
+  }
+  rpc DiscoveryAvailability (DiscoveryAvailabilityRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/coaches/{coach_id}/availability"
+    };
+  }
+  rpc DiscoveryReviews (DiscoveryReviewsRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/coaches/{coach_id}/reviews"
+    };
+  }
+  rpc DiscoveryServiceDetail (DiscoveryServiceDetailRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/services/{service_id}"
+    };
+  }
+  rpc SupportConfig (SupportConfigRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/support/config"
+    };
+  }
+}

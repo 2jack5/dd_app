@@ -1,0 +1,203 @@
+syntax = "proto3";
+
+package api.business.v1;
+
+option go_package = "dd_web/back/api/business/v1;businessv1";
+
+import "api/common/v1/common.proto";
+import "google/protobuf/struct.proto";
+import "third_party/google/api/annotations.proto";
+
+message CoachApplicationCurrentRequest {
+  google.protobuf.Struct empty = 1;
+}
+
+message CoachApplyRequest {
+  api.common.v1.CoachApplication body = 1;
+}
+
+message CoachWithdrawRequest {
+  string application_id = 1;
+}
+
+message CoachVerifyIdentityRequest {
+  api.common.v1.IdentityCheck body = 1;
+}
+
+message CoachIdentityCurrentRequest {
+  google.protobuf.Struct empty = 1;
+}
+
+message CoachSubmitSkillRequest {
+  api.common.v1.CoachSkill body = 1;
+}
+
+message CoachSkillsRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message CoachSkillDetailRequest {
+  string skill_id = 1;
+}
+
+message CoachProfileRequest {
+  google.protobuf.Struct empty = 1;
+}
+
+message CoachUpdateProfileRequest {
+  api.common.v1.CoachProfile body = 1;
+}
+
+message CoachWorkbenchRequest {
+  google.protobuf.Struct empty = 1;
+}
+
+message CoachAcceptingRequest {
+  api.common.v1.AcceptingOrders body = 1;
+}
+
+message CoachHeartbeatRequest {
+  google.protobuf.Struct empty = 1;
+}
+
+message CoachServicesRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message CoachCreateServiceRequest {
+  api.common.v1.CoachService body = 1;
+}
+
+message CoachUpdateServiceRequest {
+  string service_id = 1;
+  api.common.v1.CoachServicePatch body = 2;
+}
+
+message CoachPublishServiceRequest {
+  string service_id = 1;
+}
+
+message CoachUnpublishServiceRequest {
+  string service_id = 1;
+}
+
+message CoachAvailabilityRequest {
+  string date = 1;
+}
+
+message CoachUpdateAvailabilityRequest {
+  api.common.v1.Availability body = 1;
+}
+
+service CoachService {
+  rpc CoachApplicationCurrent (CoachApplicationCurrentRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/coach/applications/current"
+    };
+  }
+  rpc CoachApply (CoachApplyRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/coach/applications"
+      body: "body"
+    };
+  }
+  rpc CoachWithdraw (CoachWithdrawRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/coach/applications/{application_id}/withdraw"
+    };
+  }
+  rpc CoachVerifyIdentity (CoachVerifyIdentityRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/coach/identity-checks"
+      body: "body"
+    };
+  }
+  rpc CoachIdentityCurrent (CoachIdentityCurrentRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/coach/identity-checks/current"
+    };
+  }
+  rpc CoachSubmitSkill (CoachSubmitSkillRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/coach/skills"
+      body: "body"
+    };
+  }
+  rpc CoachSkills (CoachSkillsRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/coach/skills"
+    };
+  }
+  rpc CoachSkillDetail (CoachSkillDetailRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/coach/skills/{skill_id}"
+    };
+  }
+  rpc CoachProfile (CoachProfileRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/coach/me"
+    };
+  }
+  rpc CoachUpdateProfile (CoachUpdateProfileRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      patch: "/api/v1/coach/me"
+      body: "body"
+    };
+  }
+  rpc CoachWorkbench (CoachWorkbenchRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/coach/workbench"
+    };
+  }
+  rpc CoachAccepting (CoachAcceptingRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      put: "/api/v1/coach/accepting-orders"
+      body: "body"
+    };
+  }
+  rpc CoachHeartbeat (CoachHeartbeatRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/coach/heartbeat"
+    };
+  }
+  rpc CoachServices (CoachServicesRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/coach/services"
+    };
+  }
+  rpc CoachCreateService (CoachCreateServiceRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/coach/services"
+      body: "body"
+    };
+  }
+  rpc CoachUpdateService (CoachUpdateServiceRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      patch: "/api/v1/coach/services/{service_id}"
+      body: "body"
+    };
+  }
+  rpc CoachPublishService (CoachPublishServiceRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/coach/services/{service_id}/publish"
+    };
+  }
+  rpc CoachUnpublishService (CoachUnpublishServiceRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/coach/services/{service_id}/unpublish"
+    };
+  }
+  rpc CoachAvailability (CoachAvailabilityRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/coach/availability"
+    };
+  }
+  rpc CoachUpdateAvailability (CoachUpdateAvailabilityRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      put: "/api/v1/coach/availability"
+      body: "body"
+    };
+  }
+}

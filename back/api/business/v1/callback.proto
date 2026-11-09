@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package api.business.v1;
+
+option go_package = "dd_web/back/api/business/v1;businessv1";
+
+import "api/common/v1/common.proto";
+import "third_party/google/api/annotations.proto";
+
+message CallbackIdentityRequest {
+  string provider = 1;
+}
+
+message CallbackContentRequest {
+  string provider = 1;
+}
+
+service CallbackService {
+  rpc CallbackIdentity (CallbackIdentityRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/callbacks/identity/{provider}"
+    };
+  }
+  rpc CallbackContent (CallbackContentRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/callbacks/content-audit/{provider}"
+    };
+  }
+}

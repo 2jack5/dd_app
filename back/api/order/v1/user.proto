@@ -1,0 +1,216 @@
+syntax = "proto3";
+
+package api.order.v1;
+
+option go_package = "dd_web/back/api/order/v1;orderv1";
+
+import "api/common/v1/common.proto";
+import "third_party/google/api/annotations.proto";
+
+message TradeQuoteRequest {
+  api.common.v1.OrderQuote body = 1;
+}
+
+message TradeCreateOrderRequest {
+  api.common.v1.CreateOrder body = 1;
+}
+
+message TradeOrdersRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+  string status = 3;
+}
+
+message TradeOrderDetailRequest {
+  string order_id = 1;
+}
+
+message TradeOrderEventsRequest {
+  string order_id = 1;
+  int32 page_size = 2;
+  string cursor = 3;
+}
+
+message TradeCancelOrderRequest {
+  string order_id = 1;
+  api.common.v1.Reason body = 2;
+}
+
+message TradeConfirmOrderRequest {
+  string order_id = 1;
+}
+
+message PaymentPrepayRequest {
+  string order_id = 1;
+  api.common.v1.Prepay body = 2;
+}
+
+message PaymentResultRequest {
+  string order_id = 1;
+}
+
+message RefundApplyRequest {
+  string order_id = 1;
+  api.common.v1.RefundApply body = 2;
+}
+
+message RefundListRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+  string status = 3;
+}
+
+message RefundDetailRequest {
+  string refund_id = 1;
+}
+
+message RefundCancelRequest {
+  string refund_id = 1;
+}
+
+message ReviewCreateRequest {
+  string order_id = 1;
+  api.common.v1.CreateReview body = 2;
+}
+
+message ReviewFollowUpRequest {
+  string review_id = 1;
+  api.common.v1.ReviewContent body = 2;
+}
+
+message ReviewMineRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message CaseCreateRequest {
+  api.common.v1.CreateCase body = 1;
+}
+
+message CaseListRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+  string kind = 3;
+  string status = 4;
+}
+
+message CaseDetailRequest {
+  string case_id = 1;
+}
+
+message CaseMessageRequest {
+  string case_id = 1;
+  api.common.v1.CaseMessage body = 2;
+}
+
+service UserOrderService {
+  rpc TradeQuote (TradeQuoteRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/orders/quotes"
+      body: "body"
+    };
+  }
+  rpc TradeCreateOrder (TradeCreateOrderRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/orders"
+      body: "body"
+    };
+  }
+  rpc TradeOrders (TradeOrdersRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/orders"
+    };
+  }
+  rpc TradeOrderDetail (TradeOrderDetailRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/orders/{order_id}"
+    };
+  }
+  rpc TradeOrderEvents (TradeOrderEventsRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/orders/{order_id}/events"
+    };
+  }
+  rpc TradeCancelOrder (TradeCancelOrderRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/orders/{order_id}/cancel"
+      body: "body"
+    };
+  }
+  rpc TradeConfirmOrder (TradeConfirmOrderRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/orders/{order_id}/confirm"
+    };
+  }
+  rpc PaymentPrepay (PaymentPrepayRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/orders/{order_id}/payment"
+      body: "body"
+    };
+  }
+  rpc PaymentResult (PaymentResultRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/orders/{order_id}/payment"
+    };
+  }
+  rpc RefundApply (RefundApplyRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/orders/{order_id}/refunds"
+      body: "body"
+    };
+  }
+  rpc RefundList (RefundListRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/refunds"
+    };
+  }
+  rpc RefundDetail (RefundDetailRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/refunds/{refund_id}"
+    };
+  }
+  rpc RefundCancel (RefundCancelRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/refunds/{refund_id}/cancel"
+    };
+  }
+  rpc ReviewCreate (ReviewCreateRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/orders/{order_id}/reviews"
+      body: "body"
+    };
+  }
+  rpc ReviewFollowUp (ReviewFollowUpRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/reviews/{review_id}/follow-ups"
+      body: "body"
+    };
+  }
+  rpc ReviewMine (ReviewMineRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/users/me/reviews"
+    };
+  }
+  rpc CaseCreate (CaseCreateRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/cases"
+      body: "body"
+    };
+  }
+  rpc CaseList (CaseListRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/cases"
+    };
+  }
+  rpc CaseDetail (CaseDetailRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/cases/{case_id}"
+    };
+  }
+  rpc CaseMessage (CaseMessageRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/cases/{case_id}/messages"
+      body: "body"
+    };
+  }
+}
