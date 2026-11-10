@@ -24,8 +24,8 @@ const (
 
 type ApiResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          string                 `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
+	ErrorMsg      string                 `protobuf:"bytes,2,opt,name=error_msg,json=errorMsg,proto3" json:"error_msg,omitempty"`
 	Data          *structpb.Value        `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
 	RequestId     string                 `protobuf:"bytes,4,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -62,16 +62,16 @@ func (*ApiResponse) Descriptor() ([]byte, []int) {
 	return file_api_common_v1_common_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *ApiResponse) GetCode() string {
+func (x *ApiResponse) GetCode() int32 {
 	if x != nil {
 		return x.Code
 	}
-	return ""
+	return 0
 }
 
-func (x *ApiResponse) GetMessage() string {
+func (x *ApiResponse) GetErrorMsg() string {
 	if x != nil {
-		return x.Message
+		return x.ErrorMsg
 	}
 	return ""
 }
@@ -4718,10 +4718,10 @@ var File_api_common_v1_common_proto protoreflect.FileDescriptor
 
 const file_api_common_v1_common_proto_rawDesc = "" +
 	"\n" +
-	"\x1aapi/common/v1/common.proto\x12\rapi.common.v1\x1a\x1cgoogle/protobuf/struct.proto\"\x86\x01\n" +
+	"\x1aapi/common/v1/common.proto\x12\rapi.common.v1\x1a\x1cgoogle/protobuf/struct.proto\"\x89\x01\n" +
 	"\vApiResponse\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\tR\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12*\n" +
+	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x1b\n" +
+	"\terror_msg\x18\x02 \x01(\tR\berrorMsg\x12*\n" +
 	"\x04data\x18\x03 \x01(\v2\x16.google.protobuf.ValueR\x04data\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x04 \x01(\tR\trequestId\"B\n" +

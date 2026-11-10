@@ -2,10 +2,14 @@ package service
 
 import (
 	"context"
+	"errors"
+	"strconv"
+	"time"
+
 	businessv1 "dd_web/back/api/business/v1"
 	commonv1 "dd_web/back/api/common/v1"
 	"dd_web/back/internal/biz"
-	kerrors "github.com/go-kratos/kratos/v3/errors"
+	"dd_web/back/internal/ecode"
 )
 
 func (s *BusinessService) SystemHealth(context.Context, *businessv1.SystemHealthRequest) (*commonv1.ApiResponse, error) {
@@ -13,12 +17,47 @@ func (s *BusinessService) SystemHealth(context.Context, *businessv1.SystemHealth
 }
 func (s *BusinessService) SystemReady(ctx context.Context, _ *businessv1.SystemReadyRequest) (*commonv1.ApiResponse, error) {
 	if err := s.system.Ready(ctx); err != nil {
-		return nil, kerrors.ServiceUnavailable("NOT_READY", "数据库连接未就绪")
+		return nil, ecode.Wrap(ecode.InternalError, err)
 	}
 	return ok(map[string]any{"status": "ready"})
 }
-func (s *BusinessService) AuthWechatLogin(context.Context, *businessv1.AuthWechatLoginRequest) (*commonv1.ApiResponse, error) {
-	return nil, notImplemented("auth.wechatLogin")
+func (s *BusinessService) AuthWechatLogin(ctx context.Context, req *businessv1.AuthWechatLoginRequest) (*commonv1.ApiResponse, error) {
+	if s.auth == nil {
+		return nil, ecode.New(ecode.AuthNotConfigured)
+	}
+	if req == nil || req.Body == nil {
+		return nil, ecode.New(ecode.InvalidArgument)
+	}
+	result, err := s.auth.WechatLogin(ctx, req.Body.ClientType, req.Body.Code)
+	if err != nil {
+		switch {
+		case errors.Is(err, biz.ErrInvalidArgument):
+			return nil, ecode.New(ecode.InvalidArgument)
+		case errors.Is(err, biz.ErrInvalidWechatCode):
+			return nil, ecode.New(ecode.InvalidWechatCode)
+		case errors.Is(err, biz.ErrAccountDisabled):
+			return nil, ecode.New(ecode.AccountDisabled)
+		case errors.Is(err, biz.ErrWechatUnavailable), errors.Is(err, biz.ErrAuthenticationUnavailable):
+			return nil, ecode.New(ecode.AuthNotConfigured)
+		default:
+			return nil, ecode.Wrap(ecode.InternalError, err)
+		}
+	}
+	now := time.Now()
+	return ok(map[string]any{
+		"token_type":         "Bearer",
+		"access_token":       result.Tokens.AccessToken,
+		"refresh_token":      result.Tokens.RefreshToken,
+		"expires_in":         float64(max(0, int(time.Until(result.Tokens.AccessExpiresAt).Seconds()))),
+		"refresh_expires_in": float64(max(0, int(result.Tokens.RefreshExpiresAt.Sub(now).Seconds()))),
+		"is_new_user":        result.IsNewUser,
+		"user": map[string]any{
+			"id":       strconv.FormatInt(result.User.ID, 10),
+			"user_no":  result.User.UserNo,
+			"nickname": result.User.Nickname,
+			"status":   result.User.Status,
+		},
+	})
 }
 func (s *BusinessService) AuthRefreshToken(context.Context, *businessv1.AuthRefreshTokenRequest) (*commonv1.ApiResponse, error) {
 	return nil, notImplemented("auth.refreshToken")

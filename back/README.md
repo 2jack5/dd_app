@@ -85,3 +85,11 @@ go build ./cmd/business ./cmd/order
 - `internal/app` 负责配置、日志、数据库和 Kratos 生命周期。
 
 日志统一使用标准库 `slog`。数据库连接生命周期归 `internal/app` 所有；路由层不创建或关闭数据库连接。
+
+## 微信登录配置
+
+`POST /api/v1/auth/wechat/login` 已实现小程序与移动应用登录。服务端使用 `client_type` 选择受信任的 AppID/Secret，不接受客户端提交 OpenID。请配置 `auth.token_secret`（至少 32 字节）以及对应的 `wechat.mini_*` 或 `wechat.open_*` 凭据。登录会创建或复用用户与微信身份，并把刷新令牌 SHA-256 摘要及会话写入 Redis；PostgreSQL 不保存登录会话或刷新令牌。Redis 不可用时登录失败并返回业务状态码 `5000`。
+
+## 统一业务状态码
+
+Business 与 Order 共用 `internal/ecode` 中的四位业务状态码。所有响应固定包含 `code`、`error_msg`、`data`、`request_id`：`1000` 表示成功，`5000` 表示系统内部错误。完整清单见 `docs/业务状态码.md`。

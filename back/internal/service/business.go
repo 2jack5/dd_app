@@ -4,36 +4,41 @@ import (
 	commonv1 "dd_web/back/api/common/v1"
 	"dd_web/back/internal/biz"
 	"dd_web/back/internal/data"
+	"dd_web/back/internal/ecode"
 	"errors"
-	kerrors "github.com/go-kratos/kratos/v3/errors"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
 type BusinessService struct {
 	system  *biz.SystemUsecase
 	catalog *biz.CatalogUsecase
+	auth    *biz.AuthUsecase
 }
 
-func NewBusinessService(system *biz.SystemUsecase, catalog *biz.CatalogUsecase) *BusinessService {
-	return &BusinessService{system: system, catalog: catalog}
+func NewBusinessService(system *biz.SystemUsecase, catalog *biz.CatalogUsecase, auth ...*biz.AuthUsecase) *BusinessService {
+	service := &BusinessService{system: system, catalog: catalog}
+	if len(auth) > 0 {
+		service.auth = auth[0]
+	}
+	return service
 }
 func ok(data any) (*commonv1.ApiResponse, error) {
 	value, err := structpb.NewValue(data)
 	if err != nil {
-		return nil, kerrors.InternalServer("INTERNAL_ERROR", "服务暂时不可用")
+		return nil, ecode.Wrap(ecode.InternalError, err)
 	}
-	return &commonv1.ApiResponse{Code: "OK", Data: value}, nil
+	return &commonv1.ApiResponse{Code: int32(ecode.Success), ErrorMsg: "", Data: value}, nil
 }
 func notImplemented(op string) error {
-	return kerrors.New(501, "NOT_IMPLEMENTED", "接口已设计，业务逻辑尚未实现").WithMetadata(map[string]string{"operation": op})
+	return ecode.New(ecode.NotImplemented).WithData(map[string]string{"operation": op})
 }
 func catalogError(err error) error {
 	switch {
 	case errors.Is(err, biz.ErrInvalidArgument):
-		return kerrors.BadRequest("INVALID_ARGUMENT", "ID、日期或分页参数无效")
+		return ecode.New(ecode.InvalidArgument)
 	case errors.Is(err, data.ErrNotFound):
-		return kerrors.NotFound("NOT_FOUND", "资源不存在或未启用")
+		return ecode.New(ecode.NotFound)
 	default:
-		return kerrors.InternalServer("INTERNAL_ERROR", "服务暂时不可用")
+		return ecode.Wrap(ecode.InternalError, err)
 	}
 }

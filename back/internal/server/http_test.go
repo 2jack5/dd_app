@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -13,6 +14,7 @@ import (
 
 	"dd_web/back/internal/biz"
 	"dd_web/back/internal/config"
+	"dd_web/back/internal/ecode"
 	"dd_web/back/internal/model"
 	"dd_web/back/internal/service"
 )
@@ -165,5 +167,49 @@ func TestGeneratedCatalogValidation(t *testing.T) {
 		if got := invoke(business, "GET", path, "", "", false); got.Code != 400 {
 			t.Errorf("%s: %d %s", path, got.Code, got.Body.String())
 		}
+	}
+}
+
+func TestUnifiedBusinessEnvelope(t *testing.T) {
+	business, _ := testServers(t, nil)
+	for _, tc := range []struct {
+		name, path string
+		status     int
+		code       ecode.Code
+		errorMsg   string
+	}{
+		{"success", "/healthz", http.StatusOK, ecode.Success, ""},
+		{"not-found", "/__missing__", http.StatusNotFound, ecode.NotFound, ecode.Message(ecode.NotFound)},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			response := invoke(business, http.MethodGet, tc.path, "", "", false)
+			var body struct {
+				Code      int32  `json:"code"`
+				ErrorMsg  string `json:"error_msg"`
+				RequestID string `json:"request_id"`
+			}
+			if err := json.Unmarshal(response.Body.Bytes(), &body); err != nil {
+				t.Fatal(err)
+			}
+			if response.Code != tc.status || body.Code != int32(tc.code) || body.ErrorMsg != tc.errorMsg || body.RequestID == "" {
+				t.Fatalf("unexpected envelope: status=%d body=%s", response.Code, response.Body.String())
+			}
+		})
+	}
+}
+
+func TestUnknownErrorUsesInternalCode5000(t *testing.T) {
+	recorder := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodGet, "/", nil)
+	encodeError(recorder, request, errors.New("database details must not leak"))
+	var body map[string]any
+	if err := json.Unmarshal(recorder.Body.Bytes(), &body); err != nil {
+		t.Fatal(err)
+	}
+	if recorder.Code != http.StatusInternalServerError || body["code"] != float64(ecode.InternalError) || body["error_msg"] != ecode.Message(ecode.InternalError) {
+		t.Fatalf("unexpected internal envelope: status=%d body=%s", recorder.Code, recorder.Body.String())
+	}
+	if strings.Contains(recorder.Body.String(), "database details") {
+		t.Fatal("internal error leaked into response")
 	}
 }
