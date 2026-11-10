@@ -22,6 +22,13 @@ func TestTokenManagerIssuesAndVerifiesAccessToken(t *testing.T) {
 	if _, err := manager.VerifyAccess(pair.RefreshToken); !errors.Is(err, biz.ErrInvalidToken) {
 		t.Fatalf("refresh token accepted as access token: %v", err)
 	}
+	refreshClaims, err := manager.VerifyRefresh(pair.RefreshToken)
+	if err != nil || refreshClaims.UserID != 42 || refreshClaims.AuthVersion != 3 {
+		t.Fatalf("verify refresh: claims=%+v err=%v", refreshClaims, err)
+	}
+	if _, err := manager.VerifyRefresh(pair.AccessToken); !errors.Is(err, biz.ErrInvalidToken) {
+		t.Fatalf("access token accepted as refresh token: %v", err)
+	}
 }
 
 func TestTokenManagerRequiresStrongSecret(t *testing.T) {

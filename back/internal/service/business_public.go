@@ -59,8 +59,36 @@ func (s *BusinessService) AuthWechatLogin(ctx context.Context, req *businessv1.A
 		},
 	})
 }
-func (s *BusinessService) AuthRefreshToken(context.Context, *businessv1.AuthRefreshTokenRequest) (*commonv1.ApiResponse, error) {
-	return nil, notImplemented("auth.refreshToken")
+func (s *BusinessService) AuthRefreshToken(ctx context.Context, req *businessv1.AuthRefreshTokenRequest) (*commonv1.ApiResponse, error) {
+	if s.auth == nil {
+		return nil, ecode.New(ecode.AuthNotConfigured)
+	}
+	if req == nil || req.Body == nil {
+		return nil, ecode.New(ecode.InvalidArgument)
+	}
+	result, err := s.auth.RefreshToken(ctx, req.Body.RefreshToken)
+	if err != nil {
+		switch {
+		case errors.Is(err, biz.ErrInvalidArgument):
+			return nil, ecode.New(ecode.InvalidArgument)
+		case errors.Is(err, biz.ErrInvalidToken):
+			return nil, ecode.New(ecode.InvalidToken)
+		case errors.Is(err, biz.ErrAccountDisabled):
+			return nil, ecode.New(ecode.AccountDisabled)
+		case errors.Is(err, biz.ErrAuthenticationUnavailable):
+			return nil, ecode.New(ecode.AuthNotConfigured)
+		default:
+			return nil, ecode.Wrap(ecode.InternalError, err)
+		}
+	}
+	now := time.Now()
+	return ok(map[string]any{
+		"token_type":         "Bearer",
+		"access_token":       result.Tokens.AccessToken,
+		"refresh_token":      result.Tokens.RefreshToken,
+		"expires_in":         float64(max(0, int(time.Until(result.Tokens.AccessExpiresAt).Seconds()))),
+		"refresh_expires_in": float64(max(0, int(result.Tokens.RefreshExpiresAt.Sub(now).Seconds()))),
+	})
 }
 func (s *BusinessService) AgreementCurrent(context.Context, *businessv1.AgreementCurrentRequest) (*commonv1.ApiResponse, error) {
 	return nil, notImplemented("agreement.current")

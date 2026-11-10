@@ -24,18 +24,24 @@ func (loginRepoStub) FindOrCreateWechatUser(context.Context, biz.WechatIdentity)
 	return biz.LoginUser{ID: 9, UserNo: "DD9", Nickname: "微信用户", Status: "ACTIVE", AuthVersion: 1}, true, nil
 }
 func (loginRepoStub) UserForAuthentication(context.Context, int64) (biz.LoginUser, error) {
-	return biz.LoginUser{}, nil
+	return biz.LoginUser{ID: 9, Status: "ACTIVE", AuthVersion: 1}, nil
 }
 
 type loginTokenStub struct{}
 type loginSessionStub struct{ err error }
 
 func (s loginSessionStub) SaveRefreshSession(context.Context, biz.RefreshSession) error { return s.err }
+func (s loginSessionStub) RotateRefreshSession(context.Context, string, biz.RefreshSession) error {
+	return s.err
+}
 
 func (loginTokenStub) Issue(int64, int32) (biz.TokenPair, error) {
 	return biz.TokenPair{AccessToken: "access", RefreshToken: "refresh", RefreshTokenHash: "hash", AccessExpiresAt: time.Now().Add(time.Hour), RefreshExpiresAt: time.Now().Add(24 * time.Hour)}, nil
 }
 func (loginTokenStub) VerifyAccess(string) (biz.TokenClaims, error) { return biz.TokenClaims{}, nil }
+func (loginTokenStub) VerifyRefresh(string) (biz.TokenClaims, error) {
+	return biz.TokenClaims{UserID: 9, AuthVersion: 1}, nil
+}
 
 func TestAuthWechatLoginReturnsTokenAndUser(t *testing.T) {
 	auth := biz.NewAuthUsecase(loginWechatStub{}, loginRepoStub{}, loginTokenStub{}, loginSessionStub{})
@@ -64,5 +70,26 @@ func TestAuthWechatLoginMapsRedisFailureToInternalCode5000(t *testing.T) {
 	businessError, ok := ecode.FromError(err)
 	if !ok || businessError.Code() != ecode.InternalError || businessError.Code() != 5000 {
 		t.Fatalf("redis failure must map to code 5000: %v", err)
+	}
+}
+
+func TestAuthRefreshTokenReturnsRotatedTokens(t *testing.T) {
+	auth := biz.NewAuthUsecase(loginWechatStub{}, loginRepoStub{}, loginTokenStub{}, loginSessionStub{})
+	response, err := NewBusinessService(nil, nil, auth).AuthRefreshToken(context.Background(), &businessv1.AuthRefreshTokenRequest{Body: &commonv1.RefreshToken{RefreshToken: "refresh"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	data, ok := response.Data.AsInterface().(map[string]any)
+	if !ok || data["token_type"] != "Bearer" || data["access_token"] != "access" || data["refresh_token"] != "refresh" {
+		t.Fatalf("unexpected response: %#v", response.Data.AsInterface())
+	}
+}
+
+func TestAuthRefreshTokenValidatesBody(t *testing.T) {
+	auth := biz.NewAuthUsecase(loginWechatStub{}, loginRepoStub{}, loginTokenStub{}, loginSessionStub{})
+	_, err := NewBusinessService(nil, nil, auth).AuthRefreshToken(context.Background(), &businessv1.AuthRefreshTokenRequest{})
+	businessError, ok := ecode.FromError(err)
+	if !ok || businessError.Code() != ecode.InvalidArgument {
+		t.Fatalf("missing body must be invalid argument: %v", err)
 	}
 }

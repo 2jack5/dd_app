@@ -67,8 +67,16 @@ func (m *TokenManager) Issue(userID int64, authVersion int32) (biz.TokenPair, er
 }
 
 func (m *TokenManager) VerifyAccess(token string) (biz.TokenClaims, error) {
+	return m.verifyType(token, "access")
+}
+
+func (m *TokenManager) VerifyRefresh(token string) (biz.TokenClaims, error) {
+	return m.verifyType(token, "refresh")
+}
+
+func (m *TokenManager) verifyType(token, tokenType string) (biz.TokenClaims, error) {
 	claims, err := m.verify(token)
-	if err != nil || claims.Type != "access" {
+	if err != nil || claims.Type != tokenType {
 		return biz.TokenClaims{}, errOrInvalidToken(err)
 	}
 	userID, err := strconv.ParseInt(claims.Subject, 10, 64)

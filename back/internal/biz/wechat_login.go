@@ -2,6 +2,8 @@ package biz
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"strings"
@@ -67,17 +69,23 @@ type RefreshSession struct {
 
 type SessionStore interface {
 	SaveRefreshSession(context.Context, RefreshSession) error
+	RotateRefreshSession(context.Context, string, RefreshSession) error
 }
 
 type TokenManager interface {
 	Issue(int64, int32) (TokenPair, error)
 	VerifyAccess(string) (TokenClaims, error)
+	VerifyRefresh(string) (TokenClaims, error)
 }
 
 type WechatLoginResult struct {
 	User      LoginUser
 	Tokens    TokenPair
 	IsNewUser bool
+}
+
+type RefreshTokenResult struct {
+	Tokens TokenPair
 }
 
 type AuthUsecase struct {
@@ -122,6 +130,43 @@ func (u *AuthUsecase) WechatLogin(ctx context.Context, clientType, code string) 
 		return WechatLoginResult{}, err
 	}
 	return WechatLoginResult{User: user, Tokens: pair, IsNewUser: created}, nil
+}
+
+func (u *AuthUsecase) RefreshToken(ctx context.Context, refreshToken string) (RefreshTokenResult, error) {
+	refreshToken = strings.TrimSpace(refreshToken)
+	if refreshToken == "" || len(refreshToken) > 4096 {
+		return RefreshTokenResult{}, ErrInvalidArgument
+	}
+	claims, err := u.tokens.VerifyRefresh(refreshToken)
+	if err != nil {
+		return RefreshTokenResult{}, err
+	}
+	user, err := u.repo.UserForAuthentication(ctx, claims.UserID)
+	if err != nil {
+		return RefreshTokenResult{}, err
+	}
+	if user.Status != "ACTIVE" {
+		return RefreshTokenResult{}, ErrAccountDisabled
+	}
+	if user.AuthVersion != claims.AuthVersion {
+		return RefreshTokenResult{}, ErrInvalidToken
+	}
+	pair, err := u.tokens.Issue(user.ID, user.AuthVersion)
+	if err != nil {
+		return RefreshTokenResult{}, err
+	}
+	if u.sessions == nil {
+		return RefreshTokenResult{}, fmt.Errorf("rotate refresh session: %w", ErrAuthenticationUnavailable)
+	}
+	currentHash := sha256.Sum256([]byte(refreshToken))
+	next := RefreshSession{
+		UserID: user.ID, AuthVersion: user.AuthVersion,
+		RefreshTokenHash: pair.RefreshTokenHash, ExpiresAt: pair.RefreshExpiresAt,
+	}
+	if err := u.sessions.RotateRefreshSession(ctx, hex.EncodeToString(currentHash[:]), next); err != nil {
+		return RefreshTokenResult{}, err
+	}
+	return RefreshTokenResult{Tokens: pair}, nil
 }
 
 func (u *AuthUsecase) Authenticate(ctx context.Context, bearerToken, _ string) (Principal, error) {

@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -59,4 +60,50 @@ func (s *RedisSessionStore) SaveRefreshSession(ctx context.Context, session biz.
 		return fmt.Errorf("save refresh session to redis: %w", err)
 	}
 	return nil
+}
+
+func (s *RedisSessionStore) RotateRefreshSession(ctx context.Context, currentHash string, next biz.RefreshSession) error {
+	if s == nil || s.client == nil {
+		return fmt.Errorf("redis session store is not configured")
+	}
+	ttl := next.ExpiresAt.Sub(s.now())
+	if currentHash == "" || ttl <= 0 || next.UserID <= 0 || next.RefreshTokenHash == "" {
+		return biz.ErrInvalidToken
+	}
+	currentKey := refreshSessionPrefix + currentHash
+	nextKey := refreshSessionPrefix + next.RefreshTokenHash
+	userKey := userSessionsPrefix + strconv.FormatInt(next.UserID, 10)
+	err := s.client.Watch(ctx, func(tx *redis.Tx) error {
+		raw, err := tx.Get(ctx, currentKey).Bytes()
+		if err == redis.Nil {
+			return biz.ErrInvalidToken
+		}
+		if err != nil {
+			return fmt.Errorf("load refresh session from redis: %w", err)
+		}
+		var current refreshSessionValue
+		if json.Unmarshal(raw, &current) != nil || current.UserID != strconv.FormatInt(next.UserID, 10) || current.AuthVersion != next.AuthVersion {
+			return biz.ErrInvalidToken
+		}
+		value, err := json.Marshal(refreshSessionValue{
+			UserID: current.UserID, AuthVersion: current.AuthVersion,
+			ClientType: current.ClientType, CreatedAt: s.now().UTC().Unix(),
+		})
+		if err != nil {
+			return fmt.Errorf("marshal refresh session: %w", err)
+		}
+		_, err = tx.TxPipelined(ctx, func(pipe redis.Pipeliner) error {
+			pipe.Del(ctx, currentKey)
+			pipe.Set(ctx, nextKey, value, ttl)
+			pipe.SRem(ctx, userKey, currentHash)
+			pipe.SAdd(ctx, userKey, next.RefreshTokenHash)
+			pipe.Expire(ctx, userKey, ttl)
+			return nil
+		})
+		return err
+	}, currentKey)
+	if errors.Is(err, redis.TxFailedErr) {
+		return biz.ErrInvalidToken
+	}
+	return err
 }

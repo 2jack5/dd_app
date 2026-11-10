@@ -30,18 +30,37 @@ func (f *fakeAuthRepo) UserForAuthentication(context.Context, int64) (LoginUser,
 	return f.user, nil
 }
 
-type fakeTokens struct{ pair TokenPair }
+type fakeTokens struct {
+	pair   TokenPair
+	claims TokenClaims
+	err    error
+}
 
-type fakeSessionStore struct{ saved RefreshSession }
+type fakeSessionStore struct {
+	saved       RefreshSession
+	rotatedFrom string
+	rotateErr   error
+}
 
 func (f *fakeSessionStore) SaveRefreshSession(_ context.Context, session RefreshSession) error {
 	f.saved = session
 	return nil
 }
+func (f *fakeSessionStore) RotateRefreshSession(_ context.Context, currentHash string, session RefreshSession) error {
+	f.rotatedFrom = currentHash
+	f.saved = session
+	return f.rotateErr
+}
 
 func (f fakeTokens) Issue(int64, int32) (TokenPair, error) { return f.pair, nil }
 func (f fakeTokens) VerifyAccess(string) (TokenClaims, error) {
 	return TokenClaims{UserID: 7, AuthVersion: 2}, nil
+}
+func (f fakeTokens) VerifyRefresh(string) (TokenClaims, error) {
+	if f.err != nil {
+		return TokenClaims{}, f.err
+	}
+	return f.claims, nil
 }
 
 func TestWechatLoginCreatesSessionAndReturnsTokens(t *testing.T) {
@@ -49,7 +68,7 @@ func TestWechatLoginCreatesSessionAndReturnsTokens(t *testing.T) {
 	repo := &fakeAuthRepo{user: LoginUser{ID: 7, UserNo: "DD1", Nickname: "微信用户", Status: "ACTIVE", AuthVersion: 2}, created: true}
 	sessions := &fakeSessionStore{}
 	pair := TokenPair{AccessToken: "access", RefreshToken: "refresh", RefreshTokenHash: "hash", RefreshExpiresAt: time.Now().Add(time.Hour)}
-	result, err := NewAuthUsecase(exchanger, repo, fakeTokens{pair}, sessions).WechatLogin(context.Background(), "wechat_mini", " code ")
+	result, err := NewAuthUsecase(exchanger, repo, fakeTokens{pair: pair}, sessions).WechatLogin(context.Background(), "wechat_mini", " code ")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -71,5 +90,26 @@ func TestAuthUsecaseAuthenticatesActiveMatchingVersion(t *testing.T) {
 	principal, err := NewAuthUsecase(&fakeWechat{}, repo, fakeTokens{}, &fakeSessionStore{}).Authenticate(context.Background(), "token", "user")
 	if err != nil || principal.UserID != 7 {
 		t.Fatalf("authenticate: principal=%+v err=%v", principal, err)
+	}
+}
+
+func TestAuthUsecaseRefreshTokenRotatesSession(t *testing.T) {
+	repo := &fakeAuthRepo{user: LoginUser{ID: 7, Status: "ACTIVE", AuthVersion: 2}}
+	sessions := &fakeSessionStore{}
+	pair := TokenPair{AccessToken: "new-access", RefreshToken: "new-refresh", RefreshTokenHash: "new-hash", RefreshExpiresAt: time.Now().Add(time.Hour)}
+	result, err := NewAuthUsecase(&fakeWechat{}, repo, fakeTokens{pair: pair, claims: TokenClaims{UserID: 7, AuthVersion: 2}}, sessions).RefreshToken(context.Background(), " old-refresh ")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Tokens.AccessToken != "new-access" || sessions.saved.RefreshTokenHash != "new-hash" || sessions.rotatedFrom == "" {
+		t.Fatalf("unexpected refresh result: %+v session=%+v", result, sessions)
+	}
+}
+
+func TestAuthUsecaseRefreshTokenRejectsAuthVersionMismatch(t *testing.T) {
+	repo := &fakeAuthRepo{user: LoginUser{ID: 7, Status: "ACTIVE", AuthVersion: 3}}
+	_, err := NewAuthUsecase(&fakeWechat{}, repo, fakeTokens{claims: TokenClaims{UserID: 7, AuthVersion: 2}}, &fakeSessionStore{}).RefreshToken(context.Background(), "refresh")
+	if !errors.Is(err, ErrInvalidToken) {
+		t.Fatalf("auth version mismatch: %v", err)
 	}
 }
