@@ -1,3 +1,4 @@
+// 游戏目录查询相关业务
 package biz
 
 import (
@@ -19,6 +20,7 @@ type List struct {
 	NextCursor string
 }
 
+// 声明需要哪些查询方法
 type CatalogRepository interface {
 	Games(context.Context, int64, int) ([]model.Game, error)
 	Regions(context.Context, int64, int64, int) ([]model.GameRegion, error)
@@ -26,6 +28,7 @@ type CatalogRepository interface {
 	Categories(context.Context, int64, int64, int) ([]model.ServiceCategory, error)
 }
 
+// 调用这些方法并处理结果
 type CatalogUsecase struct{ repo CatalogRepository }
 
 func NewCatalogUsecase(repo CatalogRepository) *CatalogUsecase { return &CatalogUsecase{repo: repo} }

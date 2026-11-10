@@ -15,17 +15,37 @@ import (
 	"dd_web/back/internal/model"
 	"dd_web/back/internal/server"
 	"dd_web/back/internal/service"
+
 	"github.com/go-kratos/kratos/v3"
 	khttp "github.com/go-kratos/kratos/v3/transport/http"
 )
 
+//func RunBusiness() error {
+//	return run("dongdong-business-api", func(cfg *config.Config, dataSet *data.Data) (*khttp.Server, time.Duration, error) {
+//		catalog := biz.NewCatalogUsecase(data.NewCatalogRepo(dataSet))
+//		svc := service.NewBusinessService(biz.NewSystemUsecase(dataSet), catalog)
+//		httpServer, err := server.NewBusinessHTTPServer(cfg, svc, nil)
+//		return httpServer, cfg.HTTP.ShutdownTimeout, err
+//	})
+//}
+
 func RunBusiness() error {
-	return run("dongdong-business-api", func(cfg *config.Config, dataSet *data.Data) (*khttp.Server, time.Duration, error) {
-		catalog := biz.NewCatalogUsecase(data.NewCatalogRepo(dataSet))
-		svc := service.NewBusinessService(biz.NewSystemUsecase(dataSet), catalog)
-		httpServer, err := server.NewBusinessHTTPServer(cfg, svc, nil)
-		return httpServer, cfg.HTTP.ShutdownTimeout, err
-	})
+	return run("dongdong-business-api",
+		func(cfg *config.Config, dataSet *data.Data) (*khttp.Server, time.Duration, error) {
+			catalog := biz.NewCatalogUsecase(data.NewCatalogRepo(dataSet))
+			// 第一步：创建管理员数据库访问对象。
+			adminRepo := data.NewAdminRepo(dataSet)
+			// 第二步：把数据库访问对象交给业务用例。
+			adminUsecase := biz.NewAdminUsecase(adminRepo)
+			// 第三步：把业务用例交给接口层。
+			svc := service.NewBusinessService(biz.NewSystemUsecase(dataSet), catalog, adminUsecase)
+
+			httpServer, err := server.NewBusinessHTTPServer(
+				cfg, svc, nil,
+			)
+			return httpServer, cfg.HTTP.ShutdownTimeout, err
+		},
+	)
 }
 
 func RunOrder() error {
