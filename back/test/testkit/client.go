@@ -2,6 +2,7 @@ package testkit
 
 import (
 	"bytes"
+	"dd_web/back/internal/ecode"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -20,8 +21,8 @@ const (
 var httpClient = &http.Client{Timeout: 5 * time.Second}
 
 type Envelope struct {
-	Code      string          `json:"code"`
-	Message   string          `json:"message"`
+	Code      int32           `json:"code"`
+	ErrorMsg  string          `json:"error_msg"`
 	Data      json.RawMessage `json:"data"`
 	RequestID string          `json:"request_id"`
 }
@@ -107,7 +108,13 @@ func requestWithHeaders(t *testing.T, baseURL, service, method, path string, bod
 	if headerID := resp.Header.Get("X-Request-ID"); headerID != result.Envelope.RequestID {
 		t.Fatalf("请求 ID 不一致: header=%q body=%q", headerID, result.Envelope.RequestID)
 	}
-	t.Logf("真实服务响应: status=%d code=%s request_id=%s", result.StatusCode, result.Envelope.Code, result.Envelope.RequestID)
+	if result.Envelope.Code == int32(ecode.Success) && result.Envelope.ErrorMsg != "" {
+		t.Fatalf("成功响应的error_msg必须为空: %s", raw)
+	}
+	if result.Envelope.Code != int32(ecode.Success) && result.Envelope.ErrorMsg == "" {
+		t.Fatalf("失败响应必须包含error_msg: %s", raw)
+	}
+	t.Logf("真实服务响应: status=%d code=%d request_id=%s", result.StatusCode, result.Envelope.Code, result.Envelope.RequestID)
 	return result
 }
 
@@ -134,10 +141,10 @@ func requestJSON(t *testing.T, order bool, method, path string, payload any) Res
 	return RequestWithHeaders(t, method, path, bytes.NewReader(body), header)
 }
 
-func Require(t *testing.T, response Response, status int, code string) {
+func Require(t *testing.T, response Response, status int, code ecode.Code) {
 	t.Helper()
-	if response.StatusCode != status || response.Envelope.Code != code {
-		t.Fatalf("接口结果不符合预期: want_status=%d want_code=%q got_status=%d got_code=%q body=%s",
+	if response.StatusCode != status || response.Envelope.Code != int32(code) {
+		t.Fatalf("接口结果不符合预期: want_status=%d want_code=%d got_status=%d got_code=%d body=%s",
 			status, code, response.StatusCode, response.Envelope.Code, response.Body)
 	}
 }

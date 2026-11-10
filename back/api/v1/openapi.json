@@ -283,12 +283,12 @@
         "tags": [
           "public / 登录与协议"
         ],
-        "x-implementation": "planned",
+        "x-implementation": "implemented",
         "x-permission": "",
         "x-idempotent": false,
         "responses": {
           "200": {
-            "description": "规划成功响应，data尚未细化，不应据此生成最终业务客户端",
+            "description": "微信 code 校验成功；返回用户信息、访问令牌和服务端可撤销的刷新令牌",
             "content": {
               "application/json": {
                 "schema": {
@@ -390,9 +390,9 @@
           }
         },
         "x-delivery-priority": "P0",
-        "x-response-contract-status": "draft",
+        "x-response-contract-status": "implemented",
         "x-request-types": "defined",
-        "x-request-validation": "not_implemented",
+        "x-request-validation": "implemented",
         "x-service": "business",
         "servers": [
           {
@@ -27703,16 +27703,21 @@
         "type": "object",
         "required": [
           "code",
-          "message",
+          "error_msg",
           "data",
           "request_id"
         ],
         "properties": {
           "code": {
-            "type": "string"
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1000,
+            "maximum": 5000,
+            "description": "项目统一四位业务状态码，范围1000～5000；1000成功，5000系统内部错误"
           },
-          "message": {
-            "type": "string"
+          "error_msg": {
+            "type": "string",
+            "description": "状态码对应的统一错误文案；成功时为空字符串"
           },
           "data": {},
           "request_id": {

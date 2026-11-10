@@ -7,7 +7,7 @@ import (
 // User 用户。
 type User struct {
 	Base
-	UserNo         string     `gorm:"column:user_no;type:varchar(32);not null;comment:唯一公开编号" json:"user_no"`                                                          // 唯一公开编号
+	UserNo         string     `gorm:"column:user_no;type:varchar(32);not null;uniqueIndex:uk_users_user_no;comment:唯一公开编号" json:"user_no"`                             // 唯一公开编号
 	Nickname       string     `gorm:"column:nickname;type:varchar(64);not null;comment:已审核昵称" json:"nickname"`                                                         // 已审核昵称
 	AvatarAssetID  *int64     `gorm:"column:avatar_asset_id;type:bigint;comment:→media_assets" json:"avatar_asset_id,string"`                                          // →media_assets
 	PhoneCipher    []byte     `gorm:"column:phone_cipher;type:bytea;comment:手机号密文" json:"-"`                                                                           // 手机号密文
@@ -24,12 +24,12 @@ func (User) TableName() string { return "users" }
 // AuthIdentity 第三方登录身份。
 type AuthIdentity struct {
 	Base
-	UserID   int64                `gorm:"column:user_id;type:bigint;not null;comment:→users" json:"user_id,string"`                 // →users
-	Provider AuthIdentityProvider `gorm:"column:provider;type:varchar(24);not null;comment:WECHAT_MINI/WECHAT_APP" json:"provider"` // WECHAT_MINI/WECHAT_APP
-	AppID    string               `gorm:"column:app_id;type:varchar(64);not null;comment:微信应用标识" json:"app_id"`                     // 微信应用标识
-	Subject  string               `gorm:"column:subject;type:varchar(128);not null;comment:该应用下 OpenID" json:"-"`                   // 该应用下 OpenID
-	UnionID  *string              `gorm:"column:union_id;type:varchar(128);comment:开放平台关联标识；不作为实名认证凭据" json:"-"`                    // 开放平台关联标识；不作为实名认证凭据
-	BoundAt  time.Time            `gorm:"column:bound_at;type:timestamptz;not null;comment:绑定时间" json:"bound_at"`                   // 绑定时间
+	UserID   int64                `gorm:"column:user_id;type:bigint;not null;comment:→users" json:"user_id,string"`                                                                 // →users
+	Provider AuthIdentityProvider `gorm:"column:provider;type:varchar(24);not null;uniqueIndex:uk_auth_identity_subject,priority:1;comment:WECHAT_MINI/WECHAT_APP" json:"provider"` // WECHAT_MINI/WECHAT_APP
+	AppID    string               `gorm:"column:app_id;type:varchar(64);not null;uniqueIndex:uk_auth_identity_subject,priority:2;comment:微信应用标识" json:"app_id"`                     // 微信应用标识
+	Subject  string               `gorm:"column:subject;type:varchar(128);not null;uniqueIndex:uk_auth_identity_subject,priority:3;comment:该应用下 OpenID" json:"-"`                   // 该应用下 OpenID
+	UnionID  *string              `gorm:"column:union_id;type:varchar(128);comment:开放平台关联标识；不作为实名认证凭据" json:"-"`                                                                    // 开放平台关联标识；不作为实名认证凭据
+	BoundAt  time.Time            `gorm:"column:bound_at;type:timestamptz;not null;comment:绑定时间" json:"bound_at"`                                                                   // 绑定时间
 }
 
 func (AuthIdentity) TableName() string { return "auth_identities" }

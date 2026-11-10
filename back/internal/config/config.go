@@ -17,6 +17,8 @@ type Config struct {
 	Log       Log    `mapstructure:"log"`
 	PG        PG     `mapstructure:"pg"`
 	Redis     Redis  `mapstructure:"redis"`
+	Auth      Auth   `mapstructure:"auth"`
+	Wechat    Wechat `mapstructure:"wechat"`
 }
 
 type HTTP struct {
@@ -43,9 +45,27 @@ type PG struct {
 }
 
 type Redis struct {
-	Addr     string `mapstructure:"addr"`
-	Password string `mapstructure:"password"`
-	DB       int    `mapstructure:"db"`
+	Addr         string        `mapstructure:"addr"`
+	Password     string        `mapstructure:"password"`
+	DB           int           `mapstructure:"db"`
+	DialTimeout  time.Duration `mapstructure:"dial_timeout"`
+	ReadTimeout  time.Duration `mapstructure:"read_timeout"`
+	WriteTimeout time.Duration `mapstructure:"write_timeout"`
+}
+
+type Auth struct {
+	Issuer          string        `mapstructure:"issuer"`
+	TokenSecret     string        `mapstructure:"token_secret"`
+	AccessTokenTTL  time.Duration `mapstructure:"access_token_ttl"`
+	RefreshTokenTTL time.Duration `mapstructure:"refresh_token_ttl"`
+}
+
+type Wechat struct {
+	APIBaseURL string `mapstructure:"api_base_url"`
+	MiniAppID  string `mapstructure:"mini_app_id"`
+	MiniSecret string `mapstructure:"mini_secret"`
+	OpenAppID  string `mapstructure:"open_app_id"`
+	OpenSecret string `mapstructure:"open_secret"`
 }
 
 // Load 加载配置。默认优先读取config/config.yaml，兼容旧的configs目录。

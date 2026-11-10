@@ -27,6 +27,22 @@ pg:
   conn_max_lifetime: 360s  # 连接最大存活时长，填写带单位的时长
 
 redis:
-  addr: 127.0.0.1  # host:port；当前尚未接入Redis初始化
+  addr: 127.0.0.1:6379 # 必填；Redis host:port
   password: # 密码
   db:  0 # 数据库编号，填写非负整数
+  dial_timeout: 3s
+  read_timeout: 2s
+  write_timeout: 2s
+
+auth:
+  issuer: dongdong-business-api
+  token_secret: # 必填；至少32字节，生产环境请通过 NX_AUTH__TOKEN_SECRET 注入
+  access_token_ttl: 2h
+  refresh_token_ttl: 720h
+
+wechat:
+  api_base_url: https://api.weixin.qq.com
+  mini_app_id: # 微信小程序 AppID
+  mini_secret: # 微信小程序 AppSecret
+  open_app_id: # 微信开放平台移动应用 AppID
+  open_secret: # 微信开放平台移动应用 AppSecret

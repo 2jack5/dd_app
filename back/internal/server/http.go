@@ -17,6 +17,7 @@ import (
 	commonv1 "dd_web/back/api/common/v1"
 	"dd_web/back/internal/biz"
 	"dd_web/back/internal/config"
+	"dd_web/back/internal/ecode"
 	"dd_web/back/internal/infra"
 	kerrors "github.com/go-kratos/kratos/v3/errors"
 	"github.com/go-kratos/kratos/v3/middleware"
@@ -34,8 +35,8 @@ type routePolicy struct {
 }
 
 type envelope struct {
-	Code      string `json:"code"`
-	Message   string `json:"message"`
+	Code      int32  `json:"code"`
+	ErrorMsg  string `json:"error_msg"`
 	Data      any    `json:"data"`
 	RequestID string `json:"request_id"`
 }
@@ -50,10 +51,10 @@ func newHTTPServer(httpCfg config.HTTP, defaultAddress, addressEnv, timeoutEnv s
 		khttp.Filter(requestFilter()), khttp.Middleware(recovery.Recovery(), accessMiddleware(auth, policies)),
 		khttp.ResponseEncoder(encodeResponse), khttp.ErrorEncoder(encodeError),
 		khttp.NotFoundHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			writeEnvelope(w, r, 404, "NOT_FOUND", "接口不存在", nil)
+			writeError(w, r, ecode.New(ecode.NotFound))
 		})),
 		khttp.MethodNotAllowedHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			writeEnvelope(w, r, 405, "METHOD_NOT_ALLOWED", "请求方法不支持", nil)
+			writeError(w, r, ecode.New(ecode.MethodNotAllowed))
 		})),
 	), nil
 }
@@ -96,23 +97,31 @@ func encodeResponse(w http.ResponseWriter, r *http.Request, value any) error {
 	if reply.Data != nil {
 		data = reply.Data.AsInterface()
 	}
-	writeEnvelope(w, r, http.StatusOK, reply.Code, reply.Message, data)
+	writeEnvelope(w, r, http.StatusOK, ecode.Code(reply.Code), reply.ErrorMsg, data)
 	return nil
 }
 
 func encodeError(w http.ResponseWriter, r *http.Request, err error) {
-	e := kerrors.FromError(err)
-	var data any
-	if operation := e.Metadata["operation"]; operation != "" {
-		data = map[string]string{"operation": operation}
+	if businessError, ok := ecode.FromError(err); ok {
+		writeError(w, r, businessError)
+		return
 	}
-	writeEnvelope(w, r, int(e.Code), e.Reason, e.Message, data)
+	e := kerrors.FromError(err)
+	code := ecode.FromHTTPStatus(int(e.Code))
+	writeError(w, r, ecode.Wrap(code, err))
 }
 
-func writeEnvelope(w http.ResponseWriter, r *http.Request, status int, code, message string, data any) {
+func writeError(w http.ResponseWriter, r *http.Request, err *ecode.Error) {
+	if err.HTTPStatus() >= http.StatusInternalServerError {
+		infra.L().Error("service_error", "request_id", requestID(r), "code", err.Code(), "error", err)
+	}
+	writeEnvelope(w, r, err.HTTPStatus(), err.Code(), err.ErrorMessage(), err.Data())
+}
+
+func writeEnvelope(w http.ResponseWriter, r *http.Request, status int, code ecode.Code, errorMsg string, data any) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(envelope{code, message, data, requestID(r)})
+	_ = json.NewEncoder(w).Encode(envelope{int32(code), errorMsg, data, requestID(r)})
 }
 
 func requestID(r *http.Request) string {
@@ -125,7 +134,7 @@ func requestFilter() khttp.FilterFunc {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			var bytes [16]byte
 			if _, err := rand.Read(bytes[:]); err != nil {
-				writeEnvelope(w, r, 500, "INTERNAL_ERROR", "服务暂时不可用", nil)
+				writeError(w, r, ecode.Wrap(ecode.InternalError, err))
 				return
 			}
 			id := hex.EncodeToString(bytes[:])
@@ -150,38 +159,38 @@ func accessMiddleware(auth biz.Authenticator, policies map[string]routePolicy) m
 			}
 			policy, ok := policies[tr.Operation()]
 			if !ok {
-				return nil, kerrors.InternalServer("INTERNAL_ERROR", "接口策略未配置")
+				return nil, ecode.New(ecode.InternalError)
 			}
 			if policy.Scope != "public" && policy.Scope != "channel" {
 				parts := strings.Fields(tr.RequestHeader().Get("Authorization"))
 				if len(parts) != 2 || !strings.EqualFold(parts[0], "Bearer") {
-					return nil, kerrors.Unauthorized("AUTH_REQUIRED", "请先登录")
+					return nil, ecode.New(ecode.AuthRequired)
 				}
 				if auth == nil {
-					return nil, kerrors.ServiceUnavailable("AUTH_NOT_CONFIGURED", "身份验证服务尚未接入")
+					return nil, ecode.New(ecode.AuthNotConfigured)
 				}
 				principal, err := auth.Authenticate(ctx, parts[1], policy.Scope)
 				if errors.Is(err, biz.ErrAuthenticationUnavailable) {
-					return nil, kerrors.ServiceUnavailable("AUTH_NOT_CONFIGURED", "身份验证服务尚未接入")
+					return nil, ecode.New(ecode.AuthNotConfigured)
 				}
 				if err != nil {
-					return nil, kerrors.Unauthorized("INVALID_TOKEN", "登录态无效或已过期")
+					return nil, ecode.New(ecode.InvalidToken)
 				}
 				if (policy.Scope == "admin" && principal.AdminID <= 0) || (policy.Scope != "admin" && principal.UserID <= 0) {
-					return nil, kerrors.Forbidden("FORBIDDEN", "身份不匹配")
+					return nil, ecode.New(ecode.Forbidden)
 				}
 				if policy.Scope == "coach" && !principal.IsCoach {
-					return nil, kerrors.Forbidden("COACH_NOT_VERIFIED", "当前身份不具备陪练角色")
+					return nil, ecode.New(ecode.CoachNotVerified)
 				}
 				if policy.Permission != "" && !principal.Permissions[policy.Permission] {
-					return nil, kerrors.Forbidden("FORBIDDEN", "没有对应操作权限")
+					return nil, ecode.New(ecode.Forbidden)
 				}
 				ctx = biz.WithPrincipal(ctx, principal)
 			}
 			if policy.Idempotent {
 				key := strings.TrimSpace(tr.RequestHeader().Get("Idempotency-Key"))
 				if key == "" || len(key) > 128 {
-					return nil, kerrors.BadRequest("IDEMPOTENCY_KEY_REQUIRED", "请提供不超过128字节的Idempotency-Key")
+					return nil, ecode.New(ecode.IdempotencyKeyRequired)
 				}
 			}
 			return next(ctx, req)

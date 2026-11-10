@@ -15,48 +15,34 @@ import (
 	"dd_web/back/internal/model"
 	"dd_web/back/internal/server"
 	"dd_web/back/internal/service"
-
 	"github.com/go-kratos/kratos/v3"
 	khttp "github.com/go-kratos/kratos/v3/transport/http"
+	"github.com/redis/go-redis/v9"
 )
 
-//func RunBusiness() error {
-//	return run("dongdong-business-api", func(cfg *config.Config, dataSet *data.Data) (*khttp.Server, time.Duration, error) {
-//		catalog := biz.NewCatalogUsecase(data.NewCatalogRepo(dataSet))
-//		svc := service.NewBusinessService(biz.NewSystemUsecase(dataSet), catalog)
-//		httpServer, err := server.NewBusinessHTTPServer(cfg, svc, nil)
-//		return httpServer, cfg.HTTP.ShutdownTimeout, err
-//	})
-//}
-
 func RunBusiness() error {
-	return run("dongdong-business-api",
-		func(cfg *config.Config, dataSet *data.Data) (*khttp.Server, time.Duration, error) {
-			catalog := biz.NewCatalogUsecase(data.NewCatalogRepo(dataSet))
-			// 第一步：创建管理员数据库访问对象。
-			adminRepo := data.NewAdminRepo(dataSet)
-			// 第二步：把数据库访问对象交给业务用例。
-			adminUsecase := biz.NewAdminUsecase(adminRepo)
-			// 第三步：把业务用例交给接口层。
-			svc := service.NewBusinessService(biz.NewSystemUsecase(dataSet), catalog, adminUsecase)
-
-			httpServer, err := server.NewBusinessHTTPServer(
-				cfg, svc, nil,
-			)
-			return httpServer, cfg.HTTP.ShutdownTimeout, err
-		},
-	)
+	return run("dongdong-business-api", func(cfg *config.Config, dataSet *data.Data, redisClient *redis.Client) (*khttp.Server, time.Duration, error) {
+		catalog := biz.NewCatalogUsecase(data.NewCatalogRepo(dataSet))
+		auth := newAuthUsecase(cfg, dataSet, redisClient)
+		svc := service.NewBusinessService(biz.NewSystemUsecase(data.NewDependencyHealth(dataSet, redisClient)), catalog, auth)
+		httpServer, err := server.NewBusinessHTTPServer(cfg, svc, auth)
+		return httpServer, cfg.HTTP.ShutdownTimeout, err
+	})
 }
 
 func RunOrder() error {
-	return run("dongdong-order-api", func(cfg *config.Config, dataSet *data.Data) (*khttp.Server, time.Duration, error) {
-		svc := service.NewOrderService(biz.NewSystemUsecase(dataSet))
-		httpServer, err := server.NewOrderHTTPServer(cfg, svc, nil)
+	return run("dongdong-order-api", func(cfg *config.Config, dataSet *data.Data, redisClient *redis.Client) (*khttp.Server, time.Duration, error) {
+		svc := service.NewOrderService(biz.NewSystemUsecase(data.NewDependencyHealth(dataSet, redisClient)))
+		httpServer, err := server.NewOrderHTTPServer(cfg, svc, newAuthUsecase(cfg, dataSet, redisClient))
 		return httpServer, cfg.OrderHTTP.ShutdownTimeout, err
 	})
 }
 
-type serverBuilder func(*config.Config, *data.Data) (*khttp.Server, time.Duration, error)
+func newAuthUsecase(cfg *config.Config, dataSet *data.Data, redisClient *redis.Client) *biz.AuthUsecase {
+	return biz.NewAuthUsecase(infra.NewWechatClient(cfg.Wechat), data.NewAuthRepo(dataSet), infra.NewTokenManager(cfg.Auth), data.NewRedisSessionStore(redisClient))
+}
+
+type serverBuilder func(*config.Config, *data.Data, *redis.Client) (*khttp.Server, time.Duration, error)
 
 func run(name string, build serverBuilder) error {
 	cfg, err := config.Load("")
@@ -80,7 +66,16 @@ func run(name string, build serverBuilder) error {
 			infra.L().Error("close postgres failed", "error", err)
 		}
 	}()
-	httpServer, stopTimeout, err := build(cfg, data.NewData(pg))
+	redisClient, err := infra.NewRedis(cfg.Redis)
+	if err != nil {
+		return fmt.Errorf("initialize redis: %w", err)
+	}
+	defer func() {
+		if err := infra.CloseRedis(redisClient); err != nil {
+			infra.L().Error("close redis failed", "error", err)
+		}
+	}()
+	httpServer, stopTimeout, err := build(cfg, data.NewData(pg), redisClient)
 	if err != nil {
 		return err
 	}
