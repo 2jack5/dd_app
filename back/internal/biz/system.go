@@ -1,3 +1,5 @@
+// 要求底层提供“检查数据库连接”的能力
+
 package biz
 
 import "context"
