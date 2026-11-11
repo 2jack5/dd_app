@@ -6,6 +6,7 @@ import (
 	"dd_web/back/internal/data"
 	"dd_web/back/internal/ecode"
 	"errors"
+
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -13,13 +14,11 @@ type BusinessService struct {
 	system  *biz.SystemUsecase
 	catalog *biz.CatalogUsecase
 	auth    *biz.AuthUsecase
+	admin   *biz.AdminUsecase
 }
 
-func NewBusinessService(system *biz.SystemUsecase, catalog *biz.CatalogUsecase, auth ...*biz.AuthUsecase) *BusinessService {
-	service := &BusinessService{system: system, catalog: catalog}
-	if len(auth) > 0 {
-		service.auth = auth[0]
-	}
+func NewBusinessService(system *biz.SystemUsecase, catalog *biz.CatalogUsecase, auth *biz.AuthUsecase, admin *biz.AdminUsecase) *BusinessService {
+	service := &BusinessService{system: system, catalog: catalog, auth: auth, admin: admin}
 	return service
 }
 func ok(data any) (*commonv1.ApiResponse, error) {

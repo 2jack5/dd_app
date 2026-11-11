@@ -184,6 +184,7 @@ message Onboarding {
 message AdminLogin {
   string account = 1;
   string password = 2;
+  // 历史兼容字段，管理员账号密码登录不再读取或校验此字段。
   string mfa_code = 3;
 }
 

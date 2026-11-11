@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"dd_web/back/internal/biz"
+
 	"github.com/redis/go-redis/v9"
 )
 
@@ -20,10 +21,25 @@ const (
 type RedisSessionStore struct {
 	client *redis.Client
 	now    func() time.Time
+
+	refreshPrefix string
+	indexPrefix   string
 }
 
-func NewRedisSessionStore(client *redis.Client) *RedisSessionStore {
-	return &RedisSessionStore{client: client, now: time.Now}
+func NewRedisSessionStore(client *redis.Client, namespace ...string) *RedisSessionStore {
+	refreshPrefix := refreshSessionPrefix
+	indexPrefix := userSessionsPrefix
+
+	if len(namespace) > 0 && namespace[0] != "" {
+		refreshPrefix = "auth:" + namespace[0] + "_refresh:"
+		indexPrefix = "auth:" + namespace[0] + "_sessions:"
+	}
+	return &RedisSessionStore{
+		client:        client,
+		now:           time.Now,
+		refreshPrefix: refreshPrefix,
+		indexPrefix:   indexPrefix,
+	}
 }
 
 type refreshSessionValue struct {
@@ -48,8 +64,8 @@ func (s *RedisSessionStore) SaveRefreshSession(ctx context.Context, session biz.
 	if err != nil {
 		return fmt.Errorf("marshal refresh session: %w", err)
 	}
-	refreshKey := refreshSessionPrefix + session.RefreshTokenHash
-	userKey := userSessionsPrefix + strconv.FormatInt(session.UserID, 10)
+	refreshKey := s.refreshPrefix + session.RefreshTokenHash
+	userKey := s.indexPrefix + strconv.FormatInt(session.UserID, 10)
 	_, err = s.client.TxPipelined(ctx, func(pipe redis.Pipeliner) error {
 		pipe.Set(ctx, refreshKey, value, ttl)
 		pipe.SAdd(ctx, userKey, session.RefreshTokenHash)
@@ -70,9 +86,9 @@ func (s *RedisSessionStore) RotateRefreshSession(ctx context.Context, currentHas
 	if currentHash == "" || ttl <= 0 || next.UserID <= 0 || next.RefreshTokenHash == "" {
 		return biz.ErrInvalidToken
 	}
-	currentKey := refreshSessionPrefix + currentHash
-	nextKey := refreshSessionPrefix + next.RefreshTokenHash
-	userKey := userSessionsPrefix + strconv.FormatInt(next.UserID, 10)
+	currentKey := s.refreshPrefix + currentHash
+	nextKey := s.refreshPrefix + next.RefreshTokenHash
+	userKey := s.indexPrefix + strconv.FormatInt(next.UserID, 10)
 	err := s.client.Watch(ctx, func(tx *redis.Tx) error {
 		raw, err := tx.Get(ctx, currentKey).Bytes()
 		if err == redis.Nil {

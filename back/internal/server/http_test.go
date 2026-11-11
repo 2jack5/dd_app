@@ -48,7 +48,7 @@ func testServers(t *testing.T, auth biz.Authenticator) (http.Handler, http.Handl
 	t.Setenv("DD_ORDER_HTTP_ADDR", "127.0.0.1:0")
 	repo := fakeRepo{}
 	system := biz.NewSystemUsecase(repo)
-	business, err := NewBusinessHTTPServer(&config.Config{}, service.NewBusinessService(system, biz.NewCatalogUsecase(repo)), auth)
+	business, err := NewBusinessHTTPServer(&config.Config{}, service.NewBusinessService(system, biz.NewCatalogUsecase(repo), nil, nil), auth)
 	if err != nil {
 		t.Fatal(err)
 	}

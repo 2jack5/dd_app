@@ -15,6 +15,7 @@ import (
 	"dd_web/back/internal/model"
 	"dd_web/back/internal/server"
 	"dd_web/back/internal/service"
+
 	"github.com/go-kratos/kratos/v3"
 	khttp "github.com/go-kratos/kratos/v3/transport/http"
 	"github.com/redis/go-redis/v9"
@@ -24,8 +25,13 @@ func RunBusiness() error {
 	return run("dongdong-business-api", func(cfg *config.Config, dataSet *data.Data, redisClient *redis.Client) (*khttp.Server, time.Duration, error) {
 		catalog := biz.NewCatalogUsecase(data.NewCatalogRepo(dataSet))
 		auth := newAuthUsecase(cfg, dataSet, redisClient)
-		svc := service.NewBusinessService(biz.NewSystemUsecase(data.NewDependencyHealth(dataSet, redisClient)), catalog, auth)
-		httpServer, err := server.NewBusinessHTTPServer(cfg, svc, auth)
+		adminUsecase := newAdminUsecase(cfg, dataSet, redisClient)
+		svc := service.NewBusinessService(biz.NewSystemUsecase(data.NewDependencyHealth(dataSet, redisClient)), catalog, auth, adminUsecase)
+		authenticator := biz.ScopedAuthenticator{
+			User:  auth,
+			Admin: adminUsecase,
+		}
+		httpServer, err := server.NewBusinessHTTPServer(cfg, svc, authenticator)
 		return httpServer, cfg.HTTP.ShutdownTimeout, err
 	})
 }
@@ -33,13 +39,32 @@ func RunBusiness() error {
 func RunOrder() error {
 	return run("dongdong-order-api", func(cfg *config.Config, dataSet *data.Data, redisClient *redis.Client) (*khttp.Server, time.Duration, error) {
 		svc := service.NewOrderService(biz.NewSystemUsecase(data.NewDependencyHealth(dataSet, redisClient)))
-		httpServer, err := server.NewOrderHTTPServer(cfg, svc, newAuthUsecase(cfg, dataSet, redisClient))
+		authenticator := biz.ScopedAuthenticator{
+			User:  newAuthUsecase(cfg, dataSet, redisClient),
+			Admin: newAdminUsecase(cfg, dataSet, redisClient),
+		}
+		httpServer, err := server.NewOrderHTTPServer(cfg, svc, authenticator)
 		return httpServer, cfg.OrderHTTP.ShutdownTimeout, err
 	})
 }
 
 func newAuthUsecase(cfg *config.Config, dataSet *data.Data, redisClient *redis.Client) *biz.AuthUsecase {
 	return biz.NewAuthUsecase(infra.NewWechatClient(cfg.Wechat), data.NewAuthRepo(dataSet), infra.NewTokenManager(cfg.Auth), data.NewRedisSessionStore(redisClient))
+}
+func newAdminUsecase(cfg *config.Config, dataSet *data.Data, redisClient *redis.Client) *biz.AdminUsecase {
+	tokenConfig := cfg.Auth
+
+	issuer := strings.TrimSpace(tokenConfig.Issuer)
+	if issuer == "" {
+		issuer = "dongdong-business-api"
+	}
+	tokenConfig.Issuer = issuer + "/admin"
+
+	return biz.NewAdminUsecase(
+		data.NewAdminRepo(dataSet),
+		infra.NewTokenManager(tokenConfig),
+		data.NewRedisSessionStore(redisClient, "admin"),
+	)
 }
 
 type serverBuilder func(*config.Config, *data.Data, *redis.Client) (*khttp.Server, time.Duration, error)

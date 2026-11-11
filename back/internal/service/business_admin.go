@@ -5,55 +5,55 @@ import (
 	businessv1 "dd_web/back/api/business/v1"
 	commonv1 "dd_web/back/api/common/v1"
 	"dd_web/back/internal/biz"
-	"dd_web/back/internal/model"
+	"dd_web/back/internal/ecode"
 	"errors"
-	"strings"
-
-	kerrors "github.com/go-kratos/kratos/v3/errors"
+	"strconv"
+	"time"
 )
-
-//func (s *BusinessService) AdminLogin(context.Context, *businessv1.AdminLoginRequest) (*commonv1.ApiResponse, error) {
-//
-//	return nil, notImplemented("admin.login")
-//}
 
 // AdminLogin 处理后台管理员登录。
 func (s *BusinessService) AdminLogin(ctx context.Context, req *businessv1.AdminLoginRequest) (*commonv1.ApiResponse, error) {
-	body := req.GetBody()
+	if s.admin == nil {
+		return nil, ecode.New(ecode.AuthNotConfigured)
+	}
+	if req == nil || req.Body == nil {
+		return nil, ecode.New(ecode.InvalidArgument)
+	}
 
-	if body == nil ||
-		strings.TrimSpace(body.GetAccount()) == "" ||
-		body.GetPassword() == "" {
-		return nil, kerrors.BadRequest(
-			"INVALID_ARGUMENT",
-			"账号和密码不能为空",
-		)
-	}
-	// service → biz → data → 数据库
-	admin, err := s.admin.FindByAccount(ctx, body.GetAccount())
-	if errors.Is(err, biz.ErrAdminNotFound) {
-		return nil, kerrors.Unauthorized(
-			"INVALID_CREDENTIALS",
-			"账号或密码错误",
-		)
-	}
+	result, err := s.admin.Login(ctx, req.Body.Account, req.Body.Password)
 	if err != nil {
-		return nil, kerrors.InternalServer(
-			"INTERNAL_ERROR",
-			"服务暂时不可用",
-		)
+		switch {
+		case errors.Is(err, biz.ErrInvalidArgument):
+			return nil, ecode.New(ecode.InvalidArgument)
+		case errors.Is(err, biz.ErrInvalidCredentials):
+			return nil, ecode.New(ecode.InvalidCredentials)
+		case errors.Is(err, biz.ErrAccountDisabled):
+			return nil, ecode.New(ecode.AccountDisabled)
+		case errors.Is(err, biz.ErrAuthenticationUnavailable):
+			return nil, ecode.New(ecode.AuthNotConfigured)
+		default:
+			return nil, ecode.Wrap(ecode.InternalError, err)
+		}
 	}
 
-	if admin.Status != model.AdminUserStatusActive {
-		return nil, kerrors.Unauthorized(
-			"INVALID_CREDENTIALS",
-			"账号或密码错误",
-		)
-	}
-
-	// 这里只完成账号查询。
-	// 后续继续实现密码哈希校验、MFA 和登录凭证。
-	return nil, notImplemented("admin.login")
+	return ok(map[string]any{
+		"token_type":    "Bearer",
+		"access_token":  result.Tokens.AccessToken,
+		"refresh_token": result.Tokens.RefreshToken,
+		"expires_in": float64(max(
+			0,
+			int(time.Until(result.Tokens.AccessExpiresAt).Seconds()),
+		)),
+		"refresh_expires_in": float64(max(
+			0,
+			int(time.Until(result.Tokens.RefreshExpiresAt).Seconds()),
+		)),
+		"admin": map[string]any{
+			"id":           strconv.FormatInt(result.Admin.ID, 10),
+			"account":      result.Admin.Account,
+			"display_name": result.Admin.DisplayName,
+		},
+	})
 }
 
 // AdminRefreshToken 刷新后台管理员的登录凭证。
@@ -68,6 +68,9 @@ func (s *BusinessService) AdminMe(context.Context, *businessv1.AdminMeRequest) (
 
 // AdminLogout 退出当前管理员登录。
 func (s *BusinessService) AdminLogout(context.Context, *businessv1.AdminLogoutRequest) (*commonv1.ApiResponse, error) {
+	if s.admin == nil {
+		return nil, ecode.New(ecode.AuthNotConfigured)
+	}
 	return nil, notImplemented("admin.logout")
 }
 
@@ -77,8 +80,49 @@ func (s *BusinessService) AdminAccounts(context.Context, *businessv1.AdminAccoun
 }
 
 // AdminCreateAccount 创建后台管理员账号。
-func (s *BusinessService) AdminCreateAccount(context.Context, *businessv1.AdminCreateAccountRequest) (*commonv1.ApiResponse, error) {
-	return nil, notImplemented("admin.createAccount")
+func (s *BusinessService) AdminCreateAccount(ctx context.Context, req *businessv1.AdminCreateAccountRequest) (*commonv1.ApiResponse, error) {
+	if s.admin == nil {
+		return nil, ecode.New(ecode.AuthNotConfigured)
+	}
+	if req == nil || req.Body == nil {
+		return nil, ecode.New(ecode.InvalidArgument)
+	}
+
+	// 创建操作必须由有权限的管理员执行。
+	principal, found := biz.PrincipalFromContext(ctx)
+	if !found ||
+		principal.AdminID <= 0 ||
+		!principal.Permissions["admin.account.write"] {
+		return nil, ecode.New(ecode.Forbidden)
+	}
+
+	body := req.Body
+	admin, err := s.admin.CreateAccount(ctx, body.Account, body.InitialPassword, body.DisplayName, body.RoleIds)
+	if err != nil {
+		switch {
+		case errors.Is(err, biz.ErrInvalidArgument):
+			return nil, ecode.New(ecode.InvalidArgument)
+
+		case errors.Is(err, biz.ErrAdminAccountExists):
+			return nil, ecode.New(ecode.AdminAccountExists)
+
+		case errors.Is(err, biz.ErrAdminRoleInvalid):
+			return nil, ecode.New(ecode.AdminRoleInvalid)
+
+		case errors.Is(err, biz.ErrAuthenticationUnavailable):
+			return nil, ecode.New(ecode.AuthNotConfigured)
+
+		default:
+			return nil, ecode.Wrap(ecode.InternalError, err)
+		}
+	}
+
+	return ok(map[string]any{
+		"id":           strconv.FormatInt(admin.ID, 10),
+		"account":      admin.Account,
+		"display_name": admin.DisplayName,
+		"status":       string(admin.Status),
+	})
 }
 
 // AdminUpdateAccount 修改后台管理员账号信息、状态和角色。

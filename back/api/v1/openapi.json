@@ -12188,7 +12188,7 @@
     "/api/v1/admin/auth/login": {
       "post": {
         "operationId": "admin.login",
-        "summary": "后台账号密码及二次验证登录",
+        "summary": "后台管理员账号密码登录",
         "tags": [
           "admin / 登录与权限"
         ],
@@ -25415,11 +25415,14 @@
           "password": {
             "type": "string",
             "format": "password",
-            "maxLength": 256
+            "maxLength": 72,
+            "description": "密码原样校验，最多 72 个 UTF-8 字节。"
           },
           "mfa_code": {
             "type": "string",
-            "maxLength": 12
+            "maxLength": 12,
+            "deprecated": true,
+            "description": "历史兼容字段，当前不参与管理员登录校验。"
           }
         },
         "required": [
@@ -26395,15 +26398,18 @@
         "properties": {
           "account": {
             "type": "string",
-            "maxLength": 512
+            "maxLength": 64
           },
           "initial_password": {
             "type": "string",
-            "format": "password"
+            "format": "password",
+            "minLength": 8,
+            "maxLength": 72,
+            "description": "初始密码为 8～72 个 UTF-8 字节，空格不做裁剪。"
           },
           "display_name": {
             "type": "string",
-            "maxLength": 512
+            "maxLength": 64
           },
           "role_ids": {
             "type": "array",
@@ -26411,7 +26417,8 @@
               "type": "string",
               "pattern": "^[1-9][0-9]{0,18}$",
               "description": "十进制int64 ID，以字符串传输，服务端还应校验int64上限"
-            }
+            },
+            "minItems": 1
           }
         },
         "required": [

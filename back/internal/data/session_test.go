@@ -58,3 +58,34 @@ func TestRedisSessionStoreRejectsUnavailableClient(t *testing.T) {
 		t.Fatal("closed redis client was accepted")
 	}
 }
+
+func TestRedisSessionNamespacesSeparateAdminAndUser(t *testing.T) {
+	client := redis.NewClient(&redis.Options{Addr: "unused:6379", Dialer: func(context.Context, string, string) (net.Conn, error) {
+		t.Fatal("capture hook should prevent network access")
+		return nil, nil
+	}})
+	defer client.Close()
+	hook := &captureRedisHook{}
+	client.AddHook(hook)
+	session := biz.RefreshSession{UserID: 7, AuthVersion: 1, ClientType: "ADMIN", RefreshTokenHash: "same-hash", ExpiresAt: time.Now().Add(time.Hour)}
+	for _, store := range []*RedisSessionStore{NewRedisSessionStore(client), NewRedisSessionStore(client, "admin")} {
+		if err := store.SaveRefreshSession(context.Background(), session); err != nil {
+			t.Fatal(err)
+		}
+	}
+	keys := map[string]bool{}
+	for _, command := range hook.commands {
+		if command.Name() == "set" || command.Name() == "sadd" {
+			key, ok := command.Args()[1].(string)
+			if !ok {
+				t.Fatalf("unexpected key: %#v", command.Args())
+			}
+			keys[key] = true
+		}
+	}
+	for _, key := range []string{"auth:refresh:same-hash", "auth:admin_refresh:same-hash", "auth:user_sessions:7", "auth:admin_sessions:7"} {
+		if !keys[key] {
+			t.Errorf("missing isolated session key %s", key)
+		}
+	}
+}

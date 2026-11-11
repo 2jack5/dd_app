@@ -93,3 +93,11 @@ go build ./cmd/business ./cmd/order
 ## 统一业务状态码
 
 Business 与 Order 共用 `internal/ecode` 中的四位业务状态码。所有响应固定包含 `code`、`error_msg`、`data`、`request_id`：`1000` 表示成功，`5000` 表示系统内部错误。完整清单见 `docs/业务状态码.md`。
+
+## 管理员账号密码登录
+
+POST /api/v1/admin/accounts 由具有 admin.account.write 权限的管理员调用，提交 account、initial_password、display_name、role_ids。账号统一转小写，密码使用 bcrypt 哈希保存，管理员与启用角色在同一事务中创建，新账号状态为 ACTIVE。启动迁移会为账号创建唯一索引，已有重复账号时需先处理重复数据。
+
+POST /api/v1/admin/auth/login 只需 account 和 password，不需要 MFA、二维码绑定或 MFA 加密密钥。登录检查账号状态，返回 access_token、refresh_token 和有效期，并将刷新凭证摘要保存到 Redis。历史 mfa_code 请求字段和数据库 MFA 字段暂时保留兼容，登录与创建不使用它们。密码中的空格会保留。
+
+管理员和普通用户的令牌签发方、Redis 会话命名空间分别隔离。创建接口仍要求 Idempotency-Key；完整请求重放和创建操作审计尚未接入，重复账号返回业务码 1300。管理员刷新凭证和退出登录接口仍是占位实现。项目不自动创建首个管理员。

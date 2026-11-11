@@ -8,13 +8,13 @@ import (
 // AdminUser 后台管理员。
 type AdminUser struct {
 	Base
-	Account         string          `gorm:"column:account;type:varchar(64);not null;comment:统一转小写的登录名" json:"account"`            // 统一转小写的登录名
-	PasswordHash    string          `gorm:"column:password_hash;type:varchar(256);not null;comment:强密码哈希；不存明文" json:"-"`          // 强密码哈希；不存明文
-	DisplayName     string          `gorm:"column:display_name;type:varchar(64);not null;comment:名称" json:"display_name"`         // 名称
-	Status          AdminUserStatus `gorm:"column:status;type:varchar(16);not null;comment:ACTIVE/DISABLED" json:"status"`        // ACTIVE/DISABLED
-	MFASecretCipher []byte          `gorm:"column:mfa_secret_cipher;type:bytea;comment:二次认证密钥密文" json:"-"`                        // 二次认证密钥密文
-	AuthVersion     int32           `gorm:"column:auth_version;type:integer;not null;default:1;comment:默认 1" json:"auth_version"` // 默认 1
-	LastLoginAt     *time.Time      `gorm:"column:last_login_at;type:timestamptz;comment:最近登录" json:"last_login_at"`              // 最近登录
+	Account         string          `gorm:"column:account;type:varchar(64);not null;uniqueIndex:uk_admin_users_account;comment:统一转小写的登录名" json:"account"` // 统一转小写的登录名
+	PasswordHash    string          `gorm:"column:password_hash;type:varchar(256);not null;comment:强密码哈希；不存明文" json:"-"`                                  // 强密码哈希；不存明文
+	DisplayName     string          `gorm:"column:display_name;type:varchar(64);not null;comment:名称" json:"display_name"`                                 // 名称
+	Status          AdminUserStatus `gorm:"column:status;type:varchar(16);not null;comment:ACTIVE/DISABLED" json:"status"`                                // ACTIVE/DISABLED
+	MFASecretCipher []byte          `gorm:"column:mfa_secret_cipher;type:bytea;comment:二次认证密钥密文" json:"-"`                                                // 二次认证密钥密文
+	AuthVersion     int32           `gorm:"column:auth_version;type:integer;not null;default:1;comment:默认 1" json:"auth_version"`                         // 默认 1
+	LastLoginAt     *time.Time      `gorm:"column:last_login_at;type:timestamptz;comment:最近登录" json:"last_login_at"`                                      // 最近登录
 }
 
 func (AdminUser) TableName() string { return "admin_users" }

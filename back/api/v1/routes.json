@@ -1223,13 +1223,13 @@
     "method": "POST",
     "path": "/api/v1/admin/auth/login",
     "operation": "admin.login",
-    "summary": "后台账号密码及二次验证登录",
+    "summary": "后台管理员账号密码登录",
     "auth": "public",
     "permission": "",
     "idempotent": false,
     "body": "AdminLogin",
-    "notes": "",
-    "implemented": false
+    "notes": "不要求 MFA；成功后返回访问令牌和刷新令牌，刷新会话保存到 Redis。",
+    "implemented": true
   },
   {
     "board": "admin",
@@ -1298,8 +1298,8 @@
     "permission": "admin.account.write",
     "idempotent": true,
     "body": "AdminAccount",
-    "notes": "",
-    "implemented": false
+    "notes": "创建 ACTIVE 管理员并关联角色；要求管理员权限和 Idempotency-Key，请求重放尚未实现，重复账号返回冲突。",
+    "implemented": true
   },
   {
     "board": "admin",

@@ -45,7 +45,7 @@ func (loginTokenStub) VerifyRefresh(string) (biz.TokenClaims, error) {
 
 func TestAuthWechatLoginReturnsTokenAndUser(t *testing.T) {
 	auth := biz.NewAuthUsecase(loginWechatStub{}, loginRepoStub{}, loginTokenStub{}, loginSessionStub{})
-	svc := NewBusinessService(nil, nil, auth)
+	svc := NewBusinessService(nil, nil, auth, nil)
 	response, err := svc.AuthWechatLogin(context.Background(), &businessv1.AuthWechatLoginRequest{Body: &commonv1.WechatLogin{ClientType: biz.WechatClientMini, Code: "code"}})
 	if err != nil {
 		t.Fatal(err)
@@ -57,7 +57,7 @@ func TestAuthWechatLoginReturnsTokenAndUser(t *testing.T) {
 }
 
 func TestAuthWechatLoginValidatesBody(t *testing.T) {
-	svc := NewBusinessService(nil, nil, biz.NewAuthUsecase(loginWechatStub{}, loginRepoStub{}, loginTokenStub{}, loginSessionStub{}))
+	svc := NewBusinessService(nil, nil, biz.NewAuthUsecase(loginWechatStub{}, loginRepoStub{}, loginTokenStub{}, loginSessionStub{}), nil)
 	if _, err := svc.AuthWechatLogin(context.Background(), &businessv1.AuthWechatLoginRequest{}); err == nil {
 		t.Fatal("missing body was accepted")
 	}
@@ -65,7 +65,7 @@ func TestAuthWechatLoginValidatesBody(t *testing.T) {
 
 func TestAuthWechatLoginMapsRedisFailureToInternalCode5000(t *testing.T) {
 	auth := biz.NewAuthUsecase(loginWechatStub{}, loginRepoStub{}, loginTokenStub{}, loginSessionStub{err: errors.New("redis unavailable")})
-	svc := NewBusinessService(nil, nil, auth)
+	svc := NewBusinessService(nil, nil, auth, nil)
 	_, err := svc.AuthWechatLogin(context.Background(), &businessv1.AuthWechatLoginRequest{Body: &commonv1.WechatLogin{ClientType: biz.WechatClientMini, Code: "code"}})
 	businessError, ok := ecode.FromError(err)
 	if !ok || businessError.Code() != ecode.InternalError || businessError.Code() != 5000 {
@@ -75,7 +75,7 @@ func TestAuthWechatLoginMapsRedisFailureToInternalCode5000(t *testing.T) {
 
 func TestAuthRefreshTokenReturnsRotatedTokens(t *testing.T) {
 	auth := biz.NewAuthUsecase(loginWechatStub{}, loginRepoStub{}, loginTokenStub{}, loginSessionStub{})
-	response, err := NewBusinessService(nil, nil, auth).AuthRefreshToken(context.Background(), &businessv1.AuthRefreshTokenRequest{Body: &commonv1.RefreshToken{RefreshToken: "refresh"}})
+	response, err := NewBusinessService(nil, nil, auth, nil).AuthRefreshToken(context.Background(), &businessv1.AuthRefreshTokenRequest{Body: &commonv1.RefreshToken{RefreshToken: "refresh"}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -87,7 +87,7 @@ func TestAuthRefreshTokenReturnsRotatedTokens(t *testing.T) {
 
 func TestAuthRefreshTokenValidatesBody(t *testing.T) {
 	auth := biz.NewAuthUsecase(loginWechatStub{}, loginRepoStub{}, loginTokenStub{}, loginSessionStub{})
-	_, err := NewBusinessService(nil, nil, auth).AuthRefreshToken(context.Background(), &businessv1.AuthRefreshTokenRequest{})
+	_, err := NewBusinessService(nil, nil, auth, nil).AuthRefreshToken(context.Background(), &businessv1.AuthRefreshTokenRequest{})
 	businessError, ok := ecode.FromError(err)
 	if !ok || businessError.Code() != ecode.InvalidArgument {
 		t.Fatalf("missing body must be invalid argument: %v", err)
