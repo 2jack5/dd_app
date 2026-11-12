@@ -1,6 +1,6 @@
 # 东东电竞后端持久化模型
 
-本包按照用户端、陪练师端和运营后台的共同业务实体组织，共 **55 张表**。数据库为 PostgreSQL，结构体使用 GORM v2 标签，由Kratos接口包引用。模型本身只依赖 Go 标准库，未绑定某一版 Kratos，也没有初始化整个后端工程。
+本包按照用户端、陪练师端和运营后台的共同业务实体组织，共 **60 张表**。数据库为 PostgreSQL，结构体使用 GORM v2 标签，由Kratos接口包引用。
 
 ## 文件分类
 
@@ -15,6 +15,7 @@
 | `order.go` | 报价、订单、订单事件（3） |
 | `fulfillment.go` | 完成服务事件的固定凭证结构，不额外建表 |
 | `payment.go` | 支付、支付事件、退款、退款事件（4） |
+| `wallet.go` | 充值套餐、钱包账户、充值单、钱包流水、充值事件（5） |
 | `review.go` | 评价主记录、评价内容版本（2） |
 | `aftersale.go` | 售后工单、工单事件（2） |
 | `settlement.go` | 结算账户、佣金规则、应结、调整追偿、批次、明细与独立补款（7） |
@@ -24,14 +25,14 @@
 | `system.go` | 业务规则版本、请求幂等、Outbox（3） |
 | `statistics.go` | 活跃事件、日统计（2） |
 | `enum.go` | 按模型隔离的状态/类型常量，使用字符串而非 PostgreSQL ENUM |
-| `registry.go` | `AllModels()` 模型清单；迁移独立放在 back/migrations |
+| `registry.go` | `AllModels()` 模型清单；服务启动时供 GORM AutoMigrate 使用 |
 | `base_test.go` | JSONB 驱动边界、日期和时区边界测试 |
 
 ## 使用边界
 
 - `model` 是持久化结构；仅由`internal/data`仓储读写，`internal/biz`使用领域结果，`internal/service`转换为API DTO，不直接序列化数据库模型。
 - 不直接把模型序列化为客户端响应，也不把模型直接绑定请求。敏感字段已尽量标 `json:"-"`，但这不替代权限和脱敏。
-- 主外键为有符号 `int64`，对外 ID 使用字符串；金额为 `int64` 分，费率为 `int32` 万分比，不使用浮点数。乘法/累计金额需防溢出。
+- 主外键为有符号 `int64`，对外 ID 使用字符串；原订单支付金额继续使用 `int64` 分，钱包与充值金额使用 `shopspring/decimal` 映射 PostgreSQL `DECIMAL(20,2)`，套餐倍率使用 `DECIMAL(10,4)`，均不使用浮点数。
 - 可空字段使用指针，`bytea` 用 `[]byte`（nil 为 NULL）。审计 IP 用 `sql.NullString` 对应 PostgreSQL `inet`。
 - `timestamptz` 保存绝对时间；连接设 UTC，展示与业务统计按 Asia/Shanghai。`Date` 保存明确日历日期，不对日期做时区转换。
 - JSONB 的 SQL NULL 与 JSON 字面量 null 不混淆。数据库规定附件/风险码为数组，其余快照/配置为对象；应用层还要验证具体结构。
@@ -40,13 +41,9 @@
 
 ## 建表与迁移
 
-迁移已从本包移到 `back/migrations`：按15个业务属性分组，另设基础扩展、外键两组，共17组 up/down 文件。新库按编号升序执行全部 up 文件；跨表外键最后安装，回滚按相反顺序执行 down 文件。各文件自行包事务，具体使用方法见该目录 README。
+当前服务启动时调用 `db.AutoMigrate(model.AllModels()...)`，模型字段、类型、默认值和 GORM 索引标签是当前数据库结构的来源。项目暂未接入版本化迁移执行器，因此不同时维护未执行的 up/down SQL，避免与 AutoMigrate 形成两套结构来源。
 
-原 `PostgreSQLSchema` 和单文件 `schema.sql` 已移除。需要在Go中读取时使用 `migrations.Files`（embed.FS），由独立迁移工具选择方向、管理版本和执行。本包仅负责模型，不主动执行迁移。
-
-**仅调用 `db.AutoMigrate(model.AllModels()...)` 无法得到完整结构。** 唯一索引、复合外键、排斥及不可变保护以版本化SQL为准；后续修改模型时新增增量迁移，不回改已执行的版本。
-
-旧版54表数据库的升级补丁已移至 `back/migrations/legacy/002_model_review_fixes.sql`，不进入主迁移链。已用修正版55表脚本建库的数据库，本次只是拆文件，不重放建表；接入迁移工具前核对结构并登记正确基线。本次没有执行真实数据库迁移。
+跨行约束、复杂外键和只追加触发器仍由业务事务、权限和测试保证。以后正式引入迁移工具时，应统一切换并登记数据库基线，而不是继续与 AutoMigrate 并行维护。
 
 没有实体关联字段，刻意避免 GORM 隐式保存关联、意外级联或循环迁移。通过显式 ID 查询和事务完成关联写入。
 
@@ -108,4 +105,4 @@
 
 参考：[GORM 模型](https://gorm.io/docs/models.html)、[自定义类型](https://gorm.io/docs/data_types.html)、[Kratos 分层原则](https://go-kratos.dev/docs/intro/design/)。业务表拆分为本项目设计选择，不是框架要求。
 
-迁移拆分验证：原1194条业务DDL完整保留，55张表和127个外键按新顺序静态核对通过；详见 back/migrations/README.md。
+本次钱包功能新增5张 GORM 模型表，模型总数为60张，并已注册到 `AllModels()`。

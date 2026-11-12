@@ -22,12 +22,16 @@ const (
 	InvalidCredentials     Code = 1106
 	AdultIdentityRequired  Code = 1107
 
-	InvalidWechatCode     Code = 1200
-	AuthNotConfigured     Code = 1201
-	ChannelNotConfigured  Code = 1202
-	IdentityNotConfigured Code = 1203
-	AdminAccountExists    Code = 1300
-	AdminRoleInvalid      Code = 1301
+	InvalidWechatCode       Code = 1200
+	AuthNotConfigured       Code = 1201
+	ChannelNotConfigured    Code = 1202
+	IdentityNotConfigured   Code = 1203
+	WalletUnavailable       Code = 1400
+	IdempotencyConflict     Code = 1401
+	RechargeStateConflict   Code = 1402
+	RechargePackageConflict Code = 1403
+	AdminAccountExists      Code = 1300
+	AdminRoleInvalid        Code = 1301
 
 	InternalError Code = 5000
 )
@@ -38,26 +42,30 @@ type Definition struct {
 }
 
 var definitions = map[Code]Definition{
-	Success:                {http.StatusOK, ""},
-	InvalidArgument:        {http.StatusBadRequest, "请求参数无效"},
-	NotFound:               {http.StatusNotFound, "资源不存在"},
-	MethodNotAllowed:       {http.StatusMethodNotAllowed, "请求方法不支持"},
-	NotImplemented:         {http.StatusNotImplemented, "接口业务逻辑尚未实现"},
-	AuthRequired:           {http.StatusUnauthorized, "请先登录"},
-	InvalidToken:           {http.StatusUnauthorized, "登录态无效或已过期"},
-	Forbidden:              {http.StatusForbidden, "没有访问权限"},
-	AccountDisabled:        {http.StatusForbidden, "账号当前不可登录"},
-	CoachNotVerified:       {http.StatusForbidden, "当前身份不具备陪练角色"},
-	IdempotencyKeyRequired: {http.StatusBadRequest, "请提供有效的Idempotency-Key"},
-	InvalidWechatCode:      {http.StatusUnauthorized, "微信登录凭据无效或已使用"},
-	AuthNotConfigured:      {http.StatusServiceUnavailable, "登录服务暂时不可用"},
-	ChannelNotConfigured:   {http.StatusServiceUnavailable, "渠道服务暂时不可用"},
-	IdentityNotConfigured:  {http.StatusServiceUnavailable, "实名认证服务暂时不可用"},
-	InternalError:          {http.StatusInternalServerError, "系统内部错误"},
-	InvalidCredentials:     {http.StatusUnauthorized, "账号或密码错误"},
-	AdultIdentityRequired:  {http.StatusForbidden, "下单前请完成实名认证并确认已满18岁"},
-	AdminAccountExists:     {http.StatusConflict, "管理员账号已存在"},
-	AdminRoleInvalid:       {http.StatusBadRequest, "角色不存在或未启用"},
+	Success:                 {http.StatusOK, ""},
+	InvalidArgument:         {http.StatusBadRequest, "请求参数无效"},
+	NotFound:                {http.StatusNotFound, "资源不存在"},
+	MethodNotAllowed:        {http.StatusMethodNotAllowed, "请求方法不支持"},
+	NotImplemented:          {http.StatusNotImplemented, "接口业务逻辑尚未实现"},
+	AuthRequired:            {http.StatusUnauthorized, "请先登录"},
+	InvalidToken:            {http.StatusUnauthorized, "登录态无效或已过期"},
+	Forbidden:               {http.StatusForbidden, "没有访问权限"},
+	AccountDisabled:         {http.StatusForbidden, "账号当前不可登录"},
+	CoachNotVerified:        {http.StatusForbidden, "当前身份不具备陪练角色"},
+	IdempotencyKeyRequired:  {http.StatusBadRequest, "请提供有效的Idempotency-Key"},
+	InvalidWechatCode:       {http.StatusUnauthorized, "微信登录凭据无效或已使用"},
+	AuthNotConfigured:       {http.StatusServiceUnavailable, "登录服务暂时不可用"},
+	ChannelNotConfigured:    {http.StatusServiceUnavailable, "渠道服务暂时不可用"},
+	IdentityNotConfigured:   {http.StatusServiceUnavailable, "实名认证服务暂时不可用"},
+	WalletUnavailable:       {http.StatusForbidden, "钱包当前不可用"},
+	IdempotencyConflict:     {http.StatusConflict, "幂等键对应的请求参数不一致"},
+	RechargeStateConflict:   {http.StatusConflict, "充值单状态冲突"},
+	RechargePackageConflict: {http.StatusConflict, "充值套餐版本冲突"},
+	InternalError:           {http.StatusInternalServerError, "系统内部错误"},
+	InvalidCredentials:      {http.StatusUnauthorized, "账号或密码错误"},
+	AdultIdentityRequired:   {http.StatusForbidden, "下单前请完成实名认证并确认已满18岁"},
+	AdminAccountExists:      {http.StatusConflict, "管理员账号已存在"},
+	AdminRoleInvalid:        {http.StatusBadRequest, "角色不存在或未启用"},
 }
 
 func Lookup(code Code) (Definition, bool) {

@@ -54,3 +54,18 @@ identity:
   app_id: # 渠道应用标识
   api_key: # 生产环境请通过 NX_IDENTITY__API_KEY 注入
   timeout: 5s
+
+wallet:
+  asset_code: DD_COIN
+  recharge_expire: 30m
+  close_interval: 30s # 超时充值单扫描间隔
+  close_retry_delay: 1m # 渠道结果不确定或处理冲突后的最短重试间隔
+  close_batch_size: 100 # 单轮最多处理数量
+
+# 本地充值适配器仅供开发和自动化测试；生产环境接入真实支付渠道后替换。
+wallet_payment:
+  provider: # 开发环境可填 LOCAL
+  merchant_id:
+  app_id:
+  callback_secret: # LOCAL 回调 HMAC 密钥，至少32字节
+  prepay_expire: 30m

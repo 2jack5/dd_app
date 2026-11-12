@@ -11,15 +11,17 @@ import (
 )
 
 type Config struct {
-	Env       string   `mapstructure:"env"`
-	HTTP      HTTP     `mapstructure:"http"`
-	OrderHTTP HTTP     `mapstructure:"order_http"`
-	Log       Log      `mapstructure:"log"`
-	PG        PG       `mapstructure:"pg"`
-	Redis     Redis    `mapstructure:"redis"`
-	Auth      Auth     `mapstructure:"auth"`
-	Wechat    Wechat   `mapstructure:"wechat"`
-	Identity  Identity `mapstructure:"identity"`
+	Env           string        `mapstructure:"env"`
+	HTTP          HTTP          `mapstructure:"http"`
+	OrderHTTP     HTTP          `mapstructure:"order_http"`
+	Log           Log           `mapstructure:"log"`
+	PG            PG            `mapstructure:"pg"`
+	Redis         Redis         `mapstructure:"redis"`
+	Auth          Auth          `mapstructure:"auth"`
+	Wechat        Wechat        `mapstructure:"wechat"`
+	Identity      Identity      `mapstructure:"identity"`
+	Wallet        Wallet        `mapstructure:"wallet"`
+	WalletPayment WalletPayment `mapstructure:"wallet_payment"`
 }
 
 type HTTP struct {
@@ -75,6 +77,22 @@ type Identity struct {
 	AppID     string        `mapstructure:"app_id"`
 	APIKey    string        `mapstructure:"api_key"`
 	Timeout   time.Duration `mapstructure:"timeout"`
+}
+
+type WalletPayment struct {
+	Provider       string        `mapstructure:"provider"`
+	MerchantID     string        `mapstructure:"merchant_id"`
+	AppID          string        `mapstructure:"app_id"`
+	CallbackSecret string        `mapstructure:"callback_secret"`
+	PrepayExpire   time.Duration `mapstructure:"prepay_expire"`
+}
+
+type Wallet struct {
+	AssetCode       string        `mapstructure:"asset_code"`
+	RechargeExpire  time.Duration `mapstructure:"recharge_expire"`
+	CloseInterval   time.Duration `mapstructure:"close_interval"`
+	CloseRetryDelay time.Duration `mapstructure:"close_retry_delay"`
+	CloseBatchSize  int           `mapstructure:"close_batch_size"`
 }
 
 // Load 加载配置。默认优先读取config/config.yaml，兼容旧的configs目录。

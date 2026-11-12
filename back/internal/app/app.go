@@ -17,12 +17,12 @@ import (
 	"dd_web/back/internal/service"
 
 	"github.com/go-kratos/kratos/v3"
-	khttp "github.com/go-kratos/kratos/v3/transport/http"
+	"github.com/go-kratos/kratos/v3/transport"
 	"github.com/redis/go-redis/v9"
 )
 
 func RunBusiness() error {
-	return run("dongdong-business-api", func(cfg *config.Config, dataSet *data.Data, redisClient *redis.Client) (*khttp.Server, time.Duration, error) {
+	return run("dongdong-business-api", func(cfg *config.Config, dataSet *data.Data, redisClient *redis.Client) ([]transport.Server, time.Duration, error) {
 		catalog := biz.NewCatalogUsecase(data.NewCatalogRepo(dataSet))
 		auth := newAuthUsecase(cfg, dataSet, redisClient)
 		adminUsecase := newAdminUsecase(cfg, dataSet, redisClient)
@@ -33,20 +33,39 @@ func RunBusiness() error {
 			Admin: adminUsecase,
 		}
 		httpServer, err := server.NewBusinessHTTPServer(cfg, svc, authenticator)
-		return httpServer, cfg.HTTP.ShutdownTimeout, err
+		if err != nil {
+			return nil, cfg.HTTP.ShutdownTimeout, err
+		}
+		return []transport.Server{httpServer}, cfg.HTTP.ShutdownTimeout, nil
 	})
 }
 
 func RunOrder() error {
-	return run("dongdong-order-api", func(cfg *config.Config, dataSet *data.Data, redisClient *redis.Client) (*khttp.Server, time.Duration, error) {
+	return run("dongdong-order-api", func(cfg *config.Config, dataSet *data.Data, redisClient *redis.Client) ([]transport.Server, time.Duration, error) {
 		identity := biz.NewIdentityUsecase(nil, data.NewIdentityRepo(dataSet))
-		svc := service.NewOrderService(biz.NewSystemUsecase(data.NewDependencyHealth(dataSet, redisClient)), identity)
+		var rechargeProviders []biz.RechargeProvider
+		if strings.EqualFold(strings.TrimSpace(cfg.WalletPayment.Provider), "LOCAL") {
+			if strings.EqualFold(cfg.Env, "prod") {
+				return nil, 0, fmt.Errorf("LOCAL wallet payment provider is not allowed in prod")
+			}
+			provider, err := infra.NewLocalRechargeProvider(cfg.WalletPayment)
+			if err != nil {
+				return nil, 0, fmt.Errorf("initialize wallet payment provider: %w", err)
+			}
+			rechargeProviders = append(rechargeProviders, provider)
+		}
+		wallet := biz.NewWalletUsecaseWithOptions(data.NewWalletRepo(dataSet), biz.WalletOptions{AssetCode: cfg.Wallet.AssetCode, RechargeExpire: cfg.Wallet.RechargeExpire}, rechargeProviders...)
+		svc := service.NewOrderServiceWithWallet(biz.NewSystemUsecase(data.NewDependencyHealth(dataSet, redisClient)), identity, wallet)
 		authenticator := biz.ScopedAuthenticator{
 			User:  newAuthUsecase(cfg, dataSet, redisClient),
 			Admin: newAdminUsecase(cfg, dataSet, redisClient),
 		}
 		httpServer, err := server.NewOrderHTTPServer(cfg, svc, authenticator)
-		return httpServer, cfg.OrderHTTP.ShutdownTimeout, err
+		if err != nil {
+			return nil, cfg.OrderHTTP.ShutdownTimeout, err
+		}
+		closer := server.NewWalletRechargeCloser(wallet, infra.L(), cfg.Wallet.CloseInterval, cfg.Wallet.CloseRetryDelay, cfg.Wallet.CloseBatchSize)
+		return []transport.Server{httpServer, closer}, cfg.OrderHTTP.ShutdownTimeout, nil
 	})
 }
 
@@ -69,7 +88,7 @@ func newAdminUsecase(cfg *config.Config, dataSet *data.Data, redisClient *redis.
 	)
 }
 
-type serverBuilder func(*config.Config, *data.Data, *redis.Client) (*khttp.Server, time.Duration, error)
+type serverBuilder func(*config.Config, *data.Data, *redis.Client) ([]transport.Server, time.Duration, error)
 
 func run(name string, build serverBuilder) error {
 	cfg, err := config.Load("")
@@ -102,11 +121,11 @@ func run(name string, build serverBuilder) error {
 			infra.L().Error("close redis failed", "error", err)
 		}
 	}()
-	httpServer, stopTimeout, err := build(cfg, data.NewData(pg), redisClient)
+	servers, stopTimeout, err := build(cfg, data.NewData(pg), redisClient)
 	if err != nil {
 		return err
 	}
-	opts := []kratos.Option{kratos.Name(name), kratos.Version("0.3.0"), kratos.Logger(infra.L()), kratos.Server(httpServer)}
+	opts := []kratos.Option{kratos.Name(name), kratos.Version("0.3.0"), kratos.Logger(infra.L()), kratos.Server(servers...)}
 	if stopTimeout > 0 {
 		opts = append(opts, kratos.StopTimeout(stopTimeout))
 	}

@@ -7,6 +7,11 @@ import (
 type OrderService struct {
 	system   *biz.SystemUsecase
 	identity *biz.IdentityUsecase
+	wallet   *biz.WalletUsecase
+}
+
+func NewOrderServiceWithWallet(system *biz.SystemUsecase, identity *biz.IdentityUsecase, wallet *biz.WalletUsecase) *OrderService {
+	return &OrderService{system: system, identity: identity, wallet: wallet}
 }
 
 func NewOrderService(system *biz.SystemUsecase, identity ...*biz.IdentityUsecase) *OrderService {

@@ -94,16 +94,18 @@ var orderOperations = map[string]bool{
 	"coach.orders": true, "coach.orderDetail": true, "coach.orderEvents": true, "coach.acceptOrder": true, "coach.rejectOrder": true, "coach.startOrder": true, "coach.completeOrder": true, "coach.earningsSummary": true, "coach.earningsItems": true, "coach.settlements": true, "coach.settlementDetail": true, "coach.supplements": true, "coach.settlementAccount": true, "coach.onboarding": true,
 	"admin.orders": true, "admin.orderDetail": true, "admin.orderEvents": true, "admin.refunds": true, "admin.refundDetail": true, "admin.decideRefund": true, "admin.cases": true, "admin.caseDetail": true, "admin.assignCase": true, "admin.caseMessage": true, "admin.resolveCase": true, "admin.reopenCase": true, "admin.dashboard": true, "admin.payments": true, "admin.settlementItems": true, "admin.batches": true, "admin.createBatch": true, "admin.adjustments": true, "admin.createAdjustment": true, "admin.supplements": true, "admin.createSupplement": true, "admin.retrySupplement": true, "admin.createReconciliation": true, "admin.reconciliationRuns": true, "admin.reconciliationDetail": true, "admin.reconciliationDiffs": true, "admin.resolveDiff": true, "admin.commissionRules": true, "admin.createCommission": true, "admin.publishCommission": true, "admin.businessRules": true, "admin.createBusinessRule": true, "admin.publishBusinessRule": true,
 	"callback.payment": true, "callback.refund": true, "callback.settlement": true,
+	"callback.walletRecharge":      true,
+	"admin.walletRechargePackages": true, "admin.createRechargePackage": true, "admin.updateRechargePackage": true,
 }
 
 func isOrder(op string) bool {
 	prefix := strings.Split(op, ".")[0]
-	return orderOperations[op] || prefix == "trade" || prefix == "payment" || prefix == "refund" || prefix == "review" || prefix == "case"
+	return orderOperations[op] || prefix == "trade" || prefix == "payment" || prefix == "refund" || prefix == "review" || prefix == "case" || prefix == "wallet"
 }
 
 func TestGeneratedRoutesAreSplitAcrossServices(t *testing.T) {
 	routes := readContract(t)
-	if len(routes) != 180 {
+	if len(routes) != 190 {
 		t.Fatalf("路由契约数量错误: %d", len(routes))
 	}
 	permissions := map[string]bool{}

@@ -3,7 +3,7 @@
   "info": {
     "title": "东东电竞APP后端接口规划及框架",
     "version": "0.3.0",
-    "description": "按PRD与三端截图设计的180个接口。API契约拆分于api/business/v1、api/order/v1和api/common/v1，由Kratos v3生成HTTP binding；业务服务与订单服务独立运行，并采用server、service、biz、data标准分层。6项基础处理已实现，其余服务方法明确返回501。"
+    "description": "按PRD、三端截图及充值钱包方案设计的190个接口。API契约拆分于api/business/v1、api/order/v1和api/common/v1，由Kratos v3生成HTTP binding；业务服务与订单服务独立运行，并采用server、service、biz、data标准分层。钱包查询、充值套餐、充值单、流水及充值回调已实现，真实支付能力由渠道适配器配置。"
   },
   "servers": [
     {
@@ -25350,6 +25350,542 @@
           }
         ]
       }
+    },
+    "/api/v1/wallet": {
+      "get": {
+        "operationId": "wallet.current",
+        "summary": "查询当前用户钱包",
+        "tags": [
+          "user / 钱包"
+        ],
+        "x-implementation": "implemented",
+        "x-permission": "",
+        "x-idempotent": false,
+        "responses": {
+          "200": {
+            "description": "成功响应",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或凭据无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/wallet/recharge-packages": {
+      "get": {
+        "operationId": "wallet.rechargePackages",
+        "summary": "查询有效充值套餐",
+        "tags": [
+          "user / 钱包"
+        ],
+        "x-implementation": "implemented",
+        "x-permission": "",
+        "x-idempotent": false,
+        "responses": {
+          "200": {
+            "description": "成功响应",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或凭据无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/wallet/recharges": {
+      "post": {
+        "operationId": "wallet.rechargeCreate",
+        "summary": "创建钱包充值单",
+        "tags": [
+          "user / 钱包"
+        ],
+        "x-implementation": "implemented",
+        "x-permission": "",
+        "x-idempotent": true,
+        "responses": {
+          "200": {
+            "description": "成功响应",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或凭据无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RechargeCreate"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "wallet.rechargeList",
+        "summary": "查询充值记录",
+        "tags": [
+          "user / 钱包"
+        ],
+        "x-implementation": "implemented",
+        "x-permission": "",
+        "x-idempotent": false,
+        "responses": {
+          "200": {
+            "description": "成功响应",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或凭据无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/wallet/recharges/{recharge_id}": {
+      "get": {
+        "operationId": "wallet.rechargeDetail",
+        "summary": "查询充值单详情",
+        "tags": [
+          "user / 钱包"
+        ],
+        "x-implementation": "implemented",
+        "x-permission": "",
+        "x-idempotent": false,
+        "responses": {
+          "200": {
+            "description": "成功响应",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或凭据无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "recharge_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/wallet/transactions": {
+      "get": {
+        "operationId": "wallet.transactions",
+        "summary": "查询钱包流水",
+        "tags": [
+          "user / 钱包"
+        ],
+        "x-implementation": "implemented",
+        "x-permission": "",
+        "x-idempotent": false,
+        "responses": {
+          "200": {
+            "description": "成功响应",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或凭据无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/callbacks/wallet/{provider}": {
+      "post": {
+        "operationId": "callback.walletRecharge",
+        "summary": "钱包充值渠道通知",
+        "tags": [
+          "callback / 渠道通知"
+        ],
+        "x-implementation": "implemented",
+        "x-permission": "",
+        "x-idempotent": false,
+        "responses": {
+          "200": {
+            "description": "成功响应",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或凭据无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WalletCallback"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/wallet/recharge-packages": {
+      "get": {
+        "operationId": "admin.walletRechargePackages",
+        "summary": "查询全部充值套餐",
+        "tags": [
+          "admin / 钱包充值"
+        ],
+        "x-implementation": "implemented",
+        "x-permission": "wallet.recharge.read",
+        "x-idempotent": false,
+        "responses": {
+          "200": {
+            "description": "成功响应",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或凭据无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "幂等键或版本冲突",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "admin.createRechargePackage",
+        "summary": "创建充值套餐",
+        "tags": [
+          "admin / 钱包充值"
+        ],
+        "x-implementation": "implemented",
+        "x-permission": "wallet.recharge.write",
+        "x-idempotent": true,
+        "responses": {
+          "200": {
+            "description": "成功响应",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或凭据无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "幂等键或版本冲突",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RechargePackage"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/wallet/recharge-packages/{package_id}": {
+      "put": {
+        "operationId": "admin.updateRechargePackage",
+        "summary": "更新充值套餐",
+        "tags": [
+          "admin / 钱包充值"
+        ],
+        "x-implementation": "implemented",
+        "x-permission": "wallet.recharge.write",
+        "x-idempotent": true,
+        "responses": {
+          "200": {
+            "description": "成功响应",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或凭据无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "幂等键或版本冲突",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RechargePackage"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "package_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -28758,6 +29294,82 @@
           "dispute_status"
         ],
         "description": "订单当事人详情契约；服务快照字段仍须在该业务实现时细化，敏感字段按访问人裁剪。"
+      },
+      "RechargeCreate": {
+        "type": "object",
+        "required": [
+          "package_id",
+          "provider",
+          "client_type"
+        ],
+        "properties": {
+          "package_id": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "client_type": {
+            "type": "string"
+          }
+        }
+      },
+      "WalletCallback": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "RechargePackage": {
+        "type": "object",
+        "required": [
+          "name",
+          "pay_amount",
+          "package_multiplier",
+          "currency",
+          "asset_code",
+          "status"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "pay_amount": {
+            "type": "string",
+            "pattern": "^[0-9]+(\\.[0-9]{1,2})?$"
+          },
+          "package_multiplier": {
+            "type": "string",
+            "pattern": "^[0-9]+(\\.[0-9]{1,4})?$"
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "CNY"
+            ]
+          },
+          "asset_code": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ENABLED",
+              "DISABLED"
+            ]
+          },
+          "effective_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
       }
     }
   },

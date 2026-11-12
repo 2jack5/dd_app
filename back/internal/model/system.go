@@ -23,16 +23,16 @@ func (BusinessRuleVersion) TableName() string { return "business_rule_versions" 
 // IdempotencyKey 请求幂等。
 type IdempotencyKey struct {
 	Base
-	ActorType       IdempotencyKeyActorType `gorm:"column:actor_type;type:varchar(16);not null;comment:USER/ADMIN/SYSTEM" json:"actor_type"`                       // USER/ADMIN/SYSTEM
-	ActorID         int64                   `gorm:"column:actor_id;type:bigint;not null;comment:主体 ID；系统使用固定主体" json:"actor_id,string"`                            // 主体 ID；系统使用固定主体
-	Operation       string                  `gorm:"column:operation;type:varchar(64);not null;comment:接口操作" json:"operation"`                                      // 接口操作
-	BizKey          string                  `gorm:"column:biz_key;type:varchar(128);not null;comment:客户端幂等键" json:"biz_key"`                                       // 客户端幂等键
-	RequestHash     string                  `gorm:"column:request_hash;type:varchar(64);not null;comment:规范化请求摘要" json:"request_hash"`                             // 规范化请求摘要
-	Status          IdempotencyKeyStatus    `gorm:"column:status;type:varchar(16);not null;comment:PROCESSING/SUCCEEDED/FAILED" json:"status"`                     // PROCESSING/SUCCEEDED/FAILED
-	ResourceType    *string                 `gorm:"column:resource_type;type:varchar(32);comment:结果资源" json:"resource_type"`                                       // 结果资源
-	ResourceID      *int64                  `gorm:"column:resource_id;type:bigint;comment:结果 ID" json:"resource_id,string"`                                        // 结果 ID
-	ResponseSummary JSONB                   `gorm:"column:response_summary;type:jsonb;not null;default:'{}'::jsonb;comment:默认 {}；脱敏可重放结果" json:"response_summary"` // 默认 {}；脱敏可重放结果
-	ExpiresAt       time.Time               `gorm:"column:expires_at;type:timestamptz;not null;comment:过期清理时间" json:"expires_at"`                                  // 过期清理时间
+	ActorType       IdempotencyKeyActorType `gorm:"column:actor_type;type:varchar(16);not null;uniqueIndex:uk_idempotency_actor_operation_key,priority:1;comment:USER/ADMIN/SYSTEM" json:"actor_type"` // USER/ADMIN/SYSTEM
+	ActorID         int64                   `gorm:"column:actor_id;type:bigint;not null;uniqueIndex:uk_idempotency_actor_operation_key,priority:2;comment:主体 ID；系统使用固定主体" json:"actor_id,string"`      // 主体 ID；系统使用固定主体
+	Operation       string                  `gorm:"column:operation;type:varchar(64);not null;uniqueIndex:uk_idempotency_actor_operation_key,priority:3;comment:接口操作" json:"operation"`                // 接口操作
+	BizKey          string                  `gorm:"column:biz_key;type:varchar(128);not null;uniqueIndex:uk_idempotency_actor_operation_key,priority:4;comment:客户端幂等键" json:"biz_key"`                 // 客户端幂等键
+	RequestHash     string                  `gorm:"column:request_hash;type:varchar(64);not null;comment:规范化请求摘要" json:"request_hash"`                                                                 // 规范化请求摘要
+	Status          IdempotencyKeyStatus    `gorm:"column:status;type:varchar(16);not null;comment:PROCESSING/SUCCEEDED/FAILED" json:"status"`                                                         // PROCESSING/SUCCEEDED/FAILED
+	ResourceType    *string                 `gorm:"column:resource_type;type:varchar(32);comment:结果资源" json:"resource_type"`                                                                           // 结果资源
+	ResourceID      *int64                  `gorm:"column:resource_id;type:bigint;comment:结果 ID" json:"resource_id,string"`                                                                            // 结果 ID
+	ResponseSummary JSONB                   `gorm:"column:response_summary;type:jsonb;not null;default:'{}'::jsonb;comment:默认 {}；脱敏可重放结果" json:"response_summary"`                                     // 默认 {}；脱敏可重放结果
+	ExpiresAt       time.Time               `gorm:"column:expires_at;type:timestamptz;not null;comment:过期清理时间" json:"expires_at"`                                                                      // 过期清理时间
 }
 
 func (IdempotencyKey) TableName() string { return "idempotency_keys" }

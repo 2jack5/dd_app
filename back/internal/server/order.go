@@ -18,5 +18,8 @@ func NewOrderHTTPServer(cfg *config.Config, svc *service.OrderService, auth biz.
 	orderv1.RegisterCoachOrderServiceHTTPServer(srv, svc)
 	orderv1.RegisterAdminOrderServiceHTTPServer(srv, svc)
 	orderv1.RegisterCallbackServiceHTTPServer(srv, svc)
+	orderv1.RegisterWalletServiceHTTPServer(srv, svc)
+	orderv1.RegisterWalletCallbackServiceHTTPServer(srv, svc)
+	orderv1.RegisterAdminWalletServiceHTTPServer(srv, svc)
 	return srv, nil
 }
