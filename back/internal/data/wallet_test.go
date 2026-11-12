@@ -29,14 +29,13 @@ func newWalletTestRepo(t *testing.T) (*WalletRepo, *gorm.DB, model.RechargePacka
 			asset_code VARCHAR(32) NOT NULL, status VARCHAR(16) NOT NULL, effective_at DATETIME, expires_at DATETIME, version INTEGER NOT NULL
 		)`,
 		`CREATE TABLE wallet_accounts (
-			id INTEGER PRIMARY KEY AUTOINCREMENT, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-			user_id BIGINT NOT NULL, asset_code VARCHAR(32) NOT NULL, available_balance DECIMAL(20,2) NOT NULL,
+			user_id BIGINT PRIMARY KEY, asset_code VARCHAR(32) NOT NULL, available_balance DECIMAL(20,2) NOT NULL,
 			frozen_balance DECIMAL(20,2) NOT NULL, status VARCHAR(16) NOT NULL, version INTEGER NOT NULL,
-			UNIQUE(user_id, asset_code)
+			created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 		)`,
 		`CREATE TABLE wallet_recharges (
 			id INTEGER PRIMARY KEY AUTOINCREMENT, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-			recharge_no VARCHAR(40) NOT NULL UNIQUE, user_id BIGINT NOT NULL, wallet_id BIGINT, package_id BIGINT NOT NULL,
+			recharge_no VARCHAR(40) NOT NULL UNIQUE, user_id BIGINT NOT NULL, package_id BIGINT NOT NULL,
 			package_version INTEGER NOT NULL, pay_amount DECIMAL(20,2) NOT NULL, currency CHAR(3) NOT NULL,
 			package_multiplier DECIMAL(10,4) NOT NULL, credited_amount DECIMAL(20,2) NOT NULL, asset_code VARCHAR(32) NOT NULL,
 			provider VARCHAR(32) NOT NULL, merchant_id VARCHAR(64) NOT NULL, app_id VARCHAR(64) NOT NULL, client_type VARCHAR(32) NOT NULL,
@@ -46,10 +45,10 @@ func newWalletTestRepo(t *testing.T) (*WalletRepo, *gorm.DB, model.RechargePacka
 		)`,
 		`CREATE TABLE wallet_ledger_entries (
 			id INTEGER PRIMARY KEY AUTOINCREMENT, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-			wallet_id BIGINT NOT NULL, user_id BIGINT NOT NULL, asset_code VARCHAR(32) NOT NULL, entry_type VARCHAR(32) NOT NULL,
+			user_id BIGINT NOT NULL, asset_code VARCHAR(32) NOT NULL, entry_type VARCHAR(32) NOT NULL,
 			biz_type VARCHAR(32) NOT NULL, biz_id BIGINT NOT NULL, available_delta DECIMAL(20,2) NOT NULL,
 			frozen_delta DECIMAL(20,2) NOT NULL, available_after DECIMAL(20,2) NOT NULL, frozen_after DECIMAL(20,2) NOT NULL,
-			occurred_at DATETIME NOT NULL, UNIQUE(wallet_id, entry_type, biz_type, biz_id)
+			occurred_at DATETIME NOT NULL, UNIQUE(user_id, asset_code, entry_type, biz_type, biz_id)
 		)`,
 		`CREATE TABLE wallet_recharge_events (
 			id INTEGER PRIMARY KEY AUTOINCREMENT, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

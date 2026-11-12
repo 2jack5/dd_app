@@ -378,10 +378,7 @@ func (r *WalletRepo) CreditRecharge(ctx context.Context, verified biz.VerifiedRe
 			if err := tx.First(&recharge, *event.RechargeID).Error; err != nil {
 				return err
 			}
-			if recharge.WalletID == nil {
-				return biz.ErrRechargeStateConflict
-			}
-			if err := tx.First(&wallet, *recharge.WalletID).Error; err != nil {
+			if err := tx.Where("user_id = ? AND asset_code = ?", recharge.UserID, recharge.AssetCode).First(&wallet).Error; err != nil {
 				return err
 			}
 			replayed = true
@@ -403,10 +400,10 @@ func (r *WalletRepo) CreditRecharge(ctx context.Context, verified biz.VerifiedRe
 			return nil
 		}
 		if recharge.Status == model.WalletRechargeStatusSucceeded {
-			if recharge.ProviderTransactionID == nil || *recharge.ProviderTransactionID != verified.ProviderTransactionID || recharge.WalletID == nil {
+			if recharge.ProviderTransactionID == nil || *recharge.ProviderTransactionID != verified.ProviderTransactionID {
 				return biz.ErrRechargeStateConflict
 			}
-			if err := tx.First(&wallet, *recharge.WalletID).Error; err != nil {
+			if err := tx.Where("user_id = ? AND asset_code = ?", recharge.UserID, recharge.AssetCode).First(&wallet).Error; err != nil {
 				return err
 			}
 			if err := tx.Model(&event).Updates(map[string]any{"recharge_id": recharge.ID, "status": model.WalletRechargeEventStatusProcessed, "handled_at": now}).Error; err != nil {
@@ -439,7 +436,7 @@ func (r *WalletRepo) CreditRecharge(ctx context.Context, verified biz.VerifiedRe
 		if newBalance.IsNegative() || newBalance.GreaterThan(limit) {
 			return biz.ErrInvalidArgument
 		}
-		result := tx.Model(&model.WalletAccount{}).Where("id = ? AND version = ?", wallet.ID, wallet.Version).Updates(map[string]any{"available_balance": newBalance, "version": wallet.Version + 1, "updated_at": now})
+		result := tx.Model(&model.WalletAccount{}).Where("user_id = ? AND version = ?", wallet.UserID, wallet.Version).Updates(map[string]any{"available_balance": newBalance, "version": wallet.Version + 1, "updated_at": now})
 		if result.Error != nil {
 			return result.Error
 		}
@@ -447,7 +444,7 @@ func (r *WalletRepo) CreditRecharge(ctx context.Context, verified biz.VerifiedRe
 			return biz.ErrRechargeStateConflict
 		}
 		wallet.AvailableBalance, wallet.Version = newBalance, wallet.Version+1
-		ledger := model.WalletLedgerEntry{WalletID: wallet.ID, UserID: recharge.UserID, AssetCode: recharge.AssetCode, EntryType: "RECHARGE_CREDIT", BizType: "RECHARGE", BizID: recharge.ID, AvailableDelta: recharge.CreditedAmount, FrozenDelta: decimal.Zero, AvailableAfter: wallet.AvailableBalance, FrozenAfter: wallet.FrozenBalance, OccurredAt: now}
+		ledger := model.WalletLedgerEntry{UserID: recharge.UserID, AssetCode: recharge.AssetCode, EntryType: "RECHARGE_CREDIT", BizType: "RECHARGE", BizID: recharge.ID, AvailableDelta: recharge.CreditedAmount, FrozenDelta: decimal.Zero, AvailableAfter: wallet.AvailableBalance, FrozenAfter: wallet.FrozenBalance, OccurredAt: now}
 		if err := tx.Create(&ledger).Error; err != nil {
 			return err
 		}
@@ -455,14 +452,14 @@ func (r *WalletRepo) CreditRecharge(ctx context.Context, verified biz.VerifiedRe
 		if paidAt.IsZero() {
 			paidAt = now
 		}
-		result = tx.Model(&model.WalletRecharge{}).Where("id = ? AND version = ?", recharge.ID, recharge.Version).Updates(map[string]any{"wallet_id": wallet.ID, "provider_transaction_id": verified.ProviderTransactionID, "status": model.WalletRechargeStatusSucceeded, "paid_at": paidAt, "credited_at": now, "version": recharge.Version + 1, "updated_at": now})
+		result = tx.Model(&model.WalletRecharge{}).Where("id = ? AND version = ?", recharge.ID, recharge.Version).Updates(map[string]any{"provider_transaction_id": verified.ProviderTransactionID, "status": model.WalletRechargeStatusSucceeded, "paid_at": paidAt, "credited_at": now, "version": recharge.Version + 1, "updated_at": now})
 		if result.Error != nil {
 			return result.Error
 		}
 		if result.RowsAffected != 1 {
 			return biz.ErrRechargeStateConflict
 		}
-		recharge.WalletID, recharge.ProviderTransactionID, recharge.Status, recharge.PaidAt, recharge.CreditedAt, recharge.Version = &wallet.ID, &verified.ProviderTransactionID, model.WalletRechargeStatusSucceeded, &paidAt, &now, recharge.Version+1
+		recharge.ProviderTransactionID, recharge.Status, recharge.PaidAt, recharge.CreditedAt, recharge.Version = &verified.ProviderTransactionID, model.WalletRechargeStatusSucceeded, &paidAt, &now, recharge.Version+1
 		if err := tx.Model(&event).Updates(map[string]any{"recharge_id": recharge.ID, "status": model.WalletRechargeEventStatusProcessed, "handled_at": now}).Error; err != nil {
 			return err
 		}

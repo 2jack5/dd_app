@@ -49,15 +49,16 @@ type RechargePackage struct {
 
 func (RechargePackage) TableName() string { return "recharge_packages" }
 
-// WalletAccount 保存用户钱包余额快照。
+// WalletAccount 保存用户唯一钱包的余额快照；user_id 同时作为钱包主键。
 type WalletAccount struct {
-	Base
-	UserID           int64               `gorm:"column:user_id;type:bigint;not null;uniqueIndex:uk_wallet_user_asset,priority:1;comment:用户ID" json:"user_id,string"`
-	AssetCode        string              `gorm:"column:asset_code;type:varchar(32);not null;uniqueIndex:uk_wallet_user_asset,priority:2;comment:钱包资产代码" json:"asset_code"`
+	UserID           int64               `gorm:"column:user_id;type:bigint;primaryKey;autoIncrement:false;comment:用户ID及钱包主键" json:"user_id,string"`
+	AssetCode        string              `gorm:"column:asset_code;type:varchar(32);not null;comment:钱包资产代码，首期固定DD_COIN" json:"asset_code"`
 	AvailableBalance decimal.Decimal     `gorm:"column:available_balance;type:decimal(20,2);not null;default:0;comment:可用余额" json:"available_balance"`
 	FrozenBalance    decimal.Decimal     `gorm:"column:frozen_balance;type:decimal(20,2);not null;default:0;comment:冻结余额" json:"frozen_balance"`
 	Status           WalletAccountStatus `gorm:"column:status;type:varchar(16);not null;default:'ACTIVE';comment:ACTIVE/FROZEN/CLOSED" json:"status"`
 	Version          int32               `gorm:"column:version;type:integer;not null;default:1;comment:并发版本" json:"version"`
+	CreatedAt        time.Time           `gorm:"column:created_at;type:timestamptz;not null;default:CURRENT_TIMESTAMP;autoCreateTime;comment:创建时间" json:"created_at"`
+	UpdatedAt        time.Time           `gorm:"column:updated_at;type:timestamptz;not null;default:CURRENT_TIMESTAMP;autoUpdateTime;comment:更新时间" json:"updated_at"`
 }
 
 func (WalletAccount) TableName() string { return "wallet_accounts" }
@@ -67,7 +68,6 @@ type WalletRecharge struct {
 	Base
 	RechargeNo            string               `gorm:"column:recharge_no;type:varchar(40);not null;uniqueIndex:uk_wallet_recharge_no;comment:充值编号" json:"recharge_no"`
 	UserID                int64                `gorm:"column:user_id;type:bigint;not null;index:idx_wallet_recharges_user_id;comment:发起用户" json:"user_id,string"`
-	WalletID              *int64               `gorm:"column:wallet_id;type:bigint;comment:成功入账钱包ID" json:"wallet_id,string"`
 	PackageID             int64                `gorm:"column:package_id;type:bigint;not null;comment:充值套餐ID" json:"package_id,string"`
 	PackageVersion        int32                `gorm:"column:package_version;type:integer;not null;comment:套餐版本快照" json:"package_version"`
 	PayAmount             decimal.Decimal      `gorm:"column:pay_amount;type:decimal(20,2);not null;comment:人民币支付金额快照" json:"pay_amount"`
@@ -95,12 +95,11 @@ func (WalletRecharge) TableName() string { return "wallet_recharges" }
 // WalletLedgerEntry 是只追加的钱包资金事实。
 type WalletLedgerEntry struct {
 	EventBase
-	WalletID       int64           `gorm:"column:wallet_id;type:bigint;not null;uniqueIndex:uk_wallet_ledger_biz,priority:1;comment:钱包ID" json:"wallet_id,string"`
-	UserID         int64           `gorm:"column:user_id;type:bigint;not null;index:idx_wallet_ledger_user_id;comment:用户ID" json:"user_id,string"`
-	AssetCode      string          `gorm:"column:asset_code;type:varchar(32);not null;comment:钱包资产代码" json:"asset_code"`
-	EntryType      string          `gorm:"column:entry_type;type:varchar(32);not null;uniqueIndex:uk_wallet_ledger_biz,priority:2;comment:流水类型" json:"entry_type"`
-	BizType        string          `gorm:"column:biz_type;type:varchar(32);not null;uniqueIndex:uk_wallet_ledger_biz,priority:3;comment:业务类型" json:"biz_type"`
-	BizID          int64           `gorm:"column:biz_id;type:bigint;not null;uniqueIndex:uk_wallet_ledger_biz,priority:4;comment:业务ID" json:"biz_id,string"`
+	UserID         int64           `gorm:"column:user_id;type:bigint;not null;index:idx_wallet_ledger_user_id;uniqueIndex:uk_wallet_ledger_biz,priority:1;comment:钱包所属用户" json:"user_id,string"`
+	AssetCode      string          `gorm:"column:asset_code;type:varchar(32);not null;uniqueIndex:uk_wallet_ledger_biz,priority:2;comment:钱包资产代码" json:"asset_code"`
+	EntryType      string          `gorm:"column:entry_type;type:varchar(32);not null;uniqueIndex:uk_wallet_ledger_biz,priority:3;comment:流水类型" json:"entry_type"`
+	BizType        string          `gorm:"column:biz_type;type:varchar(32);not null;uniqueIndex:uk_wallet_ledger_biz,priority:4;comment:业务类型" json:"biz_type"`
+	BizID          int64           `gorm:"column:biz_id;type:bigint;not null;uniqueIndex:uk_wallet_ledger_biz,priority:5;comment:业务ID" json:"biz_id,string"`
 	AvailableDelta decimal.Decimal `gorm:"column:available_delta;type:decimal(20,2);not null;comment:可用余额变化" json:"available_delta"`
 	FrozenDelta    decimal.Decimal `gorm:"column:frozen_delta;type:decimal(20,2);not null;comment:冻结余额变化" json:"frozen_delta"`
 	AvailableAfter decimal.Decimal `gorm:"column:available_after;type:decimal(20,2);not null;comment:变化后可用余额" json:"available_after"`
