@@ -46,24 +46,32 @@ type jwtClaims struct {
 	IssuedAt    int64  `json:"iat"`
 	ExpiresAt   int64  `json:"exp"`
 	JWTID       string `json:"jti"`
+	SessionID   string `json:"sid"`
 }
 
 func (m *TokenManager) Issue(userID int64, authVersion int32) (biz.TokenPair, error) {
+	return m.IssueForSession(userID, authVersion, randomID())
+}
+
+func (m *TokenManager) IssueForSession(userID int64, authVersion int32, sessionID string) (biz.TokenPair, error) {
 	if len(m.secret) < 32 {
 		return biz.TokenPair{}, fmt.Errorf("%w: auth.token_secret must contain at least 32 bytes", biz.ErrAuthenticationUnavailable)
 	}
 	now := m.now().UTC()
+	if strings.TrimSpace(sessionID) == "" {
+		return biz.TokenPair{}, biz.ErrInvalidToken
+	}
 	accessExpires, refreshExpires := now.Add(m.accessTTL), now.Add(m.refreshTTL)
-	access, err := m.sign(jwtClaims{m.issuer, strconv.FormatInt(userID, 10), "access", authVersion, now.Unix(), accessExpires.Unix(), randomID()})
+	access, err := m.sign(jwtClaims{m.issuer, strconv.FormatInt(userID, 10), "access", authVersion, now.Unix(), accessExpires.Unix(), randomID(), sessionID})
 	if err != nil {
 		return biz.TokenPair{}, err
 	}
-	refresh, err := m.sign(jwtClaims{m.issuer, strconv.FormatInt(userID, 10), "refresh", authVersion, now.Unix(), refreshExpires.Unix(), randomID()})
+	refresh, err := m.sign(jwtClaims{m.issuer, strconv.FormatInt(userID, 10), "refresh", authVersion, now.Unix(), refreshExpires.Unix(), randomID(), sessionID})
 	if err != nil {
 		return biz.TokenPair{}, err
 	}
 	hash := sha256.Sum256([]byte(refresh))
-	return biz.TokenPair{AccessToken: access, RefreshToken: refresh, AccessExpiresAt: accessExpires, RefreshExpiresAt: refreshExpires, RefreshTokenHash: hex.EncodeToString(hash[:])}, nil
+	return biz.TokenPair{AccessToken: access, RefreshToken: refresh, SessionID: sessionID, AccessExpiresAt: accessExpires, RefreshExpiresAt: refreshExpires, RefreshTokenHash: hex.EncodeToString(hash[:])}, nil
 }
 
 func (m *TokenManager) VerifyAccess(token string) (biz.TokenClaims, error) {
@@ -76,14 +84,14 @@ func (m *TokenManager) VerifyRefresh(token string) (biz.TokenClaims, error) {
 
 func (m *TokenManager) verifyType(token, tokenType string) (biz.TokenClaims, error) {
 	claims, err := m.verify(token)
-	if err != nil || claims.Type != tokenType {
+	if err != nil || claims.Type != tokenType || strings.TrimSpace(claims.SessionID) == "" {
 		return biz.TokenClaims{}, errOrInvalidToken(err)
 	}
 	userID, err := strconv.ParseInt(claims.Subject, 10, 64)
 	if err != nil || userID <= 0 {
 		return biz.TokenClaims{}, biz.ErrInvalidToken
 	}
-	return biz.TokenClaims{UserID: userID, AuthVersion: claims.AuthVersion}, nil
+	return biz.TokenClaims{UserID: userID, AuthVersion: claims.AuthVersion, SessionID: claims.SessionID}, nil
 }
 
 func (m *TokenManager) sign(claims jwtClaims) (string, error) {

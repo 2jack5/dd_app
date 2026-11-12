@@ -153,6 +153,7 @@ func (u *AdminUsecase) Login(ctx context.Context, account, password string) (Adm
 	session := RefreshSession{
 		UserID:           admin.ID,
 		AuthVersion:      admin.AuthVersion,
+		SessionID:        pair.SessionID,
 		ClientType:       "ADMIN",
 		RefreshTokenHash: pair.RefreshTokenHash,
 		ExpiresAt:        pair.RefreshExpiresAt,
@@ -196,6 +197,7 @@ func (u *AdminUsecase) Authenticate(ctx context.Context, token, scope string) (P
 
 	return Principal{
 		AdminID:     admin.ID,
+		SessionID:   claims.SessionID,
 		Permissions: permissions,
 		DataScope:   dataScope,
 	}, nil

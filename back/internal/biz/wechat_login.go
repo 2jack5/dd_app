@@ -40,6 +40,7 @@ type LoginUser struct {
 type TokenPair struct {
 	AccessToken      string
 	RefreshToken     string
+	SessionID        string
 	AccessExpiresAt  time.Time
 	RefreshExpiresAt time.Time
 	RefreshTokenHash string
@@ -48,6 +49,7 @@ type TokenPair struct {
 type TokenClaims struct {
 	UserID      int64
 	AuthVersion int32
+	SessionID   string
 }
 
 type WechatCodeExchanger interface {
@@ -62,6 +64,7 @@ type AuthRepository interface {
 type RefreshSession struct {
 	UserID           int64
 	AuthVersion      int32
+	SessionID        string
 	ClientType       string
 	RefreshTokenHash string
 	ExpiresAt        time.Time
@@ -70,10 +73,13 @@ type RefreshSession struct {
 type SessionStore interface {
 	SaveRefreshSession(context.Context, RefreshSession) error
 	RotateRefreshSession(context.Context, string, RefreshSession) error
+	RevokeSession(context.Context, int64, string) error
+	SessionActive(context.Context, int64, string) (bool, error)
 }
 
 type TokenManager interface {
 	Issue(int64, int32) (TokenPair, error)
+	IssueForSession(int64, int32, string) (TokenPair, error)
 	VerifyAccess(string) (TokenClaims, error)
 	VerifyRefresh(string) (TokenClaims, error)
 }
@@ -125,7 +131,7 @@ func (u *AuthUsecase) WechatLogin(ctx context.Context, clientType, code string) 
 	if u.sessions == nil {
 		return WechatLoginResult{}, fmt.Errorf("save refresh session: %w", ErrAuthenticationUnavailable)
 	}
-	session := RefreshSession{UserID: user.ID, AuthVersion: user.AuthVersion, ClientType: clientType, RefreshTokenHash: pair.RefreshTokenHash, ExpiresAt: pair.RefreshExpiresAt}
+	session := RefreshSession{UserID: user.ID, AuthVersion: user.AuthVersion, SessionID: pair.SessionID, ClientType: clientType, RefreshTokenHash: pair.RefreshTokenHash, ExpiresAt: pair.RefreshExpiresAt}
 	if err := u.sessions.SaveRefreshSession(ctx, session); err != nil {
 		return WechatLoginResult{}, err
 	}
@@ -151,7 +157,7 @@ func (u *AuthUsecase) RefreshToken(ctx context.Context, refreshToken string) (Re
 	if user.AuthVersion != claims.AuthVersion {
 		return RefreshTokenResult{}, ErrInvalidToken
 	}
-	pair, err := u.tokens.Issue(user.ID, user.AuthVersion)
+	pair, err := u.tokens.IssueForSession(user.ID, user.AuthVersion, claims.SessionID)
 	if err != nil {
 		return RefreshTokenResult{}, err
 	}
@@ -160,7 +166,7 @@ func (u *AuthUsecase) RefreshToken(ctx context.Context, refreshToken string) (Re
 	}
 	currentHash := sha256.Sum256([]byte(refreshToken))
 	next := RefreshSession{
-		UserID: user.ID, AuthVersion: user.AuthVersion,
+		UserID: user.ID, AuthVersion: user.AuthVersion, SessionID: pair.SessionID,
 		RefreshTokenHash: pair.RefreshTokenHash, ExpiresAt: pair.RefreshExpiresAt,
 	}
 	if err := u.sessions.RotateRefreshSession(ctx, hex.EncodeToString(currentHash[:]), next); err != nil {
@@ -178,5 +184,25 @@ func (u *AuthUsecase) Authenticate(ctx context.Context, bearerToken, _ string) (
 	if err != nil || user.Status != "ACTIVE" || user.AuthVersion != claims.AuthVersion {
 		return Principal{}, ErrAuthenticationUnavailable
 	}
-	return Principal{UserID: user.ID}, nil
+	if u.sessions == nil {
+		return Principal{}, ErrAuthenticationUnavailable
+	}
+	active, err := u.sessions.SessionActive(ctx, user.ID, claims.SessionID)
+	if err != nil {
+		return Principal{}, ErrAuthenticationUnavailable
+	}
+	if !active {
+		return Principal{}, ErrInvalidToken
+	}
+	return Principal{UserID: user.ID, SessionID: claims.SessionID}, nil
+}
+
+func (u *AuthUsecase) Logout(ctx context.Context, userID int64, sessionID string) error {
+	if userID <= 0 || strings.TrimSpace(sessionID) == "" {
+		return ErrInvalidToken
+	}
+	if u.sessions == nil {
+		return ErrAuthenticationUnavailable
+	}
+	return u.sessions.RevokeSession(ctx, userID, sessionID)
 }

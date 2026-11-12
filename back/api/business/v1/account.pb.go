@@ -112,6 +112,94 @@ func (x *UserUpdateProfileRequest) GetBody() *v1.ProfileUpdate {
 	return nil
 }
 
+type UserVerifyIdentityRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Body          *v1.IdentityCheck      `protobuf:"bytes,1,opt,name=body,proto3" json:"body,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UserVerifyIdentityRequest) Reset() {
+	*x = UserVerifyIdentityRequest{}
+	mi := &file_api_business_v1_account_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UserVerifyIdentityRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserVerifyIdentityRequest) ProtoMessage() {}
+
+func (x *UserVerifyIdentityRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_business_v1_account_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UserVerifyIdentityRequest.ProtoReflect.Descriptor instead.
+func (*UserVerifyIdentityRequest) Descriptor() ([]byte, []int) {
+	return file_api_business_v1_account_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *UserVerifyIdentityRequest) GetBody() *v1.IdentityCheck {
+	if x != nil {
+		return x.Body
+	}
+	return nil
+}
+
+type UserIdentityCurrentRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Empty         *structpb.Struct       `protobuf:"bytes,1,opt,name=empty,proto3" json:"empty,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UserIdentityCurrentRequest) Reset() {
+	*x = UserIdentityCurrentRequest{}
+	mi := &file_api_business_v1_account_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UserIdentityCurrentRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserIdentityCurrentRequest) ProtoMessage() {}
+
+func (x *UserIdentityCurrentRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_business_v1_account_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UserIdentityCurrentRequest.ProtoReflect.Descriptor instead.
+func (*UserIdentityCurrentRequest) Descriptor() ([]byte, []int) {
+	return file_api_business_v1_account_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *UserIdentityCurrentRequest) GetEmpty() *structpb.Struct {
+	if x != nil {
+		return x.Empty
+	}
+	return nil
+}
+
 type AuthLogoutRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Empty         *structpb.Struct       `protobuf:"bytes,1,opt,name=empty,proto3" json:"empty,omitempty"`
@@ -121,7 +209,7 @@ type AuthLogoutRequest struct {
 
 func (x *AuthLogoutRequest) Reset() {
 	*x = AuthLogoutRequest{}
-	mi := &file_api_business_v1_account_proto_msgTypes[2]
+	mi := &file_api_business_v1_account_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -133,7 +221,7 @@ func (x *AuthLogoutRequest) String() string {
 func (*AuthLogoutRequest) ProtoMessage() {}
 
 func (x *AuthLogoutRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_account_proto_msgTypes[2]
+	mi := &file_api_business_v1_account_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -146,7 +234,7 @@ func (x *AuthLogoutRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AuthLogoutRequest.ProtoReflect.Descriptor instead.
 func (*AuthLogoutRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_account_proto_rawDescGZIP(), []int{2}
+	return file_api_business_v1_account_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *AuthLogoutRequest) GetEmpty() *structpb.Struct {
@@ -165,7 +253,7 @@ type UserCancelAccountRequest struct {
 
 func (x *UserCancelAccountRequest) Reset() {
 	*x = UserCancelAccountRequest{}
-	mi := &file_api_business_v1_account_proto_msgTypes[3]
+	mi := &file_api_business_v1_account_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -177,7 +265,7 @@ func (x *UserCancelAccountRequest) String() string {
 func (*UserCancelAccountRequest) ProtoMessage() {}
 
 func (x *UserCancelAccountRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_account_proto_msgTypes[3]
+	mi := &file_api_business_v1_account_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -190,7 +278,7 @@ func (x *UserCancelAccountRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserCancelAccountRequest.ProtoReflect.Descriptor instead.
 func (*UserCancelAccountRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_account_proto_rawDescGZIP(), []int{3}
+	return file_api_business_v1_account_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *UserCancelAccountRequest) GetBody() *v1.Reason {
@@ -210,7 +298,7 @@ type NotificationListRequest struct {
 
 func (x *NotificationListRequest) Reset() {
 	*x = NotificationListRequest{}
-	mi := &file_api_business_v1_account_proto_msgTypes[4]
+	mi := &file_api_business_v1_account_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -222,7 +310,7 @@ func (x *NotificationListRequest) String() string {
 func (*NotificationListRequest) ProtoMessage() {}
 
 func (x *NotificationListRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_account_proto_msgTypes[4]
+	mi := &file_api_business_v1_account_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -235,7 +323,7 @@ func (x *NotificationListRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NotificationListRequest.ProtoReflect.Descriptor instead.
 func (*NotificationListRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_account_proto_rawDescGZIP(), []int{4}
+	return file_api_business_v1_account_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *NotificationListRequest) GetPageSize() int32 {
@@ -261,7 +349,7 @@ type NotificationReadRequest struct {
 
 func (x *NotificationReadRequest) Reset() {
 	*x = NotificationReadRequest{}
-	mi := &file_api_business_v1_account_proto_msgTypes[5]
+	mi := &file_api_business_v1_account_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -273,7 +361,7 @@ func (x *NotificationReadRequest) String() string {
 func (*NotificationReadRequest) ProtoMessage() {}
 
 func (x *NotificationReadRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_account_proto_msgTypes[5]
+	mi := &file_api_business_v1_account_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -286,7 +374,7 @@ func (x *NotificationReadRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NotificationReadRequest.ProtoReflect.Descriptor instead.
 func (*NotificationReadRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_account_proto_rawDescGZIP(), []int{5}
+	return file_api_business_v1_account_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *NotificationReadRequest) GetNotificationId() string {
@@ -305,7 +393,7 @@ type AgreementAcceptRequest struct {
 
 func (x *AgreementAcceptRequest) Reset() {
 	*x = AgreementAcceptRequest{}
-	mi := &file_api_business_v1_account_proto_msgTypes[6]
+	mi := &file_api_business_v1_account_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -317,7 +405,7 @@ func (x *AgreementAcceptRequest) String() string {
 func (*AgreementAcceptRequest) ProtoMessage() {}
 
 func (x *AgreementAcceptRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_account_proto_msgTypes[6]
+	mi := &file_api_business_v1_account_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -330,7 +418,7 @@ func (x *AgreementAcceptRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AgreementAcceptRequest.ProtoReflect.Descriptor instead.
 func (*AgreementAcceptRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_account_proto_rawDescGZIP(), []int{6}
+	return file_api_business_v1_account_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *AgreementAcceptRequest) GetBody() *v1.AgreementAccept {
@@ -349,7 +437,7 @@ type MediaPrepareUploadRequest struct {
 
 func (x *MediaPrepareUploadRequest) Reset() {
 	*x = MediaPrepareUploadRequest{}
-	mi := &file_api_business_v1_account_proto_msgTypes[7]
+	mi := &file_api_business_v1_account_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -361,7 +449,7 @@ func (x *MediaPrepareUploadRequest) String() string {
 func (*MediaPrepareUploadRequest) ProtoMessage() {}
 
 func (x *MediaPrepareUploadRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_account_proto_msgTypes[7]
+	mi := &file_api_business_v1_account_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -374,7 +462,7 @@ func (x *MediaPrepareUploadRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MediaPrepareUploadRequest.ProtoReflect.Descriptor instead.
 func (*MediaPrepareUploadRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_account_proto_rawDescGZIP(), []int{7}
+	return file_api_business_v1_account_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *MediaPrepareUploadRequest) GetBody() *v1.PrepareUpload {
@@ -393,7 +481,7 @@ type MediaCompleteUploadRequest struct {
 
 func (x *MediaCompleteUploadRequest) Reset() {
 	*x = MediaCompleteUploadRequest{}
-	mi := &file_api_business_v1_account_proto_msgTypes[8]
+	mi := &file_api_business_v1_account_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -405,7 +493,7 @@ func (x *MediaCompleteUploadRequest) String() string {
 func (*MediaCompleteUploadRequest) ProtoMessage() {}
 
 func (x *MediaCompleteUploadRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_account_proto_msgTypes[8]
+	mi := &file_api_business_v1_account_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -418,7 +506,7 @@ func (x *MediaCompleteUploadRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MediaCompleteUploadRequest.ProtoReflect.Descriptor instead.
 func (*MediaCompleteUploadRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_account_proto_rawDescGZIP(), []int{8}
+	return file_api_business_v1_account_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *MediaCompleteUploadRequest) GetAssetId() string {
@@ -437,7 +525,7 @@ type MediaAccessRequest struct {
 
 func (x *MediaAccessRequest) Reset() {
 	*x = MediaAccessRequest{}
-	mi := &file_api_business_v1_account_proto_msgTypes[9]
+	mi := &file_api_business_v1_account_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -449,7 +537,7 @@ func (x *MediaAccessRequest) String() string {
 func (*MediaAccessRequest) ProtoMessage() {}
 
 func (x *MediaAccessRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_account_proto_msgTypes[9]
+	mi := &file_api_business_v1_account_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -462,7 +550,7 @@ func (x *MediaAccessRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MediaAccessRequest.ProtoReflect.Descriptor instead.
 func (*MediaAccessRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_account_proto_rawDescGZIP(), []int{9}
+	return file_api_business_v1_account_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *MediaAccessRequest) GetAssetId() string {
@@ -481,7 +569,7 @@ type AnalyticsActiveRequest struct {
 
 func (x *AnalyticsActiveRequest) Reset() {
 	*x = AnalyticsActiveRequest{}
-	mi := &file_api_business_v1_account_proto_msgTypes[10]
+	mi := &file_api_business_v1_account_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -493,7 +581,7 @@ func (x *AnalyticsActiveRequest) String() string {
 func (*AnalyticsActiveRequest) ProtoMessage() {}
 
 func (x *AnalyticsActiveRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_account_proto_msgTypes[10]
+	mi := &file_api_business_v1_account_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -506,7 +594,7 @@ func (x *AnalyticsActiveRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AnalyticsActiveRequest.ProtoReflect.Descriptor instead.
 func (*AnalyticsActiveRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_account_proto_rawDescGZIP(), []int{10}
+	return file_api_business_v1_account_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *AnalyticsActiveRequest) GetBody() *v1.ActivityEvent {
@@ -524,7 +612,11 @@ const file_api_business_v1_account_proto_rawDesc = "" +
 	"\x12UserProfileRequest\x12-\n" +
 	"\x05empty\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x05empty\"L\n" +
 	"\x18UserUpdateProfileRequest\x120\n" +
-	"\x04body\x18\x01 \x01(\v2\x1c.api.common.v1.ProfileUpdateR\x04body\"B\n" +
+	"\x04body\x18\x01 \x01(\v2\x1c.api.common.v1.ProfileUpdateR\x04body\"M\n" +
+	"\x19UserVerifyIdentityRequest\x120\n" +
+	"\x04body\x18\x01 \x01(\v2\x1c.api.common.v1.IdentityCheckR\x04body\"K\n" +
+	"\x1aUserIdentityCurrentRequest\x12-\n" +
+	"\x05empty\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x05empty\"B\n" +
 	"\x11AuthLogoutRequest\x12-\n" +
 	"\x05empty\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x05empty\"E\n" +
 	"\x18UserCancelAccountRequest\x12)\n" +
@@ -543,10 +635,12 @@ const file_api_business_v1_account_proto_rawDesc = "" +
 	"\x12MediaAccessRequest\x12\x19\n" +
 	"\basset_id\x18\x01 \x01(\tR\aassetId\"J\n" +
 	"\x16AnalyticsActiveRequest\x120\n" +
-	"\x04body\x18\x01 \x01(\v2\x1c.api.common.v1.ActivityEventR\x04body2\x9f\v\n" +
+	"\x04body\x18\x01 \x01(\v2\x1c.api.common.v1.ActivityEventR\x04body2\xc1\r\n" +
 	"\x0eAccountService\x12h\n" +
 	"\vUserProfile\x12#.api.business.v1.UserProfileRequest\x1a\x1a.api.common.v1.ApiResponse\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/api/v1/users/me\x12z\n" +
-	"\x11UserUpdateProfile\x12).api.business.v1.UserUpdateProfileRequest\x1a\x1a.api.common.v1.ApiResponse\"\x1e\x82\xd3\xe4\x93\x02\x18:\x04body2\x10/api/v1/users/me\x12i\n" +
+	"\x11UserUpdateProfile\x12).api.business.v1.UserUpdateProfileRequest\x1a\x1a.api.common.v1.ApiResponse\"\x1e\x82\xd3\xe4\x93\x02\x18:\x04body2\x10/api/v1/users/me\x12\x8c\x01\n" +
+	"\x12UserVerifyIdentity\x12*.api.business.v1.UserVerifyIdentityRequest\x1a\x1a.api.common.v1.ApiResponse\".\x82\xd3\xe4\x93\x02(:\x04body\" /api/v1/users/me/identity-checks\x12\x90\x01\n" +
+	"\x13UserIdentityCurrent\x12+.api.business.v1.UserIdentityCurrentRequest\x1a\x1a.api.common.v1.ApiResponse\"0\x82\xd3\xe4\x93\x02*\x12(/api/v1/users/me/identity-checks/current\x12i\n" +
 	"\n" +
 	"AuthLogout\x12\".api.business.v1.AuthLogoutRequest\x1a\x1a.api.common.v1.ApiResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\"\x13/api/v1/auth/logout\x12\x87\x01\n" +
 	"\x11UserCancelAccount\x12).api.business.v1.UserCancelAccountRequest\x1a\x1a.api.common.v1.ApiResponse\"+\x82\xd3\xe4\x93\x02%:\x04body\"\x1d/api/v1/users/me/cancellation\x12\x80\x01\n" +
@@ -570,62 +664,71 @@ func file_api_business_v1_account_proto_rawDescGZIP() []byte {
 	return file_api_business_v1_account_proto_rawDescData
 }
 
-var file_api_business_v1_account_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_api_business_v1_account_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_api_business_v1_account_proto_goTypes = []any{
 	(*UserProfileRequest)(nil),         // 0: api.business.v1.UserProfileRequest
 	(*UserUpdateProfileRequest)(nil),   // 1: api.business.v1.UserUpdateProfileRequest
-	(*AuthLogoutRequest)(nil),          // 2: api.business.v1.AuthLogoutRequest
-	(*UserCancelAccountRequest)(nil),   // 3: api.business.v1.UserCancelAccountRequest
-	(*NotificationListRequest)(nil),    // 4: api.business.v1.NotificationListRequest
-	(*NotificationReadRequest)(nil),    // 5: api.business.v1.NotificationReadRequest
-	(*AgreementAcceptRequest)(nil),     // 6: api.business.v1.AgreementAcceptRequest
-	(*MediaPrepareUploadRequest)(nil),  // 7: api.business.v1.MediaPrepareUploadRequest
-	(*MediaCompleteUploadRequest)(nil), // 8: api.business.v1.MediaCompleteUploadRequest
-	(*MediaAccessRequest)(nil),         // 9: api.business.v1.MediaAccessRequest
-	(*AnalyticsActiveRequest)(nil),     // 10: api.business.v1.AnalyticsActiveRequest
-	(*structpb.Struct)(nil),            // 11: google.protobuf.Struct
-	(*v1.ProfileUpdate)(nil),           // 12: api.common.v1.ProfileUpdate
-	(*v1.Reason)(nil),                  // 13: api.common.v1.Reason
-	(*v1.AgreementAccept)(nil),         // 14: api.common.v1.AgreementAccept
-	(*v1.PrepareUpload)(nil),           // 15: api.common.v1.PrepareUpload
-	(*v1.ActivityEvent)(nil),           // 16: api.common.v1.ActivityEvent
-	(*v1.ApiResponse)(nil),             // 17: api.common.v1.ApiResponse
+	(*UserVerifyIdentityRequest)(nil),  // 2: api.business.v1.UserVerifyIdentityRequest
+	(*UserIdentityCurrentRequest)(nil), // 3: api.business.v1.UserIdentityCurrentRequest
+	(*AuthLogoutRequest)(nil),          // 4: api.business.v1.AuthLogoutRequest
+	(*UserCancelAccountRequest)(nil),   // 5: api.business.v1.UserCancelAccountRequest
+	(*NotificationListRequest)(nil),    // 6: api.business.v1.NotificationListRequest
+	(*NotificationReadRequest)(nil),    // 7: api.business.v1.NotificationReadRequest
+	(*AgreementAcceptRequest)(nil),     // 8: api.business.v1.AgreementAcceptRequest
+	(*MediaPrepareUploadRequest)(nil),  // 9: api.business.v1.MediaPrepareUploadRequest
+	(*MediaCompleteUploadRequest)(nil), // 10: api.business.v1.MediaCompleteUploadRequest
+	(*MediaAccessRequest)(nil),         // 11: api.business.v1.MediaAccessRequest
+	(*AnalyticsActiveRequest)(nil),     // 12: api.business.v1.AnalyticsActiveRequest
+	(*structpb.Struct)(nil),            // 13: google.protobuf.Struct
+	(*v1.ProfileUpdate)(nil),           // 14: api.common.v1.ProfileUpdate
+	(*v1.IdentityCheck)(nil),           // 15: api.common.v1.IdentityCheck
+	(*v1.Reason)(nil),                  // 16: api.common.v1.Reason
+	(*v1.AgreementAccept)(nil),         // 17: api.common.v1.AgreementAccept
+	(*v1.PrepareUpload)(nil),           // 18: api.common.v1.PrepareUpload
+	(*v1.ActivityEvent)(nil),           // 19: api.common.v1.ActivityEvent
+	(*v1.ApiResponse)(nil),             // 20: api.common.v1.ApiResponse
 }
 var file_api_business_v1_account_proto_depIdxs = []int32{
-	11, // 0: api.business.v1.UserProfileRequest.empty:type_name -> google.protobuf.Struct
-	12, // 1: api.business.v1.UserUpdateProfileRequest.body:type_name -> api.common.v1.ProfileUpdate
-	11, // 2: api.business.v1.AuthLogoutRequest.empty:type_name -> google.protobuf.Struct
-	13, // 3: api.business.v1.UserCancelAccountRequest.body:type_name -> api.common.v1.Reason
-	14, // 4: api.business.v1.AgreementAcceptRequest.body:type_name -> api.common.v1.AgreementAccept
-	15, // 5: api.business.v1.MediaPrepareUploadRequest.body:type_name -> api.common.v1.PrepareUpload
-	16, // 6: api.business.v1.AnalyticsActiveRequest.body:type_name -> api.common.v1.ActivityEvent
-	0,  // 7: api.business.v1.AccountService.UserProfile:input_type -> api.business.v1.UserProfileRequest
-	1,  // 8: api.business.v1.AccountService.UserUpdateProfile:input_type -> api.business.v1.UserUpdateProfileRequest
-	2,  // 9: api.business.v1.AccountService.AuthLogout:input_type -> api.business.v1.AuthLogoutRequest
-	3,  // 10: api.business.v1.AccountService.UserCancelAccount:input_type -> api.business.v1.UserCancelAccountRequest
-	4,  // 11: api.business.v1.AccountService.NotificationList:input_type -> api.business.v1.NotificationListRequest
-	5,  // 12: api.business.v1.AccountService.NotificationRead:input_type -> api.business.v1.NotificationReadRequest
-	6,  // 13: api.business.v1.AccountService.AgreementAccept:input_type -> api.business.v1.AgreementAcceptRequest
-	7,  // 14: api.business.v1.AccountService.MediaPrepareUpload:input_type -> api.business.v1.MediaPrepareUploadRequest
-	8,  // 15: api.business.v1.AccountService.MediaCompleteUpload:input_type -> api.business.v1.MediaCompleteUploadRequest
-	9,  // 16: api.business.v1.AccountService.MediaAccess:input_type -> api.business.v1.MediaAccessRequest
-	10, // 17: api.business.v1.AccountService.AnalyticsActive:input_type -> api.business.v1.AnalyticsActiveRequest
-	17, // 18: api.business.v1.AccountService.UserProfile:output_type -> api.common.v1.ApiResponse
-	17, // 19: api.business.v1.AccountService.UserUpdateProfile:output_type -> api.common.v1.ApiResponse
-	17, // 20: api.business.v1.AccountService.AuthLogout:output_type -> api.common.v1.ApiResponse
-	17, // 21: api.business.v1.AccountService.UserCancelAccount:output_type -> api.common.v1.ApiResponse
-	17, // 22: api.business.v1.AccountService.NotificationList:output_type -> api.common.v1.ApiResponse
-	17, // 23: api.business.v1.AccountService.NotificationRead:output_type -> api.common.v1.ApiResponse
-	17, // 24: api.business.v1.AccountService.AgreementAccept:output_type -> api.common.v1.ApiResponse
-	17, // 25: api.business.v1.AccountService.MediaPrepareUpload:output_type -> api.common.v1.ApiResponse
-	17, // 26: api.business.v1.AccountService.MediaCompleteUpload:output_type -> api.common.v1.ApiResponse
-	17, // 27: api.business.v1.AccountService.MediaAccess:output_type -> api.common.v1.ApiResponse
-	17, // 28: api.business.v1.AccountService.AnalyticsActive:output_type -> api.common.v1.ApiResponse
-	18, // [18:29] is the sub-list for method output_type
-	7,  // [7:18] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	13, // 0: api.business.v1.UserProfileRequest.empty:type_name -> google.protobuf.Struct
+	14, // 1: api.business.v1.UserUpdateProfileRequest.body:type_name -> api.common.v1.ProfileUpdate
+	15, // 2: api.business.v1.UserVerifyIdentityRequest.body:type_name -> api.common.v1.IdentityCheck
+	13, // 3: api.business.v1.UserIdentityCurrentRequest.empty:type_name -> google.protobuf.Struct
+	13, // 4: api.business.v1.AuthLogoutRequest.empty:type_name -> google.protobuf.Struct
+	16, // 5: api.business.v1.UserCancelAccountRequest.body:type_name -> api.common.v1.Reason
+	17, // 6: api.business.v1.AgreementAcceptRequest.body:type_name -> api.common.v1.AgreementAccept
+	18, // 7: api.business.v1.MediaPrepareUploadRequest.body:type_name -> api.common.v1.PrepareUpload
+	19, // 8: api.business.v1.AnalyticsActiveRequest.body:type_name -> api.common.v1.ActivityEvent
+	0,  // 9: api.business.v1.AccountService.UserProfile:input_type -> api.business.v1.UserProfileRequest
+	1,  // 10: api.business.v1.AccountService.UserUpdateProfile:input_type -> api.business.v1.UserUpdateProfileRequest
+	2,  // 11: api.business.v1.AccountService.UserVerifyIdentity:input_type -> api.business.v1.UserVerifyIdentityRequest
+	3,  // 12: api.business.v1.AccountService.UserIdentityCurrent:input_type -> api.business.v1.UserIdentityCurrentRequest
+	4,  // 13: api.business.v1.AccountService.AuthLogout:input_type -> api.business.v1.AuthLogoutRequest
+	5,  // 14: api.business.v1.AccountService.UserCancelAccount:input_type -> api.business.v1.UserCancelAccountRequest
+	6,  // 15: api.business.v1.AccountService.NotificationList:input_type -> api.business.v1.NotificationListRequest
+	7,  // 16: api.business.v1.AccountService.NotificationRead:input_type -> api.business.v1.NotificationReadRequest
+	8,  // 17: api.business.v1.AccountService.AgreementAccept:input_type -> api.business.v1.AgreementAcceptRequest
+	9,  // 18: api.business.v1.AccountService.MediaPrepareUpload:input_type -> api.business.v1.MediaPrepareUploadRequest
+	10, // 19: api.business.v1.AccountService.MediaCompleteUpload:input_type -> api.business.v1.MediaCompleteUploadRequest
+	11, // 20: api.business.v1.AccountService.MediaAccess:input_type -> api.business.v1.MediaAccessRequest
+	12, // 21: api.business.v1.AccountService.AnalyticsActive:input_type -> api.business.v1.AnalyticsActiveRequest
+	20, // 22: api.business.v1.AccountService.UserProfile:output_type -> api.common.v1.ApiResponse
+	20, // 23: api.business.v1.AccountService.UserUpdateProfile:output_type -> api.common.v1.ApiResponse
+	20, // 24: api.business.v1.AccountService.UserVerifyIdentity:output_type -> api.common.v1.ApiResponse
+	20, // 25: api.business.v1.AccountService.UserIdentityCurrent:output_type -> api.common.v1.ApiResponse
+	20, // 26: api.business.v1.AccountService.AuthLogout:output_type -> api.common.v1.ApiResponse
+	20, // 27: api.business.v1.AccountService.UserCancelAccount:output_type -> api.common.v1.ApiResponse
+	20, // 28: api.business.v1.AccountService.NotificationList:output_type -> api.common.v1.ApiResponse
+	20, // 29: api.business.v1.AccountService.NotificationRead:output_type -> api.common.v1.ApiResponse
+	20, // 30: api.business.v1.AccountService.AgreementAccept:output_type -> api.common.v1.ApiResponse
+	20, // 31: api.business.v1.AccountService.MediaPrepareUpload:output_type -> api.common.v1.ApiResponse
+	20, // 32: api.business.v1.AccountService.MediaCompleteUpload:output_type -> api.common.v1.ApiResponse
+	20, // 33: api.business.v1.AccountService.MediaAccess:output_type -> api.common.v1.ApiResponse
+	20, // 34: api.business.v1.AccountService.AnalyticsActive:output_type -> api.common.v1.ApiResponse
+	22, // [22:35] is the sub-list for method output_type
+	9,  // [9:22] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_api_business_v1_account_proto_init() }
@@ -639,7 +742,7 @@ func file_api_business_v1_account_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_business_v1_account_proto_rawDesc), len(file_api_business_v1_account_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   11,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

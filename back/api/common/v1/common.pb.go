@@ -1102,6 +1102,8 @@ type IdentityCheck struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	Provider       string                 `protobuf:"bytes,1,opt,name=provider,proto3" json:"provider,omitempty"`
 	ConsentVersion string                 `protobuf:"bytes,2,opt,name=consent_version,json=consentVersion,proto3" json:"consent_version,omitempty"`
+	RealName       string                 `protobuf:"bytes,3,opt,name=real_name,json=realName,proto3" json:"real_name,omitempty"`
+	IdentityNumber string                 `protobuf:"bytes,4,opt,name=identity_number,json=identityNumber,proto3" json:"identity_number,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -1146,6 +1148,20 @@ func (x *IdentityCheck) GetProvider() string {
 func (x *IdentityCheck) GetConsentVersion() string {
 	if x != nil {
 		return x.ConsentVersion
+	}
+	return ""
+}
+
+func (x *IdentityCheck) GetRealName() string {
+	if x != nil {
+		return x.RealName
+	}
+	return ""
+}
+
+func (x *IdentityCheck) GetIdentityNumber() string {
+	if x != nil {
+		return x.IdentityNumber
 	}
 	return ""
 }
@@ -1735,10 +1751,11 @@ func (x *Onboarding) GetConsentVersion() string {
 }
 
 type AdminLogin struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Account       string                 `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
-	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
-	MfaCode       string                 `protobuf:"bytes,3,opt,name=mfa_code,json=mfaCode,proto3" json:"mfa_code,omitempty"`
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	Account  string                 `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
+	Password string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	// 历史兼容字段，管理员账号密码登录不再读取或校验此字段。
+	MfaCode       string `protobuf:"bytes,3,opt,name=mfa_code,json=mfaCode,proto3" json:"mfa_code,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4805,10 +4822,12 @@ const file_api_common_v1_common_proto_rawDesc = "" +
 	"\x17agreement_acceptance_id\x18\x02 \x01(\tR\x15agreementAcceptanceId\x12!\n" +
 	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x12\x10\n" +
 	"\x03bio\x18\x04 \x01(\tR\x03bio\x12,\n" +
-	"\x12evidence_asset_ids\x18\x05 \x03(\tR\x10evidenceAssetIds\"T\n" +
+	"\x12evidence_asset_ids\x18\x05 \x03(\tR\x10evidenceAssetIds\"\x9a\x01\n" +
 	"\rIdentityCheck\x12\x1a\n" +
 	"\bprovider\x18\x01 \x01(\tR\bprovider\x12'\n" +
-	"\x0fconsent_version\x18\x02 \x01(\tR\x0econsentVersion\"l\n" +
+	"\x0fconsent_version\x18\x02 \x01(\tR\x0econsentVersion\x12\x1b\n" +
+	"\treal_name\x18\x03 \x01(\tR\brealName\x12'\n" +
+	"\x0fidentity_number\x18\x04 \x01(\tR\x0eidentityNumber\"l\n" +
 	"\n" +
 	"CoachSkill\x12\x17\n" +
 	"\agame_id\x18\x01 \x01(\tR\x06gameId\x12\x17\n" +

@@ -11,14 +11,18 @@ import (
 )
 
 type BusinessService struct {
-	system  *biz.SystemUsecase
-	catalog *biz.CatalogUsecase
-	auth    *biz.AuthUsecase
-	admin   *biz.AdminUsecase
+	system   *biz.SystemUsecase
+	catalog  *biz.CatalogUsecase
+	auth     *biz.AuthUsecase
+	admin    *biz.AdminUsecase
+	identity *biz.IdentityUsecase
 }
 
-func NewBusinessService(system *biz.SystemUsecase, catalog *biz.CatalogUsecase, auth *biz.AuthUsecase, admin *biz.AdminUsecase) *BusinessService {
+func NewBusinessService(system *biz.SystemUsecase, catalog *biz.CatalogUsecase, auth *biz.AuthUsecase, admin *biz.AdminUsecase, identity ...*biz.IdentityUsecase) *BusinessService {
 	service := &BusinessService{system: system, catalog: catalog, auth: auth, admin: admin}
+	if len(identity) > 0 {
+		service.identity = identity[0]
+	}
 	return service
 }
 func ok(data any) (*commonv1.ApiResponse, error) {

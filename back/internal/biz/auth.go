@@ -10,6 +10,7 @@ var ErrAuthenticationUnavailable = errors.New("authentication unavailable")
 type Principal struct {
 	UserID      int64
 	AdminID     int64
+	SessionID   string
 	IsCoach     bool
 	Permissions map[string]bool
 	DataScope   string

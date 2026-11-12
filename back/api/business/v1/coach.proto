@@ -20,14 +20,6 @@ message CoachWithdrawRequest {
   string application_id = 1;
 }
 
-message CoachVerifyIdentityRequest {
-  api.common.v1.IdentityCheck body = 1;
-}
-
-message CoachIdentityCurrentRequest {
-  google.protobuf.Struct empty = 1;
-}
-
 message CoachSubmitSkillRequest {
   api.common.v1.CoachSkill body = 1;
 }
@@ -106,17 +98,6 @@ service CoachService {
   rpc CoachWithdraw (CoachWithdrawRequest) returns (api.common.v1.ApiResponse) {
     option (google.api.http) = {
       post: "/api/v1/coach/applications/{application_id}/withdraw"
-    };
-  }
-  rpc CoachVerifyIdentity (CoachVerifyIdentityRequest) returns (api.common.v1.ApiResponse) {
-    option (google.api.http) = {
-      post: "/api/v1/coach/identity-checks"
-      body: "body"
-    };
-  }
-  rpc CoachIdentityCurrent (CoachIdentityCurrentRequest) returns (api.common.v1.ApiResponse) {
-    option (google.api.http) = {
-      get: "/api/v1/coach/identity-checks/current"
     };
   }
   rpc CoachSubmitSkill (CoachSubmitSkillRequest) returns (api.common.v1.ApiResponse) {

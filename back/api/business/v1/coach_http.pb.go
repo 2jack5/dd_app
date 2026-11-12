@@ -24,7 +24,6 @@ const OperationCoachServiceCoachApply = "/api.business.v1.CoachService/CoachAppl
 const OperationCoachServiceCoachAvailability = "/api.business.v1.CoachService/CoachAvailability"
 const OperationCoachServiceCoachCreateService = "/api.business.v1.CoachService/CoachCreateService"
 const OperationCoachServiceCoachHeartbeat = "/api.business.v1.CoachService/CoachHeartbeat"
-const OperationCoachServiceCoachIdentityCurrent = "/api.business.v1.CoachService/CoachIdentityCurrent"
 const OperationCoachServiceCoachProfile = "/api.business.v1.CoachService/CoachProfile"
 const OperationCoachServiceCoachPublishService = "/api.business.v1.CoachService/CoachPublishService"
 const OperationCoachServiceCoachServices = "/api.business.v1.CoachService/CoachServices"
@@ -35,7 +34,6 @@ const OperationCoachServiceCoachUnpublishService = "/api.business.v1.CoachServic
 const OperationCoachServiceCoachUpdateAvailability = "/api.business.v1.CoachService/CoachUpdateAvailability"
 const OperationCoachServiceCoachUpdateProfile = "/api.business.v1.CoachService/CoachUpdateProfile"
 const OperationCoachServiceCoachUpdateService = "/api.business.v1.CoachService/CoachUpdateService"
-const OperationCoachServiceCoachVerifyIdentity = "/api.business.v1.CoachService/CoachVerifyIdentity"
 const OperationCoachServiceCoachWithdraw = "/api.business.v1.CoachService/CoachWithdraw"
 const OperationCoachServiceCoachWorkbench = "/api.business.v1.CoachService/CoachWorkbench"
 
@@ -46,7 +44,6 @@ type CoachServiceHTTPServer interface {
 	CoachAvailability(context.Context, *CoachAvailabilityRequest) (*v1.ApiResponse, error)
 	CoachCreateService(context.Context, *CoachCreateServiceRequest) (*v1.ApiResponse, error)
 	CoachHeartbeat(context.Context, *CoachHeartbeatRequest) (*v1.ApiResponse, error)
-	CoachIdentityCurrent(context.Context, *CoachIdentityCurrentRequest) (*v1.ApiResponse, error)
 	CoachProfile(context.Context, *CoachProfileRequest) (*v1.ApiResponse, error)
 	CoachPublishService(context.Context, *CoachPublishServiceRequest) (*v1.ApiResponse, error)
 	CoachServices(context.Context, *CoachServicesRequest) (*v1.ApiResponse, error)
@@ -57,7 +54,6 @@ type CoachServiceHTTPServer interface {
 	CoachUpdateAvailability(context.Context, *CoachUpdateAvailabilityRequest) (*v1.ApiResponse, error)
 	CoachUpdateProfile(context.Context, *CoachUpdateProfileRequest) (*v1.ApiResponse, error)
 	CoachUpdateService(context.Context, *CoachUpdateServiceRequest) (*v1.ApiResponse, error)
-	CoachVerifyIdentity(context.Context, *CoachVerifyIdentityRequest) (*v1.ApiResponse, error)
 	CoachWithdraw(context.Context, *CoachWithdrawRequest) (*v1.ApiResponse, error)
 	CoachWorkbench(context.Context, *CoachWorkbenchRequest) (*v1.ApiResponse, error)
 }
@@ -67,8 +63,6 @@ func RegisterCoachServiceHTTPServer(s *http.Server, srv CoachServiceHTTPServer) 
 	r.Handle("GET", "/api/v1/coach/applications/current", _CoachService_CoachApplicationCurrent0_HTTP_Handler(srv))
 	r.Handle("POST", "/api/v1/coach/applications", _CoachService_CoachApply0_HTTP_Handler(srv))
 	r.Handle("POST", "/api/v1/coach/applications/{application_id}/withdraw", _CoachService_CoachWithdraw0_HTTP_Handler(srv))
-	r.Handle("POST", "/api/v1/coach/identity-checks", _CoachService_CoachVerifyIdentity0_HTTP_Handler(srv))
-	r.Handle("GET", "/api/v1/coach/identity-checks/current", _CoachService_CoachIdentityCurrent0_HTTP_Handler(srv))
 	r.Handle("POST", "/api/v1/coach/skills", _CoachService_CoachSubmitSkill0_HTTP_Handler(srv))
 	r.Handle("GET", "/api/v1/coach/skills", _CoachService_CoachSkills0_HTTP_Handler(srv))
 	r.Handle("GET", "/api/v1/coach/skills/{skill_id}", _CoachService_CoachSkillDetail0_HTTP_Handler(srv))
@@ -139,47 +133,6 @@ func _CoachService_CoachWithdraw0_HTTP_Handler(srv CoachServiceHTTPServer) func(
 		http.SetOperation(ctx, OperationCoachServiceCoachWithdraw)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.CoachWithdraw(ctx, req.(*CoachWithdrawRequest))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*v1.ApiResponse)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _CoachService_CoachVerifyIdentity0_HTTP_Handler(srv CoachServiceHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in CoachVerifyIdentityRequest
-		if err := ctx.Bind(&in.Body); err != nil {
-			return err
-		}
-		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, OperationCoachServiceCoachVerifyIdentity)
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.CoachVerifyIdentity(ctx, req.(*CoachVerifyIdentityRequest))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*v1.ApiResponse)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _CoachService_CoachIdentityCurrent0_HTTP_Handler(srv CoachServiceHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in CoachIdentityCurrentRequest
-		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, OperationCoachServiceCoachIdentityCurrent)
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.CoachIdentityCurrent(ctx, req.(*CoachIdentityCurrentRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
@@ -512,7 +465,6 @@ type CoachServiceHTTPClient interface {
 	CoachAvailability(ctx context.Context, req *CoachAvailabilityRequest, opts ...http.CallOption) (rsp *v1.ApiResponse, err error)
 	CoachCreateService(ctx context.Context, req *CoachCreateServiceRequest, opts ...http.CallOption) (rsp *v1.ApiResponse, err error)
 	CoachHeartbeat(ctx context.Context, req *CoachHeartbeatRequest, opts ...http.CallOption) (rsp *v1.ApiResponse, err error)
-	CoachIdentityCurrent(ctx context.Context, req *CoachIdentityCurrentRequest, opts ...http.CallOption) (rsp *v1.ApiResponse, err error)
 	CoachProfile(ctx context.Context, req *CoachProfileRequest, opts ...http.CallOption) (rsp *v1.ApiResponse, err error)
 	CoachPublishService(ctx context.Context, req *CoachPublishServiceRequest, opts ...http.CallOption) (rsp *v1.ApiResponse, err error)
 	CoachServices(ctx context.Context, req *CoachServicesRequest, opts ...http.CallOption) (rsp *v1.ApiResponse, err error)
@@ -523,7 +475,6 @@ type CoachServiceHTTPClient interface {
 	CoachUpdateAvailability(ctx context.Context, req *CoachUpdateAvailabilityRequest, opts ...http.CallOption) (rsp *v1.ApiResponse, err error)
 	CoachUpdateProfile(ctx context.Context, req *CoachUpdateProfileRequest, opts ...http.CallOption) (rsp *v1.ApiResponse, err error)
 	CoachUpdateService(ctx context.Context, req *CoachUpdateServiceRequest, opts ...http.CallOption) (rsp *v1.ApiResponse, err error)
-	CoachVerifyIdentity(ctx context.Context, req *CoachVerifyIdentityRequest, opts ...http.CallOption) (rsp *v1.ApiResponse, err error)
 	CoachWithdraw(ctx context.Context, req *CoachWithdrawRequest, opts ...http.CallOption) (rsp *v1.ApiResponse, err error)
 	CoachWorkbench(ctx context.Context, req *CoachWorkbenchRequest, opts ...http.CallOption) (rsp *v1.ApiResponse, err error)
 }
@@ -629,22 +580,6 @@ func (c *CoachServiceHTTPClientImpl) CoachHeartbeat(ctx context.Context, in *Coa
 		http.PathTemplate(pattern),
 	}, opts...)
 	err := c.cc.Invoke(ctx, "POST", path, nil, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-func (c *CoachServiceHTTPClientImpl) CoachIdentityCurrent(ctx context.Context, in *CoachIdentityCurrentRequest, opts ...http.CallOption) (*v1.ApiResponse, error) {
-	var out v1.ApiResponse
-	pattern := "/api/v1/coach/identity-checks/current"
-	path := http.BuildPath(pattern, in, http.WithQueryParams())
-	opts = append([]http.CallOption{
-		http.Accept("application/protojson"),
-		http.Operation(OperationCoachServiceCoachIdentityCurrent),
-		http.PathTemplate(pattern),
-	}, opts...)
-	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -809,23 +744,6 @@ func (c *CoachServiceHTTPClientImpl) CoachUpdateService(ctx context.Context, in 
 		http.PathTemplate(pattern),
 	}, opts...)
 	err := c.cc.Invoke(ctx, "PATCH", path, in.Body, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-func (c *CoachServiceHTTPClientImpl) CoachVerifyIdentity(ctx context.Context, in *CoachVerifyIdentityRequest, opts ...http.CallOption) (*v1.ApiResponse, error) {
-	var out v1.ApiResponse
-	pattern := "/api/v1/coach/identity-checks"
-	path := http.BuildPath(pattern, in, http.WithQueryParams(), http.WithOmitFields("body"))
-	opts = append([]http.CallOption{
-		http.Accept("application/protojson"),
-		http.ContentType("application/protojson"),
-		http.Operation(OperationCoachServiceCoachVerifyIdentity),
-		http.PathTemplate(pattern),
-	}, opts...)
-	err := c.cc.Invoke(ctx, "POST", path, in.Body, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

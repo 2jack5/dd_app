@@ -11,14 +11,15 @@ import (
 )
 
 type Config struct {
-	Env       string `mapstructure:"env"`
-	HTTP      HTTP   `mapstructure:"http"`
-	OrderHTTP HTTP   `mapstructure:"order_http"`
-	Log       Log    `mapstructure:"log"`
-	PG        PG     `mapstructure:"pg"`
-	Redis     Redis  `mapstructure:"redis"`
-	Auth      Auth   `mapstructure:"auth"`
-	Wechat    Wechat `mapstructure:"wechat"`
+	Env       string   `mapstructure:"env"`
+	HTTP      HTTP     `mapstructure:"http"`
+	OrderHTTP HTTP     `mapstructure:"order_http"`
+	Log       Log      `mapstructure:"log"`
+	PG        PG       `mapstructure:"pg"`
+	Redis     Redis    `mapstructure:"redis"`
+	Auth      Auth     `mapstructure:"auth"`
+	Wechat    Wechat   `mapstructure:"wechat"`
+	Identity  Identity `mapstructure:"identity"`
 }
 
 type HTTP struct {
@@ -66,6 +67,14 @@ type Wechat struct {
 	MiniSecret string `mapstructure:"mini_secret"`
 	OpenAppID  string `mapstructure:"open_app_id"`
 	OpenSecret string `mapstructure:"open_secret"`
+}
+
+type Identity struct {
+	Provider  string        `mapstructure:"provider"`
+	VerifyURL string        `mapstructure:"verify_url"`
+	AppID     string        `mapstructure:"app_id"`
+	APIKey    string        `mapstructure:"api_key"`
+	Timeout   time.Duration `mapstructure:"timeout"`
 }
 
 // Load 加载配置。默认优先读取config/config.yaml，兼容旧的configs目录。

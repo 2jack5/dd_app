@@ -156,94 +156,6 @@ func (x *CoachWithdrawRequest) GetApplicationId() string {
 	return ""
 }
 
-type CoachVerifyIdentityRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Body          *v1.IdentityCheck      `protobuf:"bytes,1,opt,name=body,proto3" json:"body,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CoachVerifyIdentityRequest) Reset() {
-	*x = CoachVerifyIdentityRequest{}
-	mi := &file_api_business_v1_coach_proto_msgTypes[3]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CoachVerifyIdentityRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CoachVerifyIdentityRequest) ProtoMessage() {}
-
-func (x *CoachVerifyIdentityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_coach_proto_msgTypes[3]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CoachVerifyIdentityRequest.ProtoReflect.Descriptor instead.
-func (*CoachVerifyIdentityRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *CoachVerifyIdentityRequest) GetBody() *v1.IdentityCheck {
-	if x != nil {
-		return x.Body
-	}
-	return nil
-}
-
-type CoachIdentityCurrentRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Empty         *structpb.Struct       `protobuf:"bytes,1,opt,name=empty,proto3" json:"empty,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CoachIdentityCurrentRequest) Reset() {
-	*x = CoachIdentityCurrentRequest{}
-	mi := &file_api_business_v1_coach_proto_msgTypes[4]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CoachIdentityCurrentRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CoachIdentityCurrentRequest) ProtoMessage() {}
-
-func (x *CoachIdentityCurrentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_coach_proto_msgTypes[4]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CoachIdentityCurrentRequest.ProtoReflect.Descriptor instead.
-func (*CoachIdentityCurrentRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *CoachIdentityCurrentRequest) GetEmpty() *structpb.Struct {
-	if x != nil {
-		return x.Empty
-	}
-	return nil
-}
-
 type CoachSubmitSkillRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Body          *v1.CoachSkill         `protobuf:"bytes,1,opt,name=body,proto3" json:"body,omitempty"`
@@ -253,7 +165,7 @@ type CoachSubmitSkillRequest struct {
 
 func (x *CoachSubmitSkillRequest) Reset() {
 	*x = CoachSubmitSkillRequest{}
-	mi := &file_api_business_v1_coach_proto_msgTypes[5]
+	mi := &file_api_business_v1_coach_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -265,7 +177,7 @@ func (x *CoachSubmitSkillRequest) String() string {
 func (*CoachSubmitSkillRequest) ProtoMessage() {}
 
 func (x *CoachSubmitSkillRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_coach_proto_msgTypes[5]
+	mi := &file_api_business_v1_coach_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -278,7 +190,7 @@ func (x *CoachSubmitSkillRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CoachSubmitSkillRequest.ProtoReflect.Descriptor instead.
 func (*CoachSubmitSkillRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{5}
+	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CoachSubmitSkillRequest) GetBody() *v1.CoachSkill {
@@ -298,7 +210,7 @@ type CoachSkillsRequest struct {
 
 func (x *CoachSkillsRequest) Reset() {
 	*x = CoachSkillsRequest{}
-	mi := &file_api_business_v1_coach_proto_msgTypes[6]
+	mi := &file_api_business_v1_coach_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -310,7 +222,7 @@ func (x *CoachSkillsRequest) String() string {
 func (*CoachSkillsRequest) ProtoMessage() {}
 
 func (x *CoachSkillsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_coach_proto_msgTypes[6]
+	mi := &file_api_business_v1_coach_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -323,7 +235,7 @@ func (x *CoachSkillsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CoachSkillsRequest.ProtoReflect.Descriptor instead.
 func (*CoachSkillsRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{6}
+	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *CoachSkillsRequest) GetPageSize() int32 {
@@ -349,7 +261,7 @@ type CoachSkillDetailRequest struct {
 
 func (x *CoachSkillDetailRequest) Reset() {
 	*x = CoachSkillDetailRequest{}
-	mi := &file_api_business_v1_coach_proto_msgTypes[7]
+	mi := &file_api_business_v1_coach_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -361,7 +273,7 @@ func (x *CoachSkillDetailRequest) String() string {
 func (*CoachSkillDetailRequest) ProtoMessage() {}
 
 func (x *CoachSkillDetailRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_coach_proto_msgTypes[7]
+	mi := &file_api_business_v1_coach_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -374,7 +286,7 @@ func (x *CoachSkillDetailRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CoachSkillDetailRequest.ProtoReflect.Descriptor instead.
 func (*CoachSkillDetailRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{7}
+	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *CoachSkillDetailRequest) GetSkillId() string {
@@ -393,7 +305,7 @@ type CoachProfileRequest struct {
 
 func (x *CoachProfileRequest) Reset() {
 	*x = CoachProfileRequest{}
-	mi := &file_api_business_v1_coach_proto_msgTypes[8]
+	mi := &file_api_business_v1_coach_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -405,7 +317,7 @@ func (x *CoachProfileRequest) String() string {
 func (*CoachProfileRequest) ProtoMessage() {}
 
 func (x *CoachProfileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_coach_proto_msgTypes[8]
+	mi := &file_api_business_v1_coach_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -418,7 +330,7 @@ func (x *CoachProfileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CoachProfileRequest.ProtoReflect.Descriptor instead.
 func (*CoachProfileRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{8}
+	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *CoachProfileRequest) GetEmpty() *structpb.Struct {
@@ -437,7 +349,7 @@ type CoachUpdateProfileRequest struct {
 
 func (x *CoachUpdateProfileRequest) Reset() {
 	*x = CoachUpdateProfileRequest{}
-	mi := &file_api_business_v1_coach_proto_msgTypes[9]
+	mi := &file_api_business_v1_coach_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -449,7 +361,7 @@ func (x *CoachUpdateProfileRequest) String() string {
 func (*CoachUpdateProfileRequest) ProtoMessage() {}
 
 func (x *CoachUpdateProfileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_coach_proto_msgTypes[9]
+	mi := &file_api_business_v1_coach_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -462,7 +374,7 @@ func (x *CoachUpdateProfileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CoachUpdateProfileRequest.ProtoReflect.Descriptor instead.
 func (*CoachUpdateProfileRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{9}
+	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *CoachUpdateProfileRequest) GetBody() *v1.CoachProfile {
@@ -481,7 +393,7 @@ type CoachWorkbenchRequest struct {
 
 func (x *CoachWorkbenchRequest) Reset() {
 	*x = CoachWorkbenchRequest{}
-	mi := &file_api_business_v1_coach_proto_msgTypes[10]
+	mi := &file_api_business_v1_coach_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -493,7 +405,7 @@ func (x *CoachWorkbenchRequest) String() string {
 func (*CoachWorkbenchRequest) ProtoMessage() {}
 
 func (x *CoachWorkbenchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_coach_proto_msgTypes[10]
+	mi := &file_api_business_v1_coach_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -506,7 +418,7 @@ func (x *CoachWorkbenchRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CoachWorkbenchRequest.ProtoReflect.Descriptor instead.
 func (*CoachWorkbenchRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{10}
+	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *CoachWorkbenchRequest) GetEmpty() *structpb.Struct {
@@ -525,7 +437,7 @@ type CoachAcceptingRequest struct {
 
 func (x *CoachAcceptingRequest) Reset() {
 	*x = CoachAcceptingRequest{}
-	mi := &file_api_business_v1_coach_proto_msgTypes[11]
+	mi := &file_api_business_v1_coach_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -537,7 +449,7 @@ func (x *CoachAcceptingRequest) String() string {
 func (*CoachAcceptingRequest) ProtoMessage() {}
 
 func (x *CoachAcceptingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_coach_proto_msgTypes[11]
+	mi := &file_api_business_v1_coach_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -550,7 +462,7 @@ func (x *CoachAcceptingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CoachAcceptingRequest.ProtoReflect.Descriptor instead.
 func (*CoachAcceptingRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{11}
+	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *CoachAcceptingRequest) GetBody() *v1.AcceptingOrders {
@@ -569,7 +481,7 @@ type CoachHeartbeatRequest struct {
 
 func (x *CoachHeartbeatRequest) Reset() {
 	*x = CoachHeartbeatRequest{}
-	mi := &file_api_business_v1_coach_proto_msgTypes[12]
+	mi := &file_api_business_v1_coach_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -581,7 +493,7 @@ func (x *CoachHeartbeatRequest) String() string {
 func (*CoachHeartbeatRequest) ProtoMessage() {}
 
 func (x *CoachHeartbeatRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_coach_proto_msgTypes[12]
+	mi := &file_api_business_v1_coach_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -594,7 +506,7 @@ func (x *CoachHeartbeatRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CoachHeartbeatRequest.ProtoReflect.Descriptor instead.
 func (*CoachHeartbeatRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{12}
+	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *CoachHeartbeatRequest) GetEmpty() *structpb.Struct {
@@ -614,7 +526,7 @@ type CoachServicesRequest struct {
 
 func (x *CoachServicesRequest) Reset() {
 	*x = CoachServicesRequest{}
-	mi := &file_api_business_v1_coach_proto_msgTypes[13]
+	mi := &file_api_business_v1_coach_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -626,7 +538,7 @@ func (x *CoachServicesRequest) String() string {
 func (*CoachServicesRequest) ProtoMessage() {}
 
 func (x *CoachServicesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_coach_proto_msgTypes[13]
+	mi := &file_api_business_v1_coach_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -639,7 +551,7 @@ func (x *CoachServicesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CoachServicesRequest.ProtoReflect.Descriptor instead.
 func (*CoachServicesRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{13}
+	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *CoachServicesRequest) GetPageSize() int32 {
@@ -665,7 +577,7 @@ type CoachCreateServiceRequest struct {
 
 func (x *CoachCreateServiceRequest) Reset() {
 	*x = CoachCreateServiceRequest{}
-	mi := &file_api_business_v1_coach_proto_msgTypes[14]
+	mi := &file_api_business_v1_coach_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -677,7 +589,7 @@ func (x *CoachCreateServiceRequest) String() string {
 func (*CoachCreateServiceRequest) ProtoMessage() {}
 
 func (x *CoachCreateServiceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_coach_proto_msgTypes[14]
+	mi := &file_api_business_v1_coach_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -690,7 +602,7 @@ func (x *CoachCreateServiceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CoachCreateServiceRequest.ProtoReflect.Descriptor instead.
 func (*CoachCreateServiceRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{14}
+	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *CoachCreateServiceRequest) GetBody() *v1.CoachService {
@@ -710,7 +622,7 @@ type CoachUpdateServiceRequest struct {
 
 func (x *CoachUpdateServiceRequest) Reset() {
 	*x = CoachUpdateServiceRequest{}
-	mi := &file_api_business_v1_coach_proto_msgTypes[15]
+	mi := &file_api_business_v1_coach_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -722,7 +634,7 @@ func (x *CoachUpdateServiceRequest) String() string {
 func (*CoachUpdateServiceRequest) ProtoMessage() {}
 
 func (x *CoachUpdateServiceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_coach_proto_msgTypes[15]
+	mi := &file_api_business_v1_coach_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -735,7 +647,7 @@ func (x *CoachUpdateServiceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CoachUpdateServiceRequest.ProtoReflect.Descriptor instead.
 func (*CoachUpdateServiceRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{15}
+	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *CoachUpdateServiceRequest) GetServiceId() string {
@@ -761,7 +673,7 @@ type CoachPublishServiceRequest struct {
 
 func (x *CoachPublishServiceRequest) Reset() {
 	*x = CoachPublishServiceRequest{}
-	mi := &file_api_business_v1_coach_proto_msgTypes[16]
+	mi := &file_api_business_v1_coach_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -773,7 +685,7 @@ func (x *CoachPublishServiceRequest) String() string {
 func (*CoachPublishServiceRequest) ProtoMessage() {}
 
 func (x *CoachPublishServiceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_coach_proto_msgTypes[16]
+	mi := &file_api_business_v1_coach_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -786,7 +698,7 @@ func (x *CoachPublishServiceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CoachPublishServiceRequest.ProtoReflect.Descriptor instead.
 func (*CoachPublishServiceRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{16}
+	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *CoachPublishServiceRequest) GetServiceId() string {
@@ -805,7 +717,7 @@ type CoachUnpublishServiceRequest struct {
 
 func (x *CoachUnpublishServiceRequest) Reset() {
 	*x = CoachUnpublishServiceRequest{}
-	mi := &file_api_business_v1_coach_proto_msgTypes[17]
+	mi := &file_api_business_v1_coach_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -817,7 +729,7 @@ func (x *CoachUnpublishServiceRequest) String() string {
 func (*CoachUnpublishServiceRequest) ProtoMessage() {}
 
 func (x *CoachUnpublishServiceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_coach_proto_msgTypes[17]
+	mi := &file_api_business_v1_coach_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -830,7 +742,7 @@ func (x *CoachUnpublishServiceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CoachUnpublishServiceRequest.ProtoReflect.Descriptor instead.
 func (*CoachUnpublishServiceRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{17}
+	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *CoachUnpublishServiceRequest) GetServiceId() string {
@@ -849,7 +761,7 @@ type CoachAvailabilityRequest struct {
 
 func (x *CoachAvailabilityRequest) Reset() {
 	*x = CoachAvailabilityRequest{}
-	mi := &file_api_business_v1_coach_proto_msgTypes[18]
+	mi := &file_api_business_v1_coach_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -861,7 +773,7 @@ func (x *CoachAvailabilityRequest) String() string {
 func (*CoachAvailabilityRequest) ProtoMessage() {}
 
 func (x *CoachAvailabilityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_coach_proto_msgTypes[18]
+	mi := &file_api_business_v1_coach_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -874,7 +786,7 @@ func (x *CoachAvailabilityRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CoachAvailabilityRequest.ProtoReflect.Descriptor instead.
 func (*CoachAvailabilityRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{18}
+	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *CoachAvailabilityRequest) GetDate() string {
@@ -893,7 +805,7 @@ type CoachUpdateAvailabilityRequest struct {
 
 func (x *CoachUpdateAvailabilityRequest) Reset() {
 	*x = CoachUpdateAvailabilityRequest{}
-	mi := &file_api_business_v1_coach_proto_msgTypes[19]
+	mi := &file_api_business_v1_coach_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -905,7 +817,7 @@ func (x *CoachUpdateAvailabilityRequest) String() string {
 func (*CoachUpdateAvailabilityRequest) ProtoMessage() {}
 
 func (x *CoachUpdateAvailabilityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_business_v1_coach_proto_msgTypes[19]
+	mi := &file_api_business_v1_coach_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -918,7 +830,7 @@ func (x *CoachUpdateAvailabilityRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CoachUpdateAvailabilityRequest.ProtoReflect.Descriptor instead.
 func (*CoachUpdateAvailabilityRequest) Descriptor() ([]byte, []int) {
-	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{19}
+	return file_api_business_v1_coach_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *CoachUpdateAvailabilityRequest) GetBody() *v1.Availability {
@@ -938,11 +850,7 @@ const file_api_business_v1_coach_proto_rawDesc = "" +
 	"\x11CoachApplyRequest\x123\n" +
 	"\x04body\x18\x01 \x01(\v2\x1f.api.common.v1.CoachApplicationR\x04body\"=\n" +
 	"\x14CoachWithdrawRequest\x12%\n" +
-	"\x0eapplication_id\x18\x01 \x01(\tR\rapplicationId\"N\n" +
-	"\x1aCoachVerifyIdentityRequest\x120\n" +
-	"\x04body\x18\x01 \x01(\v2\x1c.api.common.v1.IdentityCheckR\x04body\"L\n" +
-	"\x1bCoachIdentityCurrentRequest\x12-\n" +
-	"\x05empty\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x05empty\"H\n" +
+	"\x0eapplication_id\x18\x01 \x01(\tR\rapplicationId\"H\n" +
 	"\x17CoachSubmitSkillRequest\x12-\n" +
 	"\x04body\x18\x01 \x01(\v2\x19.api.common.v1.CoachSkillR\x04body\"I\n" +
 	"\x12CoachSkillsRequest\x12\x1b\n" +
@@ -978,14 +886,12 @@ const file_api_business_v1_coach_proto_rawDesc = "" +
 	"\x18CoachAvailabilityRequest\x12\x12\n" +
 	"\x04date\x18\x01 \x01(\tR\x04date\"Q\n" +
 	"\x1eCoachUpdateAvailabilityRequest\x12/\n" +
-	"\x04body\x18\x01 \x01(\v2\x1b.api.common.v1.AvailabilityR\x04body2\xeb\x14\n" +
+	"\x04body\x18\x01 \x01(\v2\x1b.api.common.v1.AvailabilityR\x04body2\xcb\x12\n" +
 	"\fCoachService\x12\x92\x01\n" +
 	"\x17CoachApplicationCurrent\x12/.api.business.v1.CoachApplicationCurrentRequest\x1a\x1a.api.common.v1.ApiResponse\"*\x82\xd3\xe4\x93\x02$\x12\"/api/v1/coach/applications/current\x12v\n" +
 	"\n" +
 	"CoachApply\x12\".api.business.v1.CoachApplyRequest\x1a\x1a.api.common.v1.ApiResponse\"(\x82\xd3\xe4\x93\x02\":\x04body\"\x1a/api/v1/coach/applications\x12\x90\x01\n" +
-	"\rCoachWithdraw\x12%.api.business.v1.CoachWithdrawRequest\x1a\x1a.api.common.v1.ApiResponse\"<\x82\xd3\xe4\x93\x026\"4/api/v1/coach/applications/{application_id}/withdraw\x12\x8b\x01\n" +
-	"\x13CoachVerifyIdentity\x12+.api.business.v1.CoachVerifyIdentityRequest\x1a\x1a.api.common.v1.ApiResponse\"+\x82\xd3\xe4\x93\x02%:\x04body\"\x1d/api/v1/coach/identity-checks\x12\x8f\x01\n" +
-	"\x14CoachIdentityCurrent\x12,.api.business.v1.CoachIdentityCurrentRequest\x1a\x1a.api.common.v1.ApiResponse\"-\x82\xd3\xe4\x93\x02'\x12%/api/v1/coach/identity-checks/current\x12|\n" +
+	"\rCoachWithdraw\x12%.api.business.v1.CoachWithdrawRequest\x1a\x1a.api.common.v1.ApiResponse\"<\x82\xd3\xe4\x93\x026\"4/api/v1/coach/applications/{application_id}/withdraw\x12|\n" +
 	"\x10CoachSubmitSkill\x12(.api.business.v1.CoachSubmitSkillRequest\x1a\x1a.api.common.v1.ApiResponse\"\"\x82\xd3\xe4\x93\x02\x1c:\x04body\"\x14/api/v1/coach/skills\x12l\n" +
 	"\vCoachSkills\x12#.api.business.v1.CoachSkillsRequest\x1a\x1a.api.common.v1.ApiResponse\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/api/v1/coach/skills\x12\x81\x01\n" +
 	"\x10CoachSkillDetail\x12(.api.business.v1.CoachSkillDetailRequest\x1a\x1a.api.common.v1.ApiResponse\"'\x82\xd3\xe4\x93\x02!\x12\x1f/api/v1/coach/skills/{skill_id}\x12j\n" +
@@ -1014,98 +920,89 @@ func file_api_business_v1_coach_proto_rawDescGZIP() []byte {
 	return file_api_business_v1_coach_proto_rawDescData
 }
 
-var file_api_business_v1_coach_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
+var file_api_business_v1_coach_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_api_business_v1_coach_proto_goTypes = []any{
 	(*CoachApplicationCurrentRequest)(nil), // 0: api.business.v1.CoachApplicationCurrentRequest
 	(*CoachApplyRequest)(nil),              // 1: api.business.v1.CoachApplyRequest
 	(*CoachWithdrawRequest)(nil),           // 2: api.business.v1.CoachWithdrawRequest
-	(*CoachVerifyIdentityRequest)(nil),     // 3: api.business.v1.CoachVerifyIdentityRequest
-	(*CoachIdentityCurrentRequest)(nil),    // 4: api.business.v1.CoachIdentityCurrentRequest
-	(*CoachSubmitSkillRequest)(nil),        // 5: api.business.v1.CoachSubmitSkillRequest
-	(*CoachSkillsRequest)(nil),             // 6: api.business.v1.CoachSkillsRequest
-	(*CoachSkillDetailRequest)(nil),        // 7: api.business.v1.CoachSkillDetailRequest
-	(*CoachProfileRequest)(nil),            // 8: api.business.v1.CoachProfileRequest
-	(*CoachUpdateProfileRequest)(nil),      // 9: api.business.v1.CoachUpdateProfileRequest
-	(*CoachWorkbenchRequest)(nil),          // 10: api.business.v1.CoachWorkbenchRequest
-	(*CoachAcceptingRequest)(nil),          // 11: api.business.v1.CoachAcceptingRequest
-	(*CoachHeartbeatRequest)(nil),          // 12: api.business.v1.CoachHeartbeatRequest
-	(*CoachServicesRequest)(nil),           // 13: api.business.v1.CoachServicesRequest
-	(*CoachCreateServiceRequest)(nil),      // 14: api.business.v1.CoachCreateServiceRequest
-	(*CoachUpdateServiceRequest)(nil),      // 15: api.business.v1.CoachUpdateServiceRequest
-	(*CoachPublishServiceRequest)(nil),     // 16: api.business.v1.CoachPublishServiceRequest
-	(*CoachUnpublishServiceRequest)(nil),   // 17: api.business.v1.CoachUnpublishServiceRequest
-	(*CoachAvailabilityRequest)(nil),       // 18: api.business.v1.CoachAvailabilityRequest
-	(*CoachUpdateAvailabilityRequest)(nil), // 19: api.business.v1.CoachUpdateAvailabilityRequest
-	(*structpb.Struct)(nil),                // 20: google.protobuf.Struct
-	(*v1.CoachApplication)(nil),            // 21: api.common.v1.CoachApplication
-	(*v1.IdentityCheck)(nil),               // 22: api.common.v1.IdentityCheck
-	(*v1.CoachSkill)(nil),                  // 23: api.common.v1.CoachSkill
-	(*v1.CoachProfile)(nil),                // 24: api.common.v1.CoachProfile
-	(*v1.AcceptingOrders)(nil),             // 25: api.common.v1.AcceptingOrders
-	(*v1.CoachService)(nil),                // 26: api.common.v1.CoachService
-	(*v1.CoachServicePatch)(nil),           // 27: api.common.v1.CoachServicePatch
-	(*v1.Availability)(nil),                // 28: api.common.v1.Availability
-	(*v1.ApiResponse)(nil),                 // 29: api.common.v1.ApiResponse
+	(*CoachSubmitSkillRequest)(nil),        // 3: api.business.v1.CoachSubmitSkillRequest
+	(*CoachSkillsRequest)(nil),             // 4: api.business.v1.CoachSkillsRequest
+	(*CoachSkillDetailRequest)(nil),        // 5: api.business.v1.CoachSkillDetailRequest
+	(*CoachProfileRequest)(nil),            // 6: api.business.v1.CoachProfileRequest
+	(*CoachUpdateProfileRequest)(nil),      // 7: api.business.v1.CoachUpdateProfileRequest
+	(*CoachWorkbenchRequest)(nil),          // 8: api.business.v1.CoachWorkbenchRequest
+	(*CoachAcceptingRequest)(nil),          // 9: api.business.v1.CoachAcceptingRequest
+	(*CoachHeartbeatRequest)(nil),          // 10: api.business.v1.CoachHeartbeatRequest
+	(*CoachServicesRequest)(nil),           // 11: api.business.v1.CoachServicesRequest
+	(*CoachCreateServiceRequest)(nil),      // 12: api.business.v1.CoachCreateServiceRequest
+	(*CoachUpdateServiceRequest)(nil),      // 13: api.business.v1.CoachUpdateServiceRequest
+	(*CoachPublishServiceRequest)(nil),     // 14: api.business.v1.CoachPublishServiceRequest
+	(*CoachUnpublishServiceRequest)(nil),   // 15: api.business.v1.CoachUnpublishServiceRequest
+	(*CoachAvailabilityRequest)(nil),       // 16: api.business.v1.CoachAvailabilityRequest
+	(*CoachUpdateAvailabilityRequest)(nil), // 17: api.business.v1.CoachUpdateAvailabilityRequest
+	(*structpb.Struct)(nil),                // 18: google.protobuf.Struct
+	(*v1.CoachApplication)(nil),            // 19: api.common.v1.CoachApplication
+	(*v1.CoachSkill)(nil),                  // 20: api.common.v1.CoachSkill
+	(*v1.CoachProfile)(nil),                // 21: api.common.v1.CoachProfile
+	(*v1.AcceptingOrders)(nil),             // 22: api.common.v1.AcceptingOrders
+	(*v1.CoachService)(nil),                // 23: api.common.v1.CoachService
+	(*v1.CoachServicePatch)(nil),           // 24: api.common.v1.CoachServicePatch
+	(*v1.Availability)(nil),                // 25: api.common.v1.Availability
+	(*v1.ApiResponse)(nil),                 // 26: api.common.v1.ApiResponse
 }
 var file_api_business_v1_coach_proto_depIdxs = []int32{
-	20, // 0: api.business.v1.CoachApplicationCurrentRequest.empty:type_name -> google.protobuf.Struct
-	21, // 1: api.business.v1.CoachApplyRequest.body:type_name -> api.common.v1.CoachApplication
-	22, // 2: api.business.v1.CoachVerifyIdentityRequest.body:type_name -> api.common.v1.IdentityCheck
-	20, // 3: api.business.v1.CoachIdentityCurrentRequest.empty:type_name -> google.protobuf.Struct
-	23, // 4: api.business.v1.CoachSubmitSkillRequest.body:type_name -> api.common.v1.CoachSkill
-	20, // 5: api.business.v1.CoachProfileRequest.empty:type_name -> google.protobuf.Struct
-	24, // 6: api.business.v1.CoachUpdateProfileRequest.body:type_name -> api.common.v1.CoachProfile
-	20, // 7: api.business.v1.CoachWorkbenchRequest.empty:type_name -> google.protobuf.Struct
-	25, // 8: api.business.v1.CoachAcceptingRequest.body:type_name -> api.common.v1.AcceptingOrders
-	20, // 9: api.business.v1.CoachHeartbeatRequest.empty:type_name -> google.protobuf.Struct
-	26, // 10: api.business.v1.CoachCreateServiceRequest.body:type_name -> api.common.v1.CoachService
-	27, // 11: api.business.v1.CoachUpdateServiceRequest.body:type_name -> api.common.v1.CoachServicePatch
-	28, // 12: api.business.v1.CoachUpdateAvailabilityRequest.body:type_name -> api.common.v1.Availability
-	0,  // 13: api.business.v1.CoachService.CoachApplicationCurrent:input_type -> api.business.v1.CoachApplicationCurrentRequest
-	1,  // 14: api.business.v1.CoachService.CoachApply:input_type -> api.business.v1.CoachApplyRequest
-	2,  // 15: api.business.v1.CoachService.CoachWithdraw:input_type -> api.business.v1.CoachWithdrawRequest
-	3,  // 16: api.business.v1.CoachService.CoachVerifyIdentity:input_type -> api.business.v1.CoachVerifyIdentityRequest
-	4,  // 17: api.business.v1.CoachService.CoachIdentityCurrent:input_type -> api.business.v1.CoachIdentityCurrentRequest
-	5,  // 18: api.business.v1.CoachService.CoachSubmitSkill:input_type -> api.business.v1.CoachSubmitSkillRequest
-	6,  // 19: api.business.v1.CoachService.CoachSkills:input_type -> api.business.v1.CoachSkillsRequest
-	7,  // 20: api.business.v1.CoachService.CoachSkillDetail:input_type -> api.business.v1.CoachSkillDetailRequest
-	8,  // 21: api.business.v1.CoachService.CoachProfile:input_type -> api.business.v1.CoachProfileRequest
-	9,  // 22: api.business.v1.CoachService.CoachUpdateProfile:input_type -> api.business.v1.CoachUpdateProfileRequest
-	10, // 23: api.business.v1.CoachService.CoachWorkbench:input_type -> api.business.v1.CoachWorkbenchRequest
-	11, // 24: api.business.v1.CoachService.CoachAccepting:input_type -> api.business.v1.CoachAcceptingRequest
-	12, // 25: api.business.v1.CoachService.CoachHeartbeat:input_type -> api.business.v1.CoachHeartbeatRequest
-	13, // 26: api.business.v1.CoachService.CoachServices:input_type -> api.business.v1.CoachServicesRequest
-	14, // 27: api.business.v1.CoachService.CoachCreateService:input_type -> api.business.v1.CoachCreateServiceRequest
-	15, // 28: api.business.v1.CoachService.CoachUpdateService:input_type -> api.business.v1.CoachUpdateServiceRequest
-	16, // 29: api.business.v1.CoachService.CoachPublishService:input_type -> api.business.v1.CoachPublishServiceRequest
-	17, // 30: api.business.v1.CoachService.CoachUnpublishService:input_type -> api.business.v1.CoachUnpublishServiceRequest
-	18, // 31: api.business.v1.CoachService.CoachAvailability:input_type -> api.business.v1.CoachAvailabilityRequest
-	19, // 32: api.business.v1.CoachService.CoachUpdateAvailability:input_type -> api.business.v1.CoachUpdateAvailabilityRequest
-	29, // 33: api.business.v1.CoachService.CoachApplicationCurrent:output_type -> api.common.v1.ApiResponse
-	29, // 34: api.business.v1.CoachService.CoachApply:output_type -> api.common.v1.ApiResponse
-	29, // 35: api.business.v1.CoachService.CoachWithdraw:output_type -> api.common.v1.ApiResponse
-	29, // 36: api.business.v1.CoachService.CoachVerifyIdentity:output_type -> api.common.v1.ApiResponse
-	29, // 37: api.business.v1.CoachService.CoachIdentityCurrent:output_type -> api.common.v1.ApiResponse
-	29, // 38: api.business.v1.CoachService.CoachSubmitSkill:output_type -> api.common.v1.ApiResponse
-	29, // 39: api.business.v1.CoachService.CoachSkills:output_type -> api.common.v1.ApiResponse
-	29, // 40: api.business.v1.CoachService.CoachSkillDetail:output_type -> api.common.v1.ApiResponse
-	29, // 41: api.business.v1.CoachService.CoachProfile:output_type -> api.common.v1.ApiResponse
-	29, // 42: api.business.v1.CoachService.CoachUpdateProfile:output_type -> api.common.v1.ApiResponse
-	29, // 43: api.business.v1.CoachService.CoachWorkbench:output_type -> api.common.v1.ApiResponse
-	29, // 44: api.business.v1.CoachService.CoachAccepting:output_type -> api.common.v1.ApiResponse
-	29, // 45: api.business.v1.CoachService.CoachHeartbeat:output_type -> api.common.v1.ApiResponse
-	29, // 46: api.business.v1.CoachService.CoachServices:output_type -> api.common.v1.ApiResponse
-	29, // 47: api.business.v1.CoachService.CoachCreateService:output_type -> api.common.v1.ApiResponse
-	29, // 48: api.business.v1.CoachService.CoachUpdateService:output_type -> api.common.v1.ApiResponse
-	29, // 49: api.business.v1.CoachService.CoachPublishService:output_type -> api.common.v1.ApiResponse
-	29, // 50: api.business.v1.CoachService.CoachUnpublishService:output_type -> api.common.v1.ApiResponse
-	29, // 51: api.business.v1.CoachService.CoachAvailability:output_type -> api.common.v1.ApiResponse
-	29, // 52: api.business.v1.CoachService.CoachUpdateAvailability:output_type -> api.common.v1.ApiResponse
-	33, // [33:53] is the sub-list for method output_type
-	13, // [13:33] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	18, // 0: api.business.v1.CoachApplicationCurrentRequest.empty:type_name -> google.protobuf.Struct
+	19, // 1: api.business.v1.CoachApplyRequest.body:type_name -> api.common.v1.CoachApplication
+	20, // 2: api.business.v1.CoachSubmitSkillRequest.body:type_name -> api.common.v1.CoachSkill
+	18, // 3: api.business.v1.CoachProfileRequest.empty:type_name -> google.protobuf.Struct
+	21, // 4: api.business.v1.CoachUpdateProfileRequest.body:type_name -> api.common.v1.CoachProfile
+	18, // 5: api.business.v1.CoachWorkbenchRequest.empty:type_name -> google.protobuf.Struct
+	22, // 6: api.business.v1.CoachAcceptingRequest.body:type_name -> api.common.v1.AcceptingOrders
+	18, // 7: api.business.v1.CoachHeartbeatRequest.empty:type_name -> google.protobuf.Struct
+	23, // 8: api.business.v1.CoachCreateServiceRequest.body:type_name -> api.common.v1.CoachService
+	24, // 9: api.business.v1.CoachUpdateServiceRequest.body:type_name -> api.common.v1.CoachServicePatch
+	25, // 10: api.business.v1.CoachUpdateAvailabilityRequest.body:type_name -> api.common.v1.Availability
+	0,  // 11: api.business.v1.CoachService.CoachApplicationCurrent:input_type -> api.business.v1.CoachApplicationCurrentRequest
+	1,  // 12: api.business.v1.CoachService.CoachApply:input_type -> api.business.v1.CoachApplyRequest
+	2,  // 13: api.business.v1.CoachService.CoachWithdraw:input_type -> api.business.v1.CoachWithdrawRequest
+	3,  // 14: api.business.v1.CoachService.CoachSubmitSkill:input_type -> api.business.v1.CoachSubmitSkillRequest
+	4,  // 15: api.business.v1.CoachService.CoachSkills:input_type -> api.business.v1.CoachSkillsRequest
+	5,  // 16: api.business.v1.CoachService.CoachSkillDetail:input_type -> api.business.v1.CoachSkillDetailRequest
+	6,  // 17: api.business.v1.CoachService.CoachProfile:input_type -> api.business.v1.CoachProfileRequest
+	7,  // 18: api.business.v1.CoachService.CoachUpdateProfile:input_type -> api.business.v1.CoachUpdateProfileRequest
+	8,  // 19: api.business.v1.CoachService.CoachWorkbench:input_type -> api.business.v1.CoachWorkbenchRequest
+	9,  // 20: api.business.v1.CoachService.CoachAccepting:input_type -> api.business.v1.CoachAcceptingRequest
+	10, // 21: api.business.v1.CoachService.CoachHeartbeat:input_type -> api.business.v1.CoachHeartbeatRequest
+	11, // 22: api.business.v1.CoachService.CoachServices:input_type -> api.business.v1.CoachServicesRequest
+	12, // 23: api.business.v1.CoachService.CoachCreateService:input_type -> api.business.v1.CoachCreateServiceRequest
+	13, // 24: api.business.v1.CoachService.CoachUpdateService:input_type -> api.business.v1.CoachUpdateServiceRequest
+	14, // 25: api.business.v1.CoachService.CoachPublishService:input_type -> api.business.v1.CoachPublishServiceRequest
+	15, // 26: api.business.v1.CoachService.CoachUnpublishService:input_type -> api.business.v1.CoachUnpublishServiceRequest
+	16, // 27: api.business.v1.CoachService.CoachAvailability:input_type -> api.business.v1.CoachAvailabilityRequest
+	17, // 28: api.business.v1.CoachService.CoachUpdateAvailability:input_type -> api.business.v1.CoachUpdateAvailabilityRequest
+	26, // 29: api.business.v1.CoachService.CoachApplicationCurrent:output_type -> api.common.v1.ApiResponse
+	26, // 30: api.business.v1.CoachService.CoachApply:output_type -> api.common.v1.ApiResponse
+	26, // 31: api.business.v1.CoachService.CoachWithdraw:output_type -> api.common.v1.ApiResponse
+	26, // 32: api.business.v1.CoachService.CoachSubmitSkill:output_type -> api.common.v1.ApiResponse
+	26, // 33: api.business.v1.CoachService.CoachSkills:output_type -> api.common.v1.ApiResponse
+	26, // 34: api.business.v1.CoachService.CoachSkillDetail:output_type -> api.common.v1.ApiResponse
+	26, // 35: api.business.v1.CoachService.CoachProfile:output_type -> api.common.v1.ApiResponse
+	26, // 36: api.business.v1.CoachService.CoachUpdateProfile:output_type -> api.common.v1.ApiResponse
+	26, // 37: api.business.v1.CoachService.CoachWorkbench:output_type -> api.common.v1.ApiResponse
+	26, // 38: api.business.v1.CoachService.CoachAccepting:output_type -> api.common.v1.ApiResponse
+	26, // 39: api.business.v1.CoachService.CoachHeartbeat:output_type -> api.common.v1.ApiResponse
+	26, // 40: api.business.v1.CoachService.CoachServices:output_type -> api.common.v1.ApiResponse
+	26, // 41: api.business.v1.CoachService.CoachCreateService:output_type -> api.common.v1.ApiResponse
+	26, // 42: api.business.v1.CoachService.CoachUpdateService:output_type -> api.common.v1.ApiResponse
+	26, // 43: api.business.v1.CoachService.CoachPublishService:output_type -> api.common.v1.ApiResponse
+	26, // 44: api.business.v1.CoachService.CoachUnpublishService:output_type -> api.common.v1.ApiResponse
+	26, // 45: api.business.v1.CoachService.CoachAvailability:output_type -> api.common.v1.ApiResponse
+	26, // 46: api.business.v1.CoachService.CoachUpdateAvailability:output_type -> api.common.v1.ApiResponse
+	29, // [29:47] is the sub-list for method output_type
+	11, // [11:29] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
 func init() { file_api_business_v1_coach_proto_init() }
@@ -1119,7 +1016,7 @@ func file_api_business_v1_coach_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_business_v1_coach_proto_rawDesc), len(file_api_business_v1_coach_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   20,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

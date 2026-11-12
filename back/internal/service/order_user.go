@@ -2,14 +2,34 @@ package service
 
 import (
 	"context"
+	"errors"
+
 	commonv1 "dd_web/back/api/common/v1"
 	orderv1 "dd_web/back/api/order/v1"
+	"dd_web/back/internal/biz"
+	"dd_web/back/internal/ecode"
 )
 
 func (s *OrderService) TradeQuote(context.Context, *orderv1.TradeQuoteRequest) (*commonv1.ApiResponse, error) {
 	return nil, notImplemented("trade.quote")
 }
-func (s *OrderService) TradeCreateOrder(context.Context, *orderv1.TradeCreateOrderRequest) (*commonv1.ApiResponse, error) {
+func (s *OrderService) TradeCreateOrder(ctx context.Context, _ *orderv1.TradeCreateOrderRequest) (*commonv1.ApiResponse, error) {
+	principal, found := biz.PrincipalFromContext(ctx)
+	if !found || principal.UserID <= 0 {
+		return nil, ecode.New(ecode.AuthRequired)
+	}
+	if s.identity == nil {
+		return nil, ecode.New(ecode.IdentityNotConfigured)
+	}
+	if err := s.identity.RequireAdult(ctx, principal.UserID); err != nil {
+		if errors.Is(err, biz.ErrAdultIdentityRequired) {
+			return nil, ecode.New(ecode.AdultIdentityRequired)
+		}
+		if errors.Is(err, biz.ErrIdentityUnavailable) {
+			return nil, ecode.New(ecode.IdentityNotConfigured)
+		}
+		return nil, ecode.Wrap(ecode.InternalError, err)
+	}
 	return nil, notImplemented("trade.createOrder")
 }
 func (s *OrderService) TradeOrders(context.Context, *orderv1.TradeOrdersRequest) (*commonv1.ApiResponse, error) {

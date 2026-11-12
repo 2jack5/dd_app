@@ -118,6 +118,8 @@ message CoachApplication {
 message IdentityCheck {
   string provider = 1;
   string consent_version = 2;
+  string real_name = 3;
+  string identity_number = 4;
 }
 
 message CoachSkill {

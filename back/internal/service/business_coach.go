@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	businessv1 "dd_web/back/api/business/v1"
 	commonv1 "dd_web/back/api/common/v1"
 )
@@ -19,16 +20,6 @@ func (s *BusinessService) CoachApply(context.Context, *businessv1.CoachApplyRequ
 // CoachWithdraw 撤回指定的陪练师入驻申请。
 func (s *BusinessService) CoachWithdraw(context.Context, *businessv1.CoachWithdrawRequest) (*commonv1.ApiResponse, error) {
 	return nil, notImplemented("coach.withdraw")
-}
-
-// CoachVerifyIdentity 提交陪练师实名认证请求。
-func (s *BusinessService) CoachVerifyIdentity(context.Context, *businessv1.CoachVerifyIdentityRequest) (*commonv1.ApiResponse, error) {
-	return nil, notImplemented("coach.verifyIdentity")
-}
-
-// CoachIdentityCurrent 查询当前用户的实名认证记录。
-func (s *BusinessService) CoachIdentityCurrent(context.Context, *businessv1.CoachIdentityCurrentRequest) (*commonv1.ApiResponse, error) {
-	return nil, notImplemented("coach.identityCurrent")
 }
 
 // CoachSubmitSkill 提交陪练师技能认证申请。
