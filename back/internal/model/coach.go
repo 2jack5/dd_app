@@ -44,6 +44,7 @@ type IdentityCheck struct {
 	UserID            int64                       `gorm:"column:user_id;type:bigint;not null;comment:→users" json:"user_id,string"`                                              // →users
 	Provider          string                      `gorm:"column:provider;type:varchar(32);not null;comment:核验渠道" json:"provider"`                                                // 核验渠道
 	ProviderRequestID string                      `gorm:"column:provider_request_id;type:varchar(128);not null;comment:渠道请求号" json:"provider_request_id"`                        // 渠道请求号
+	ConsentVersion    string                      `gorm:"column:consent_version;type:varchar(64);not null;default:'';comment:用户同意的实名协议版本" json:"consent_version"`                // 用户同意的实名协议版本
 	Status            IdentityCheckStatus         `gorm:"column:status;type:varchar(24);not null;comment:PENDING/PASSED/FAILED/EXPIRED/REVOKED" json:"status"`                   // PENDING/PASSED/FAILED/EXPIRED/REVOKED
 	NameMasked        *string                     `gorm:"column:name_masked;type:varchar(64);comment:脱敏姓名" json:"name_masked"`                                                   // 脱敏姓名
 	AgeCheckResult    IdentityCheckAgeCheckResult `gorm:"column:age_check_result;type:varchar(24);not null;comment:UNKNOWN/ELIGIBLE/INELIGIBLE；年龄阈值按规则" json:"age_check_result"` // UNKNOWN/ELIGIBLE/INELIGIBLE；年龄阈值按规则

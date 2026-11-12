@@ -32,7 +32,7 @@ func TestRedisSessionStoreWritesTokenAndUserIndex(t *testing.T) {
 	store := NewRedisSessionStore(client)
 	store.now = func() time.Time { return time.Unix(1_700_000_000, 0) }
 	err := store.SaveRefreshSession(context.Background(), biz.RefreshSession{
-		UserID: 7, AuthVersion: 2, ClientType: biz.WechatClientMini,
+		UserID: 7, AuthVersion: 2, SessionID: "session-1", ClientType: biz.WechatClientMini,
 		RefreshTokenHash: "token-hash", ExpiresAt: store.now().Add(time.Hour),
 	})
 	if err != nil {
@@ -53,7 +53,7 @@ func TestRedisSessionStoreRejectsUnavailableClient(t *testing.T) {
 	client := redis.NewClient(&redis.Options{Addr: "unused:6379"})
 	_ = client.Close()
 	store := NewRedisSessionStore(client)
-	err := store.SaveRefreshSession(context.Background(), biz.RefreshSession{UserID: 1, RefreshTokenHash: "hash", ExpiresAt: time.Now().Add(time.Hour)})
+	err := store.SaveRefreshSession(context.Background(), biz.RefreshSession{UserID: 1, SessionID: "session-1", RefreshTokenHash: "hash", ExpiresAt: time.Now().Add(time.Hour)})
 	if err == nil {
 		t.Fatal("closed redis client was accepted")
 	}
@@ -67,7 +67,7 @@ func TestRedisSessionNamespacesSeparateAdminAndUser(t *testing.T) {
 	defer client.Close()
 	hook := &captureRedisHook{}
 	client.AddHook(hook)
-	session := biz.RefreshSession{UserID: 7, AuthVersion: 1, ClientType: "ADMIN", RefreshTokenHash: "same-hash", ExpiresAt: time.Now().Add(time.Hour)}
+	session := biz.RefreshSession{UserID: 7, AuthVersion: 1, SessionID: "same-session", ClientType: "ADMIN", RefreshTokenHash: "same-hash", ExpiresAt: time.Now().Add(time.Hour)}
 	for _, store := range []*RedisSessionStore{NewRedisSessionStore(client), NewRedisSessionStore(client, "admin")} {
 		if err := store.SaveRefreshSession(context.Background(), session); err != nil {
 			t.Fatal(err)
@@ -83,7 +83,7 @@ func TestRedisSessionNamespacesSeparateAdminAndUser(t *testing.T) {
 			keys[key] = true
 		}
 	}
-	for _, key := range []string{"auth:refresh:same-hash", "auth:admin_refresh:same-hash", "auth:user_sessions:7", "auth:admin_sessions:7"} {
+	for _, key := range []string{"auth:refresh:same-hash", "auth:admin_refresh:same-hash", "auth:user_sessions:7", "auth:admin_sessions:7", "auth:session:same-session", "auth:admin_session:same-session"} {
 		if !keys[key] {
 			t.Errorf("missing isolated session key %s", key)
 		}

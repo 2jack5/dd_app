@@ -3337,7 +3337,7 @@
         "tags": [
           "user / 账户与通知"
         ],
-        "x-implementation": "planned",
+        "x-implementation": "implemented",
         "x-permission": "",
         "x-idempotent": true,
         "responses": {
@@ -4733,7 +4733,7 @@
     "/api/v1/orders": {
       "post": {
         "operationId": "trade.createOrder",
-        "summary": "消费报价并原子预占时段",
+        "summary": "实名通过且年满18岁后消费报价并原子预占时段",
         "tags": [
           "user / 报价与订单"
         ],
@@ -7953,14 +7953,14 @@
         ]
       }
     },
-    "/api/v1/coach/identity-checks": {
+    "/api/v1/users/me/identity-checks": {
       "post": {
-        "operationId": "coach.verifyIdentity",
-        "summary": "发起第三方实名与年龄核验",
+        "operationId": "user.verifyIdentity",
+        "summary": "用户实名及18岁年龄核验",
         "tags": [
-          "coach / 入驻与认证"
+          "user / 账户与通知"
         ],
-        "x-implementation": "planned",
+        "x-implementation": "implemented",
         "x-permission": "",
         "x-idempotent": true,
         "responses": {
@@ -8095,14 +8095,14 @@
         ]
       }
     },
-    "/api/v1/coach/identity-checks/current": {
+    "/api/v1/users/me/identity-checks/current": {
       "get": {
-        "operationId": "coach.identityCurrent",
-        "summary": "当前有效实名及年龄资格",
+        "operationId": "user.identityCurrent",
+        "summary": "用户当前实名及18岁资格",
         "tags": [
-          "coach / 入驻与认证"
+          "user / 账户与通知"
         ],
-        "x-implementation": "planned",
+        "x-implementation": "implemented",
         "x-permission": "",
         "x-idempotent": false,
         "responses": {
@@ -25946,18 +25946,32 @@
         "properties": {
           "provider": {
             "type": "string",
-            "maxLength": 512
+            "minLength": 1,
+            "maxLength": 32
           },
           "consent_version": {
             "type": "string",
-            "maxLength": 512
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "real_name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 64
+          },
+          "identity_number": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{16}[0-9Xx]$",
+            "description": "中国大陆18位居民身份证号；服务端校验出生日期与校验位"
           }
         },
         "required": [
           "provider",
-          "consent_version"
+          "consent_version",
+          "real_name",
+          "identity_number"
         ],
-        "description": "创建服务端核验会话并返回第三方授权入口；不在业务表或日志接收完整证件照片。渠道产品可能额外需要的敏感字段由受控适配层定义。"
+        "description": "实名二要素仅通过受控适配层发送给核验渠道；业务数据库只保存脱敏姓名、渠道请求号和结果，不保存身份证号原文。"
       },
       "CoachSkill": {
         "type": "object",

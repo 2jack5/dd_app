@@ -46,3 +46,11 @@ wechat:
   mini_secret: # 微信小程序 AppSecret
   open_app_id: # 微信开放平台移动应用 AppID
   open_secret: # 微信开放平台移动应用 AppSecret
+
+# 实名渠道需实现项目约定的 HTTP JSON 校验协议；敏感原文仅发送给渠道，不写入数据库。
+identity:
+  provider: # 渠道标识，例如 GENERIC_HTTP
+  verify_url: # 实名二要素校验 HTTPS 地址
+  app_id: # 渠道应用标识
+  api_key: # 生产环境请通过 NX_IDENTITY__API_KEY 注入
+  timeout: 5s

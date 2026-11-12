@@ -16,6 +16,14 @@ message UserUpdateProfileRequest {
   api.common.v1.ProfileUpdate body = 1;
 }
 
+message UserVerifyIdentityRequest {
+  api.common.v1.IdentityCheck body = 1;
+}
+
+message UserIdentityCurrentRequest {
+  google.protobuf.Struct empty = 1;
+}
+
 message AuthLogoutRequest {
   google.protobuf.Struct empty = 1;
 }
@@ -63,6 +71,17 @@ service AccountService {
     option (google.api.http) = {
       patch: "/api/v1/users/me"
       body: "body"
+    };
+  }
+  rpc UserVerifyIdentity (UserVerifyIdentityRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/users/me/identity-checks"
+      body: "body"
+    };
+  }
+  rpc UserIdentityCurrent (UserIdentityCurrentRequest) returns (api.common.v1.ApiResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/users/me/identity-checks/current"
     };
   }
   rpc AuthLogout (AuthLogoutRequest) returns (api.common.v1.ApiResponse) {

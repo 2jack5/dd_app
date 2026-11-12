@@ -20,12 +20,14 @@ const (
 	CoachNotVerified       Code = 1104
 	IdempotencyKeyRequired Code = 1105
 	InvalidCredentials     Code = 1106
+	AdultIdentityRequired  Code = 1107
 
-	InvalidWechatCode    Code = 1200
-	AuthNotConfigured    Code = 1201
-	ChannelNotConfigured Code = 1202
-	AdminAccountExists   Code = 1300
-	AdminRoleInvalid     Code = 1301
+	InvalidWechatCode     Code = 1200
+	AuthNotConfigured     Code = 1201
+	ChannelNotConfigured  Code = 1202
+	IdentityNotConfigured Code = 1203
+	AdminAccountExists    Code = 1300
+	AdminRoleInvalid      Code = 1301
 
 	InternalError Code = 5000
 )
@@ -50,8 +52,10 @@ var definitions = map[Code]Definition{
 	InvalidWechatCode:      {http.StatusUnauthorized, "微信登录凭据无效或已使用"},
 	AuthNotConfigured:      {http.StatusServiceUnavailable, "登录服务暂时不可用"},
 	ChannelNotConfigured:   {http.StatusServiceUnavailable, "渠道服务暂时不可用"},
+	IdentityNotConfigured:  {http.StatusServiceUnavailable, "实名认证服务暂时不可用"},
 	InternalError:          {http.StatusInternalServerError, "系统内部错误"},
 	InvalidCredentials:     {http.StatusUnauthorized, "账号或密码错误"},
+	AdultIdentityRequired:  {http.StatusForbidden, "下单前请完成实名认证并确认已满18岁"},
 	AdminAccountExists:     {http.StatusConflict, "管理员账号已存在"},
 	AdminRoleInvalid:       {http.StatusBadRequest, "角色不存在或未启用"},
 }

@@ -26,7 +26,8 @@ func RunBusiness() error {
 		catalog := biz.NewCatalogUsecase(data.NewCatalogRepo(dataSet))
 		auth := newAuthUsecase(cfg, dataSet, redisClient)
 		adminUsecase := newAdminUsecase(cfg, dataSet, redisClient)
-		svc := service.NewBusinessService(biz.NewSystemUsecase(data.NewDependencyHealth(dataSet, redisClient)), catalog, auth, adminUsecase)
+		identity := biz.NewIdentityUsecase(infra.NewIdentityClient(cfg.Identity), data.NewIdentityRepo(dataSet))
+		svc := service.NewBusinessService(biz.NewSystemUsecase(data.NewDependencyHealth(dataSet, redisClient)), catalog, auth, adminUsecase, identity)
 		authenticator := biz.ScopedAuthenticator{
 			User:  auth,
 			Admin: adminUsecase,
@@ -38,7 +39,8 @@ func RunBusiness() error {
 
 func RunOrder() error {
 	return run("dongdong-order-api", func(cfg *config.Config, dataSet *data.Data, redisClient *redis.Client) (*khttp.Server, time.Duration, error) {
-		svc := service.NewOrderService(biz.NewSystemUsecase(data.NewDependencyHealth(dataSet, redisClient)))
+		identity := biz.NewIdentityUsecase(nil, data.NewIdentityRepo(dataSet))
+		svc := service.NewOrderService(biz.NewSystemUsecase(data.NewDependencyHealth(dataSet, redisClient)), identity)
 		authenticator := biz.ScopedAuthenticator{
 			User:  newAuthUsecase(cfg, dataSet, redisClient),
 			Admin: newAdminUsecase(cfg, dataSet, redisClient),

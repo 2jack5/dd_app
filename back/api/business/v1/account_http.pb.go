@@ -27,8 +27,10 @@ const OperationAccountServiceMediaPrepareUpload = "/api.business.v1.AccountServi
 const OperationAccountServiceNotificationList = "/api.business.v1.AccountService/NotificationList"
 const OperationAccountServiceNotificationRead = "/api.business.v1.AccountService/NotificationRead"
 const OperationAccountServiceUserCancelAccount = "/api.business.v1.AccountService/UserCancelAccount"
+const OperationAccountServiceUserIdentityCurrent = "/api.business.v1.AccountService/UserIdentityCurrent"
 const OperationAccountServiceUserProfile = "/api.business.v1.AccountService/UserProfile"
 const OperationAccountServiceUserUpdateProfile = "/api.business.v1.AccountService/UserUpdateProfile"
+const OperationAccountServiceUserVerifyIdentity = "/api.business.v1.AccountService/UserVerifyIdentity"
 
 type AccountServiceHTTPServer interface {
 	AgreementAccept(context.Context, *AgreementAcceptRequest) (*v1.ApiResponse, error)
@@ -40,14 +42,18 @@ type AccountServiceHTTPServer interface {
 	NotificationList(context.Context, *NotificationListRequest) (*v1.ApiResponse, error)
 	NotificationRead(context.Context, *NotificationReadRequest) (*v1.ApiResponse, error)
 	UserCancelAccount(context.Context, *UserCancelAccountRequest) (*v1.ApiResponse, error)
+	UserIdentityCurrent(context.Context, *UserIdentityCurrentRequest) (*v1.ApiResponse, error)
 	UserProfile(context.Context, *UserProfileRequest) (*v1.ApiResponse, error)
 	UserUpdateProfile(context.Context, *UserUpdateProfileRequest) (*v1.ApiResponse, error)
+	UserVerifyIdentity(context.Context, *UserVerifyIdentityRequest) (*v1.ApiResponse, error)
 }
 
 func RegisterAccountServiceHTTPServer(s *http.Server, srv AccountServiceHTTPServer) {
 	r := s.Route("/")
 	r.Handle("GET", "/api/v1/users/me", _AccountService_UserProfile0_HTTP_Handler(srv))
 	r.Handle("PATCH", "/api/v1/users/me", _AccountService_UserUpdateProfile0_HTTP_Handler(srv))
+	r.Handle("POST", "/api/v1/users/me/identity-checks", _AccountService_UserVerifyIdentity0_HTTP_Handler(srv))
+	r.Handle("GET", "/api/v1/users/me/identity-checks/current", _AccountService_UserIdentityCurrent0_HTTP_Handler(srv))
 	r.Handle("POST", "/api/v1/auth/logout", _AccountService_AuthLogout0_HTTP_Handler(srv))
 	r.Handle("POST", "/api/v1/users/me/cancellation", _AccountService_UserCancelAccount0_HTTP_Handler(srv))
 	r.Handle("GET", "/api/v1/users/me/notifications", _AccountService_NotificationList0_HTTP_Handler(srv))
@@ -90,6 +96,47 @@ func _AccountService_UserUpdateProfile0_HTTP_Handler(srv AccountServiceHTTPServe
 		http.SetOperation(ctx, OperationAccountServiceUserUpdateProfile)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.UserUpdateProfile(ctx, req.(*UserUpdateProfileRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*v1.ApiResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _AccountService_UserVerifyIdentity0_HTTP_Handler(srv AccountServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in UserVerifyIdentityRequest
+		if err := ctx.Bind(&in.Body); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAccountServiceUserVerifyIdentity)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.UserVerifyIdentity(ctx, req.(*UserVerifyIdentityRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*v1.ApiResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _AccountService_UserIdentityCurrent0_HTTP_Handler(srv AccountServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in UserIdentityCurrentRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAccountServiceUserIdentityCurrent)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.UserIdentityCurrent(ctx, req.(*UserIdentityCurrentRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
@@ -302,8 +349,10 @@ type AccountServiceHTTPClient interface {
 	NotificationList(ctx context.Context, req *NotificationListRequest, opts ...http.CallOption) (rsp *v1.ApiResponse, err error)
 	NotificationRead(ctx context.Context, req *NotificationReadRequest, opts ...http.CallOption) (rsp *v1.ApiResponse, err error)
 	UserCancelAccount(ctx context.Context, req *UserCancelAccountRequest, opts ...http.CallOption) (rsp *v1.ApiResponse, err error)
+	UserIdentityCurrent(ctx context.Context, req *UserIdentityCurrentRequest, opts ...http.CallOption) (rsp *v1.ApiResponse, err error)
 	UserProfile(ctx context.Context, req *UserProfileRequest, opts ...http.CallOption) (rsp *v1.ApiResponse, err error)
 	UserUpdateProfile(ctx context.Context, req *UserUpdateProfileRequest, opts ...http.CallOption) (rsp *v1.ApiResponse, err error)
+	UserVerifyIdentity(ctx context.Context, req *UserVerifyIdentityRequest, opts ...http.CallOption) (rsp *v1.ApiResponse, err error)
 }
 
 type AccountServiceHTTPClientImpl struct {
@@ -489,6 +538,39 @@ func (c *AccountServiceHTTPClientImpl) UserUpdateProfile(ctx context.Context, in
 		http.PathTemplate(pattern),
 	}, opts...)
 	err := c.cc.Invoke(ctx, "PATCH", path, in.Body, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *AccountServiceHTTPClientImpl) UserVerifyIdentity(ctx context.Context, in *UserVerifyIdentityRequest, opts ...http.CallOption) (*v1.ApiResponse, error) {
+	var out v1.ApiResponse
+	pattern := "/api/v1/users/me/identity-checks"
+	path := http.BuildPath(pattern, in, http.WithQueryParams(), http.WithOmitFields("body"))
+	opts = append([]http.CallOption{
+		http.Accept("application/protojson"),
+		http.ContentType("application/protojson"),
+		http.Operation(OperationAccountServiceUserVerifyIdentity),
+		http.PathTemplate(pattern),
+	}, opts...)
+	err := c.cc.Invoke(ctx, "POST", path, in.Body, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *AccountServiceHTTPClientImpl) UserIdentityCurrent(ctx context.Context, in *UserIdentityCurrentRequest, opts ...http.CallOption) (*v1.ApiResponse, error) {
+	var out v1.ApiResponse
+	pattern := "/api/v1/users/me/identity-checks/current"
+	path := http.BuildPath(pattern, in, http.WithQueryParams())
+	opts = append([]http.CallOption{
+		http.Accept("application/protojson"),
+		http.Operation(OperationAccountServiceUserIdentityCurrent),
+		http.PathTemplate(pattern),
+	}, opts...)
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

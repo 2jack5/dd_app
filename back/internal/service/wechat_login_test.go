@@ -34,13 +34,24 @@ func (s loginSessionStub) SaveRefreshSession(context.Context, biz.RefreshSession
 func (s loginSessionStub) RotateRefreshSession(context.Context, string, biz.RefreshSession) error {
 	return s.err
 }
+func (s loginSessionStub) RevokeSession(context.Context, int64, string) error { return s.err }
+func (s loginSessionStub) SessionActive(context.Context, int64, string) (bool, error) {
+	return true, s.err
+}
 
 func (loginTokenStub) Issue(int64, int32) (biz.TokenPair, error) {
-	return biz.TokenPair{AccessToken: "access", RefreshToken: "refresh", RefreshTokenHash: "hash", AccessExpiresAt: time.Now().Add(time.Hour), RefreshExpiresAt: time.Now().Add(24 * time.Hour)}, nil
+	return biz.TokenPair{AccessToken: "access", RefreshToken: "refresh", SessionID: "session-1", RefreshTokenHash: "hash", AccessExpiresAt: time.Now().Add(time.Hour), RefreshExpiresAt: time.Now().Add(24 * time.Hour)}, nil
 }
-func (loginTokenStub) VerifyAccess(string) (biz.TokenClaims, error) { return biz.TokenClaims{}, nil }
+func (loginTokenStub) IssueForSession(userID int64, authVersion int32, sessionID string) (biz.TokenPair, error) {
+	pair, err := (loginTokenStub{}).Issue(userID, authVersion)
+	pair.SessionID = sessionID
+	return pair, err
+}
+func (loginTokenStub) VerifyAccess(string) (biz.TokenClaims, error) {
+	return biz.TokenClaims{UserID: 9, AuthVersion: 1, SessionID: "session-1"}, nil
+}
 func (loginTokenStub) VerifyRefresh(string) (biz.TokenClaims, error) {
-	return biz.TokenClaims{UserID: 9, AuthVersion: 1}, nil
+	return biz.TokenClaims{UserID: 9, AuthVersion: 1, SessionID: "session-1"}, nil
 }
 
 func TestAuthWechatLoginReturnsTokenAndUser(t *testing.T) {
@@ -91,5 +102,28 @@ func TestAuthRefreshTokenValidatesBody(t *testing.T) {
 	businessError, ok := ecode.FromError(err)
 	if !ok || businessError.Code() != ecode.InvalidArgument {
 		t.Fatalf("missing body must be invalid argument: %v", err)
+	}
+}
+
+func TestAuthLogoutRevokesCurrentSession(t *testing.T) {
+	auth := biz.NewAuthUsecase(loginWechatStub{}, loginRepoStub{}, loginTokenStub{}, loginSessionStub{})
+	service := NewBusinessService(nil, nil, auth, nil)
+	ctx := biz.WithPrincipal(context.Background(), biz.Principal{UserID: 9, SessionID: "session-1"})
+	response, err := service.AuthLogout(ctx, &businessv1.AuthLogoutRequest{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	data, ok := response.Data.AsInterface().(map[string]any)
+	if !ok || data["logged_out"] != true {
+		t.Fatalf("unexpected logout response: %#v", response.Data.AsInterface())
+	}
+}
+
+func TestAuthLogoutRequiresAuthenticatedSession(t *testing.T) {
+	auth := biz.NewAuthUsecase(loginWechatStub{}, loginRepoStub{}, loginTokenStub{}, loginSessionStub{})
+	_, err := NewBusinessService(nil, nil, auth, nil).AuthLogout(context.Background(), &businessv1.AuthLogoutRequest{})
+	businessError, ok := ecode.FromError(err)
+	if !ok || businessError.Code() != ecode.AuthRequired {
+		t.Fatalf("missing principal must be rejected: %v", err)
 	}
 }

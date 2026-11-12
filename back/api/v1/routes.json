@@ -347,7 +347,7 @@
     "idempotent": true,
     "body": null,
     "notes": "",
-    "implemented": false
+    "implemented": true
   },
   {
     "board": "user",
@@ -481,7 +481,7 @@
     "method": "POST",
     "path": "/api/v1/orders",
     "operation": "trade.createOrder",
-    "summary": "消费报价并原子预占时段",
+    "summary": "实名通过且年满18岁后消费报价并原子预占时段",
     "auth": "user",
     "permission": "",
     "idempotent": true,
@@ -784,32 +784,32 @@
     "implemented": false
   },
   {
-    "board": "coach",
-    "group": "入驻与认证",
+    "board": "user",
+    "group": "账户与通知",
     "method": "POST",
-    "path": "/api/v1/coach/identity-checks",
-    "operation": "coach.verifyIdentity",
-    "summary": "发起第三方实名与年龄核验",
-    "auth": "coach_applicant",
+    "path": "/api/v1/users/me/identity-checks",
+    "operation": "user.verifyIdentity",
+    "summary": "用户实名及18岁年龄核验",
+    "auth": "user",
     "permission": "",
     "idempotent": true,
     "body": "IdentityCheck",
     "notes": "",
-    "implemented": false
+    "implemented": true
   },
   {
-    "board": "coach",
-    "group": "入驻与认证",
+    "board": "user",
+    "group": "账户与通知",
     "method": "GET",
-    "path": "/api/v1/coach/identity-checks/current",
-    "operation": "coach.identityCurrent",
-    "summary": "当前有效实名及年龄资格",
-    "auth": "coach_applicant",
+    "path": "/api/v1/users/me/identity-checks/current",
+    "operation": "user.identityCurrent",
+    "summary": "用户当前实名及18岁资格",
+    "auth": "user",
     "permission": "",
     "idempotent": false,
     "body": null,
     "notes": "",
-    "implemented": false
+    "implemented": true
   },
   {
     "board": "coach",
