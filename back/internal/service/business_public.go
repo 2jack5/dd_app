@@ -63,6 +63,7 @@ func (s *BusinessService) AuthWechatLogin(ctx context.Context, req *businessv1.A
 		},
 	})
 }
+
 func (s *BusinessService) AuthRefreshToken(ctx context.Context, req *businessv1.AuthRefreshTokenRequest) (*commonv1.ApiResponse, error) {
 	if s.auth == nil {
 		return nil, ecode.New(ecode.AuthNotConfigured)
@@ -101,8 +102,17 @@ func (s *BusinessService) AgreementCurrent(context.Context, *businessv1.Agreemen
 }
 
 // HomeOverview 获取用户首页概览信息。
-func (s *BusinessService) HomeOverview(context.Context, *businessv1.HomeOverviewRequest) (*commonv1.ApiResponse, error) {
-	return nil, notImplemented("home.overview")
+func (s *BusinessService) HomeOverview(ctx context.Context, _ *businessv1.HomeOverviewRequest) (*commonv1.ApiResponse, error) {
+	if s.home == nil {
+		return nil, ecode.New(ecode.InternalError)
+	}
+
+	result, err := s.home.Overview(ctx)
+	if err != nil {
+		return nil, ecode.Wrap(ecode.InternalError, err)
+	}
+
+	return ok(result)
 }
 
 // HomeBanners 获取用户首页展示的运营横幅。

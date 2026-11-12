@@ -7,6 +7,7 @@ import (
 	"dd_web/back/internal/biz"
 	"dd_web/back/internal/ecode"
 	"errors"
+	"sort"
 	"strconv"
 	"time"
 )
@@ -107,8 +108,53 @@ func (s *BusinessService) AdminMe(ctx context.Context, req *businessv1.AdminMeRe
 	if s.admin == nil {
 		return nil, ecode.New(ecode.AuthNotConfigured)
 	}
+	// 1. 从上下文取得中间件验证后的管理员身份。
+	principal, found := biz.PrincipalFromContext(ctx)
+	if !found || principal.AdminID <= 0 {
+		return nil, ecode.New(ecode.AuthRequired)
+	}
+	// 2. 根据当前管理员 ID 查询资料。
+	admin, err := s.admin.AdminMe(ctx, principal.AdminID)
+	if err != nil {
+		switch {
+		case errors.Is(err, biz.ErrInvalidArgument):
+			return nil, ecode.New(ecode.InvalidArgument)
 
-	return nil, notImplemented("admin.me")
+		case errors.Is(err, biz.ErrAdminNotFound):
+			// 当前登录对应的账号已经不存在。
+			return nil, ecode.New(ecode.InvalidToken)
+
+		case errors.Is(err, biz.ErrAccountDisabled):
+			return nil, ecode.New(ecode.AccountDisabled)
+
+		case errors.Is(err, biz.ErrAuthenticationUnavailable):
+			return nil, ecode.New(ecode.AuthNotConfigured)
+
+		default:
+			return nil, ecode.Wrap(ecode.InternalError, err)
+		}
+	}
+
+	// 3. 把权限集合转换为前端容易使用的字符串数组。
+	permissions := make([]string, 0, len(principal.Permissions))
+	for permission, enabled := range principal.Permissions {
+		if enabled {
+			permissions = append(permissions, permission)
+		}
+	}
+
+	// map 遍历顺序不固定，排序后让响应保持稳定。
+	sort.Strings(permissions)
+
+	// 4. 只返回允许展示的字段。
+	return ok(map[string]any{
+		"id":           strconv.FormatInt(admin.ID, 10),
+		"account":      admin.Account,
+		"display_name": admin.DisplayName,
+		"status":       string(admin.Status),
+		"permissions":  permissions,
+		"data_scope":   principal.DataScope,
+	})
 }
 
 // AdminLogout 退出当前管理员登录。
@@ -142,12 +188,52 @@ func (s *BusinessService) AdminLogout(ctx context.Context, req *businessv1.Admin
 		"logged_out": true,
 		"scope":      "ALL_DEVICES",
 	})
-	return nil, notImplemented("admin.logout")
 }
 
 // AdminAccounts 分页查询后台管理员账号列表。
-func (s *BusinessService) AdminAccounts(context.Context, *businessv1.AdminAccountsRequest) (*commonv1.ApiResponse, error) {
-	return nil, notImplemented("admin.accounts")
+func (s *BusinessService) AdminAccounts(ctx context.Context, req *businessv1.AdminAccountsRequest) (*commonv1.ApiResponse, error) {
+	if s.admin == nil {
+		return nil, ecode.New(ecode.AuthNotConfigured)
+	}
+	if req == nil {
+		return nil, ecode.New(ecode.InvalidArgument)
+	}
+
+	// 1. 确认当前管理员有查看账号列表的权限。
+	principal, found := biz.PrincipalFromContext(ctx)
+	if !found || principal.AdminID <= 0 {
+		return nil, ecode.New(ecode.AuthRequired)
+	}
+	if !principal.Permissions["admin.account.read"] {
+		return nil, ecode.New(ecode.Forbidden)
+	}
+
+	// 2. 解析分页参数。
+	page, err := biz.ParsePage(req.Cursor, req.PageSize)
+	if err != nil {
+		return nil, ecode.New(ecode.InvalidArgument)
+	}
+
+	// 3. 调用业务层查询列表。
+	result, err := s.admin.AdminAccounts(ctx, page)
+	if err != nil {
+		switch {
+		case errors.Is(err, biz.ErrInvalidArgument):
+			return nil, ecode.New(ecode.InvalidArgument)
+
+		case errors.Is(err, biz.ErrAuthenticationUnavailable):
+			return nil, ecode.New(ecode.AuthNotConfigured)
+
+		default:
+			return nil, ecode.Wrap(ecode.InternalError, err)
+		}
+	}
+
+	// 4. 返回列表与下一页游标。
+	return ok(map[string]any{
+		"items":       result.Items,
+		"next_cursor": result.NextCursor,
+	})
 }
 
 // AdminCreateAccount 创建后台管理员账号。

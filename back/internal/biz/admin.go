@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 	"unicode/utf8"
 
 	"dd_web/back/internal/model"
@@ -28,6 +29,7 @@ type AdminRepository interface {
 	Access(context.Context, int64) (map[string]bool, string, error)
 	CreateAccount(ctx context.Context, admin *model.AdminUser, roleIDs []int64) error
 	IncrementAuthVersion(context.Context, int64) error
+	AdminAccounts(ctx context.Context, after int64, limit int) ([]model.AdminUser, error)
 }
 
 type AdminLoginResult struct {
@@ -250,6 +252,66 @@ func (u *AdminUsecase) RefreshToken(ctx context.Context, refreshToken string) (R
 	return RefreshTokenResult{
 		Tokens: pair,
 	}, nil
+}
+
+// AdminMe 查询当前管理员的资料，并确认账号仍然可用。
+func (u *AdminUsecase) AdminMe(ctx context.Context, adminID int64) (*model.AdminUser, error) {
+	if adminID <= 0 {
+		return nil, ErrInvalidArgument
+	}
+	if u.repo == nil {
+		return nil, ErrAuthenticationUnavailable
+	}
+	// 查询管理员。
+	admin, err := u.repo.FindByID(ctx, adminID)
+	if err != nil {
+		return nil, err
+	}
+	// 查询时再次确认账号状态。
+	if admin.Status != model.AdminUserStatusActive {
+		return nil, ErrAccountDisabled
+	}
+
+	return admin, nil
+}
+
+// AdminAccounts 查询管理员列表，并生成下一页游标。
+func (u *AdminUsecase) AdminAccounts(ctx context.Context, p Page) (List, error) {
+	if p.After < 0 || p.Limit < 1 || p.Limit > 100 {
+		return List{}, ErrInvalidArgument
+	}
+	if u.repo == nil {
+		return List{}, ErrAuthenticationUnavailable
+	}
+
+	// 查询数据，数据库层会多取一条。
+	rows, err := u.repo.AdminAccounts(ctx, p.After, p.Limit)
+	if err != nil {
+		return List{}, err
+	}
+	// 截取当前页，并计算下一页游标。
+	nextCursor := trim(&rows, p.Limit, func(admin model.AdminUser) int64 {
+		return admin.ID
+	})
+	// 只组装允许展示的字段。
+	items := make([]map[string]any, 0, len(rows))
+	for _, admin := range rows {
+		var lastLoginAt any
+		if admin.LastLoginAt != nil {
+			lastLoginAt = admin.LastLoginAt.Format(time.RFC3339)
+		}
+
+		items = append(items, map[string]any{
+			"id":            id(admin.ID),
+			"account":       admin.Account,
+			"display_name":  admin.DisplayName,
+			"status":        string(admin.Status),
+			"created_at":    admin.CreatedAt.Format(time.RFC3339),
+			"last_login_at": lastLoginAt,
+		})
+	}
+
+	return List{Items: items, NextCursor: nextCursor}, nil
 }
 
 // Authenticate 供后台接口的鉴权中间件使用。

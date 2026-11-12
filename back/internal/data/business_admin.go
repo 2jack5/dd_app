@@ -109,6 +109,19 @@ func (r *AdminRepo) IncrementAuthVersion(ctx context.Context, adminID int64) err
 	return nil
 }
 
+// Accounts 按 ID 升序分页查询管理员账号。
+func (r *AdminRepo) AdminAccounts(ctx context.Context, after int64, limit int) ([]model.AdminUser, error) {
+	var rows []model.AdminUser
+	err := r.data.db.WithContext(ctx).
+		Select("id", "account", "display_name", "status", "created_at", "last_login_at").
+		Where("id > ?", after).
+		Order("id ASC").
+		Limit(limit + 1).
+		Find(&rows).
+		Error
+
+	return rows, err
+}
 func (r *AdminRepo) Access(ctx context.Context, adminID int64) (map[string]bool, string, error) {
 	var rows []struct {
 		Code      *string

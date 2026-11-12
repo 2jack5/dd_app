@@ -27,7 +27,8 @@ func RunBusiness() error {
 		auth := newAuthUsecase(cfg, dataSet, redisClient)
 		adminUsecase := newAdminUsecase(cfg, dataSet, redisClient)
 		identity := biz.NewIdentityUsecase(infra.NewIdentityClient(cfg.Identity), data.NewIdentityRepo(dataSet))
-		svc := service.NewBusinessService(biz.NewSystemUsecase(data.NewDependencyHealth(dataSet, redisClient)), catalog, auth, adminUsecase, identity)
+		home := biz.NewHomeUsecase(data.NewHomeRepo(dataSet))
+		svc := service.NewBusinessService(biz.NewSystemUsecase(data.NewDependencyHealth(dataSet, redisClient)), catalog, auth, adminUsecase, home, identity)
 		authenticator := biz.ScopedAuthenticator{
 			User:  auth,
 			Admin: adminUsecase,

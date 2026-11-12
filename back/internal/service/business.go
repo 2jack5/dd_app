@@ -16,14 +16,16 @@ type BusinessService struct {
 	auth     *biz.AuthUsecase
 	admin    *biz.AdminUsecase
 	identity *biz.IdentityUsecase
+	home     *biz.HomeUsecase
 }
 
-func NewBusinessService(system *biz.SystemUsecase, catalog *biz.CatalogUsecase, auth *biz.AuthUsecase, admin *biz.AdminUsecase, identity ...*biz.IdentityUsecase) *BusinessService {
-	service := &BusinessService{system: system, catalog: catalog, auth: auth, admin: admin}
+func NewBusinessService(system *biz.SystemUsecase, catalog *biz.CatalogUsecase, auth *biz.AuthUsecase, admin *biz.AdminUsecase, home *biz.HomeUsecase, identity ...*biz.IdentityUsecase) *BusinessService {
+	svc := &BusinessService{system: system, catalog: catalog, auth: auth, admin: admin, home: home}
 	if len(identity) > 0 {
-		service.identity = identity[0]
+		svc.identity = identity[0]
 	}
-	return service
+
+	return svc
 }
 func ok(data any) (*commonv1.ApiResponse, error) {
 	value, err := structpb.NewValue(data)
