@@ -57,20 +57,91 @@ func (s *BusinessService) AdminLogin(ctx context.Context, req *businessv1.AdminL
 }
 
 // AdminRefreshToken 刷新后台管理员的登录凭证。
-func (s *BusinessService) AdminRefreshToken(context.Context, *businessv1.AdminRefreshTokenRequest) (*commonv1.ApiResponse, error) {
-	return nil, notImplemented("admin.refreshToken")
+func (s *BusinessService) AdminRefreshToken(ctx context.Context, req *businessv1.AdminRefreshTokenRequest) (*commonv1.ApiResponse, error) {
+	if s.admin == nil {
+		return nil, ecode.New(ecode.AuthNotConfigured)
+	}
+	if req == nil || req.Body == nil {
+		return nil, ecode.New(ecode.InvalidArgument)
+	}
+
+	result, err := s.admin.RefreshToken(ctx, req.Body.RefreshToken)
+	if err != nil {
+		switch {
+		case errors.Is(err, biz.ErrInvalidArgument):
+			return nil, ecode.New(ecode.InvalidArgument)
+
+		case errors.Is(err, biz.ErrInvalidToken):
+			return nil, ecode.New(ecode.InvalidToken)
+
+		case errors.Is(err, biz.ErrAccountDisabled):
+			return nil, ecode.New(ecode.AccountDisabled)
+
+		case errors.Is(err, biz.ErrAuthenticationUnavailable):
+			return nil, ecode.New(ecode.AuthNotConfigured)
+
+		default:
+			return nil, ecode.Wrap(ecode.InternalError, err)
+		}
+	}
+
+	now := time.Now()
+
+	return ok(map[string]any{
+		"token_type":    "Bearer",
+		"access_token":  result.Tokens.AccessToken,
+		"refresh_token": result.Tokens.RefreshToken,
+		"expires_in": float64(max(
+			0,
+			int(result.Tokens.AccessExpiresAt.Sub(now).Seconds()),
+		)),
+		"refresh_expires_in": float64(max(
+			0,
+			int(result.Tokens.RefreshExpiresAt.Sub(now).Seconds()),
+		)),
+	})
 }
 
 // AdminMe 查询当前登录管理员的信息。
-func (s *BusinessService) AdminMe(context.Context, *businessv1.AdminMeRequest) (*commonv1.ApiResponse, error) {
+func (s *BusinessService) AdminMe(ctx context.Context, req *businessv1.AdminMeRequest) (*commonv1.ApiResponse, error) {
+	if s.admin == nil {
+		return nil, ecode.New(ecode.AuthNotConfigured)
+	}
+
 	return nil, notImplemented("admin.me")
 }
 
 // AdminLogout 退出当前管理员登录。
-func (s *BusinessService) AdminLogout(context.Context, *businessv1.AdminLogoutRequest) (*commonv1.ApiResponse, error) {
+func (s *BusinessService) AdminLogout(ctx context.Context, req *businessv1.AdminLogoutRequest) (*commonv1.ApiResponse, error) {
 	if s.admin == nil {
 		return nil, ecode.New(ecode.AuthNotConfigured)
 	}
+	// 管理员身份由认证中间件写入 context。
+	principal, found := biz.PrincipalFromContext(ctx)
+	if !found || principal.AdminID <= 0 {
+		return nil, ecode.New(ecode.AuthRequired)
+	}
+	err := s.admin.Logout(ctx, principal.AdminID)
+	if err != nil {
+		switch {
+		case errors.Is(err, biz.ErrAdminNotFound):
+			return nil, ecode.New(ecode.InvalidToken)
+
+		case errors.Is(err, biz.ErrInvalidArgument):
+			return nil, ecode.New(ecode.InvalidArgument)
+
+		case errors.Is(err, biz.ErrAuthenticationUnavailable):
+			return nil, ecode.New(ecode.AuthNotConfigured)
+
+		default:
+			return nil, ecode.Wrap(ecode.InternalError, err)
+		}
+	}
+
+	return ok(map[string]any{
+		"logged_out": true,
+		"scope":      "ALL_DEVICES",
+	})
 	return nil, notImplemented("admin.logout")
 }
 

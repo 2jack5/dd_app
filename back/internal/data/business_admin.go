@@ -90,6 +90,25 @@ func (r *AdminRepo) FindByID(ctx context.Context, id int64) (*model.AdminUser, e
 	return &admin, nil
 }
 
+// IncrementAuthVersion 递增管理员登录版本，使旧凭证失效。
+func (r *AdminRepo) IncrementAuthVersion(ctx context.Context, adminID int64) error {
+	result := r.data.db.WithContext(ctx).
+		Model(&model.AdminUser{}).Where("id = ?", adminID).
+		Update("auth_version", gorm.Expr("auth_version + ?", 1))
+
+	// 数据库执行失败。
+	if result.Error != nil {
+		return result.Error
+	}
+
+	// 没有更新任何记录，说明管理员不存在。
+	if result.RowsAffected == 0 {
+		return biz.ErrAdminNotFound
+	}
+
+	return nil
+}
+
 func (r *AdminRepo) Access(ctx context.Context, adminID int64) (map[string]bool, string, error) {
 	var rows []struct {
 		Code      *string

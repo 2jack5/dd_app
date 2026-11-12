@@ -2,6 +2,8 @@ package biz
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"strings"
@@ -25,6 +27,7 @@ type AdminRepository interface {
 	FindByID(context.Context, int64) (*model.AdminUser, error)
 	Access(context.Context, int64) (map[string]bool, string, error)
 	CreateAccount(ctx context.Context, admin *model.AdminUser, roleIDs []int64) error
+	IncrementAuthVersion(context.Context, int64) error
 }
 
 type AdminLoginResult struct {
@@ -163,6 +166,87 @@ func (u *AdminUsecase) Login(ctx context.Context, account, password string) (Adm
 
 	return AdminLoginResult{
 		Admin:  admin,
+		Tokens: pair,
+	}, nil
+}
+
+// Logout 使当前管理员所有设备上的旧登录凭证失效。
+func (u *AdminUsecase) Logout(ctx context.Context, adminID int64) error {
+	if adminID <= 0 {
+		return ErrInvalidArgument
+	}
+	if u.repo == nil {
+		return ErrAuthenticationUnavailable
+	}
+
+	return u.repo.IncrementAuthVersion(ctx, adminID)
+}
+
+// RefreshToken 验证管理员刷新凭证并轮换登录凭证。
+func (u *AdminUsecase) RefreshToken(ctx context.Context, refreshToken string) (RefreshTokenResult, error) {
+	refreshToken = strings.TrimSpace(refreshToken)
+
+	// 1. 检查输入及依赖。
+	if refreshToken == "" || len(refreshToken) > 4096 {
+		return RefreshTokenResult{}, ErrInvalidArgument
+	}
+	if u.repo == nil || u.tokens == nil || u.sessions == nil {
+		return RefreshTokenResult{}, ErrAuthenticationUnavailable
+	}
+
+	// 2. 验证刷新凭证。
+	// 检查签名、有效期、管理员签发方，以及类型必须为 refresh。
+	claims, err := u.tokens.VerifyRefresh(refreshToken)
+	if err != nil {
+		return RefreshTokenResult{}, err
+	}
+
+	// 3. 查询管理员。
+	// 共享的 TokenClaims 字段叫 UserID，此处装的是管理员 ID。
+	admin, err := u.repo.FindByID(ctx, claims.UserID)
+	if errors.Is(err, ErrAdminNotFound) {
+		return RefreshTokenResult{}, ErrInvalidToken
+	}
+	if err != nil {
+		return RefreshTokenResult{}, err
+	}
+
+	// 4. 检查账号状态和登录版本。
+	if admin.Status != model.AdminUserStatusActive {
+		return RefreshTokenResult{}, ErrAccountDisabled
+	}
+	if admin.AuthVersion != claims.AuthVersion {
+		return RefreshTokenResult{}, ErrInvalidToken
+	}
+
+	// 5. 生成新的访问凭证和刷新凭证。
+	pair, err := u.tokens.Issue(admin.ID, admin.AuthVersion)
+	if err != nil {
+		return RefreshTokenResult{}, err
+	}
+
+	// 6. 计算旧刷新凭证摘要，用它定位 Redis 中的旧会话。
+	hash := sha256.Sum256([]byte(refreshToken))
+	currentHash := hex.EncodeToString(hash[:])
+
+	next := RefreshSession{
+		UserID:           admin.ID,
+		AuthVersion:      admin.AuthVersion,
+		ClientType:       "ADMIN",
+		RefreshTokenHash: pair.RefreshTokenHash,
+		ExpiresAt:        pair.RefreshExpiresAt,
+	}
+
+	// 7. 旧会话必须存在且匹配，才能替换为新会话。
+	if err := u.sessions.RotateRefreshSession(
+		ctx,
+		currentHash,
+		next,
+	); err != nil {
+		return RefreshTokenResult{}, err
+	}
+
+	return RefreshTokenResult{
 		Tokens: pair,
 	}, nil
 }
